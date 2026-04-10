@@ -4,3 +4,6 @@ obj/
 resources/App/*.lock
 resources/App/.mendix-cache
 resources/App/extensions/MxLintExtension/*
+.DS_Store
+dist
+node_modules

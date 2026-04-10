@@ -1,13 +1,13 @@
-﻿using Mendix.StudioPro.ExtensionsAPI.Model;
+using System.Text.Json.Nodes;
+using com.cinaq.MxLintExtension.Core;
+using Mendix.StudioPro.ExtensionsAPI.Model;
 using Mendix.StudioPro.ExtensionsAPI.Model.Projects;
 using Mendix.StudioPro.ExtensionsAPI.Services;
 using Mendix.StudioPro.ExtensionsAPI.UI.DockablePane;
 using Mendix.StudioPro.ExtensionsAPI.UI.Services;
 using Mendix.StudioPro.ExtensionsAPI.UI.WebView;
-using System.Text.Json.Nodes;
 
-
-namespace com.cinaq.MxLintExtension;
+namespace com.cinaq.MxLintExtension.Extensions.Pane;
 
 public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
 {
@@ -16,16 +16,19 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
     private readonly ILogService _logService;
     private readonly IDockingWindowService _dockingWindowService;
     private DateTime _lastUpdateTime;
-    private IWebView? _webView;  // Change 1: Make _webView nullable
+    private IWebView? _webView;
 
-
-    public MxLintPaneExtensionWebViewModel(Uri baseUri, Func<IModel?> getCurrentApp, ILogService logService, IDockingWindowService dockingWindowService)
+    public MxLintPaneExtensionWebViewModel(
+        Uri baseUri,
+        Func<IModel?> getCurrentApp,
+        ILogService logService,
+        IDockingWindowService dockingWindowService)
     {
         _baseUri = baseUri;
         _getCurrentApp = getCurrentApp;
         _dockingWindowService = dockingWindowService;
         _logService = logService;
-        _lastUpdateTime = DateTime.Now.AddYears(-100); // force refresh on first run
+        _lastUpdateTime = DateTime.Now.AddYears(-100);
     }
 
     public override void InitWebView(IWebView webView)
@@ -33,24 +36,27 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         _webView = webView;
         webView.Address = new Uri(_baseUri, "index.html");
         _logService.Info($"InitWebView: {_baseUri}");
-
         webView.MessageReceived += HandleWebViewMessage;
-        //webView.ShowDevTools();
     }
 
-    private async void HandleWebViewMessage(object? sender, MessageReceivedEventArgs args)  // Change 2: Make sender nullable
+    private async void HandleWebViewMessage(object? sender, MessageReceivedEventArgs args)
     {
         var currentApp = _getCurrentApp();
-        if (currentApp == null) return;
+        if (currentApp == null)
+        {
+            return;
+        }
 
         if (args.Message == "refreshData")
         {
             await Refresh(currentApp);
         }
+
         if (args.Message == "toggleDebug")
         {
             _webView?.ShowDevTools();
         }
+
         if (args.Message == "openDocument")
         {
             _webView?.PostMessage("documentOpened");
@@ -58,76 +64,75 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         }
     }
 
-
-    private async Task<bool> OpenDocument(IModel currentApp, JsonObject data)
+    private Task<bool> OpenDocument(IModel currentApp, JsonObject data)
     {
         var doc = GetUnit(currentApp, data);
         if (doc == null)
         {
             _logService.Error($"Document not found: {data}");
-            return false;
+            return Task.FromResult(false);
         }
 
         _dockingWindowService.TryOpenEditor(doc, null);
-        return true;
+        return Task.FromResult(true);
     }
 
     private IAbstractUnit? GetUnit(IModel currentApp, JsonObject data)
     {
         _logService.Info($"Looking up document: {data}");
 
-        var documentName = data["document"].ToString();
+        var documentName = data["document"]?.ToString();
+        if (string.IsNullOrWhiteSpace(documentName))
+        {
+            return null;
+        }
+
         if (documentName == "Security$ProjectSecurity")
         {
             return null;
         }
 
-        var moduleName = data["module"].ToString();
+        var moduleName = data["module"]?.ToString();
+        if (string.IsNullOrWhiteSpace(moduleName))
+        {
+            return null;
+        }
 
-        var module = currentApp.Root.GetModules().Single(m => m.Name == moduleName);
+        var module = currentApp.Root.GetModules().FirstOrDefault(m => m.Name == moduleName);
         if (module == null)
         {
             _logService.Error($"Module not found: {moduleName}");
             return null;
         }
 
-
         if (documentName == "DomainModels$DomainModel")
         {
             return module.DomainModel;
         }
 
-
-        IFolder folder = null;
-        while (documentName.Contains("/"))
+        IFolder? folder = null;
+        while (documentName.Contains('/'))
         {
-            var tokens = documentName.Split("/");
+            var tokens = documentName.Split('/');
             var folderName = tokens[0];
-            if (folder == null)
-            {
-                folder = module.GetFolders().FirstOrDefault(f => f.Name == folderName);
-            }
-            else
-            {
-                folder = folder.GetFolders().FirstOrDefault(f => f.Name == folderName);
-            }
+            folder = folder == null
+                ? module.GetFolders().FirstOrDefault(f => f.Name == folderName)
+                : folder.GetFolders().FirstOrDefault(f => f.Name == folderName);
             documentName = documentName.Substring(folderName.Length + 1);
         }
-        if (folder == null)
-        {
-            return module.GetDocuments().FirstOrDefault(d => d.Name == documentName);
-        }
-        else
-        {
-            return folder.GetDocuments().FirstOrDefault(d => d.Name == documentName);
-        }
 
+        return folder == null
+            ? module.GetDocuments().FirstOrDefault(d => d.Name == documentName)
+            : folder.GetDocuments().FirstOrDefault(d => d.Name == documentName);
     }
 
     private async Task<bool> Refresh(IModel currentApp)
     {
         var mprFile = GetMprFile(currentApp.Root.DirectoryPath);
-        if (mprFile == null) return false;
+        if (mprFile == null)
+        {
+            return false;
+        }
 
         var lastWrite = File.GetLastWriteTime(mprFile);
         if (lastWrite <= _lastUpdateTime)
@@ -155,6 +160,7 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         {
             _logService.Error("No mpr file found");
         }
+
         return mprFile;
     }
 }

@@ -1,25 +1,25 @@
 using System.ComponentModel.Composition;
 using System.Net;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Mendix.StudioPro.ExtensionsAPI.Services;
 using Mendix.StudioPro.ExtensionsAPI.UI.WebServer;
 
-namespace com.cinaq.MxLintExtension;
+namespace com.cinaq.MxLintExtension.WebServer;
 
 [Export(typeof(WebServerExtension))]
 public class MxLintWebServerExtension : WebServerExtension
 {
     private readonly IExtensionFileService _extensionFileService;
-    private readonly ILogService _logService;
     private readonly IConfigurationService _configurationService;
 
     [ImportingConstructor]
-    public MxLintWebServerExtension(IExtensionFileService extensionFileService, ILogService logService, IConfigurationService configurationService)
+    public MxLintWebServerExtension(
+        IExtensionFileService extensionFileService,
+        ILogService logService,
+        IConfigurationService configurationService)
     {
         _extensionFileService = extensionFileService;
-        _logService = logService;
         _configurationService = configurationService;
     }
 
@@ -34,17 +34,17 @@ public class MxLintWebServerExtension : WebServerExtension
             webServer.AddRoute(route, (request, response, ct) => ServeFile(file, response, ct));
         }
 
-        webServer.AddRoute("api", ServeAPI);
+        webServer.AddRoute("api", ServeApi);
         webServer.AddRoute("api/theme", ServeTheme);
     }
 
-    private async Task ServeFile(string filePath, HttpListenerResponse response, CancellationToken ct)
+    private static async Task ServeFile(string filePath, HttpListenerResponse response, CancellationToken ct)
     {
         var mimeType = GetMimeType(filePath);
         await response.SendFileAndClose(mimeType, filePath, ct);
     }
 
-    private string GetMimeType(string filePath)
+    private static string GetMimeType(string filePath)
     {
         var extension = Path.GetExtension(filePath);
         return extension switch
@@ -56,7 +56,7 @@ public class MxLintWebServerExtension : WebServerExtension
         };
     }
 
-    private async Task ServeAPI(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
+    private async Task ServeApi(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
     {
         if (CurrentApp == null)
         {
@@ -64,7 +64,6 @@ public class MxLintWebServerExtension : WebServerExtension
             return;
         }
 
-        // read json file
         var jsonPath = Path.Combine(CurrentApp.Root.DirectoryPath, ".mendix-cache", "lint-results.json");
         var data = await File.ReadAllTextAsync(jsonPath, ct);
         var jsonStream = new MemoryStream();
@@ -72,12 +71,12 @@ public class MxLintWebServerExtension : WebServerExtension
         response.SendJsonAndClose(jsonStream);
     }
 
-    private async Task ServeTheme(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
+    private Task ServeTheme(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
     {
         if (CurrentApp == null)
         {
             response.SendNoBodyAndClose(404);
-            return;
+            return Task.CompletedTask;
         }
 
         var themeObject = new JsonObject
@@ -87,13 +86,14 @@ public class MxLintWebServerExtension : WebServerExtension
                 .ToLowerInvariant()
         };
 
-        string json = themeObject.ToJsonString(new()
+        var json = themeObject.ToJsonString(new()
         {
-            WriteIndented = true,
+            WriteIndented = true
         });
 
         var jsonStream = new MemoryStream();
         jsonStream.Write(Encoding.UTF8.GetBytes(json));
         response.SendJsonAndClose(jsonStream);
+        return Task.CompletedTask;
     }
 }
