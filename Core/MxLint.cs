@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Net.Http;
+using System.Text;
 using Mendix.StudioPro.ExtensionsAPI.Model;
 using Mendix.StudioPro.ExtensionsAPI.Services;
 
@@ -12,12 +12,11 @@ public class MxLint
     private readonly ILogService _logService;
     private readonly string _executablePath;
     private readonly string _lintResultsPath;
+    private readonly string _configPath;
     private readonly string _cachePath;
-    private readonly string _rulesPath;
     private readonly string _cliBaseUrl;
-    private readonly string _rulesBaseUrl;
 
-    private const string CliVersion = "v3.12.0";
+    private const string CliVersion = "v3.14.0";
     private const string RulesVersion = "v3.3.0";
 
     public MxLint(IModel model, ILogService logService)
@@ -28,17 +27,17 @@ public class MxLint
         _cachePath = Path.Combine(_model.Root.DirectoryPath, ".mendix-cache");
         _executablePath = Path.Combine(_cachePath, "mxlint-local.exe");
         _lintResultsPath = Path.Combine(_cachePath, "lint-results.json");
-        _rulesPath = Path.Combine(_cachePath, "rules");
+        _configPath = Path.Combine(_cachePath, "mxlint-extension.yaml");
         _cliBaseUrl = $"https://github.com/mxlint/mxlint-cli/releases/download/{CliVersion}/";
-        _rulesBaseUrl = $"https://github.com/mxlint/mxlint-rules/releases/download/{RulesVersion}/";
     }
 
     public async Task Lint()
     {
         try
         {
+            EnsureCacheDirectory();
             await EnsureCli();
-            await EnsurePolicies();
+            await EnsureConfig();
             await ExportModel();
             await LintModel();
         }
@@ -50,12 +49,12 @@ public class MxLint
 
     public async Task ExportModel()
     {
-        await RunProcess("export-model", "Exporting model");
+        await RunProcess($"--config \"{_configPath}\" export", "Exporting model");
     }
 
     public async Task LintModel()
     {
-        await RunProcess($"lint -j \"{_lintResultsPath}\" -r \"{_rulesPath}\"", "Linting model");
+        await RunProcess($"--config \"{_configPath}\" lint", "Linting model");
     }
 
     private async Task RunProcess(string arguments, string operationName)
@@ -93,6 +92,11 @@ public class MxLint
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             await process.WaitForExitAsync();
+            if (process.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"{operationName} failed with exit code {process.ExitCode}");
+            }
+
             _logService.Info($"Finished {operationName}");
         }
         catch (Exception ex)
@@ -110,29 +114,54 @@ public class MxLint
         }
 
         using var client = new HttpClient();
-        var downloadUrl = $"{_cliBaseUrl}mxlint-{CliVersion}-windows-amd64.exe";
+        var downloadUrl = $"{_cliBaseUrl}mxlint-windows-amd64.exe";
         _logService.Info($"Downloading CLI from {downloadUrl}");
         var response = await client.GetAsync(downloadUrl);
+        response.EnsureSuccessStatusCode();
         await using var fs = new FileStream(_executablePath, FileMode.CreateNew);
         await response.Content.CopyToAsync(fs);
     }
 
-    private async Task EnsurePolicies()
+    private void EnsureCacheDirectory()
     {
-        if (Directory.Exists(_rulesPath))
+        if (!Directory.Exists(_cachePath))
         {
-            _logService.Info("Rules already exists");
+            Directory.CreateDirectory(_cachePath);
+        }
+    }
+
+    private async Task EnsureConfig()
+    {
+        if (File.Exists(_configPath))
+        {
+            _logService.Info("MxLint extension config already exists");
             return;
         }
 
-        using var client = new HttpClient();
-        var downloadUrl = $"{_rulesBaseUrl}rules-{RulesVersion}.zip";
-        var tempZip = Path.Combine(_cachePath, "rules.zip");
-        _logService.Info($"Downloading rules from {downloadUrl}");
-        var response = await client.GetAsync(downloadUrl);
-        await using var fs = new FileStream(tempZip, FileMode.CreateNew);
-        await response.Content.CopyToAsync(fs);
-        ZipFile.ExtractToDirectory(tempZip, _cachePath);
-        File.Delete(tempZip);
+        var config = $$"""
+rules:
+  path: .mendix-cache/rules
+  rulesets:
+    - https://github.com/mxlint/mxlint-rules/releases/download/{{RulesVersion}}/rules-{{RulesVersion}}.zip
+lint:
+  xunitReport: ""
+  jsonFile: .mendix-cache/lint-results.json
+  ignoreNoqa: false
+  noCache: false
+  concurrency: 4
+  regoTrace: false
+  skip: {}
+cache:
+  directory: .mendix-cache/mxlint
+  enable: true
+modelsource: modelsource
+projectDirectory: .
+export:
+  filter: ".*"
+  raw: false
+  appstore: false
+""";
+
+        await File.WriteAllTextAsync(_configPath, config, Encoding.UTF8);
     }
 }
