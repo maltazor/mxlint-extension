@@ -1,5 +1,6 @@
 *** Settings ***
 Library    FlaUILibrary    uia=UIA3    screenshot_on_failure=False
+Library    Collections
 Library    Process
 Library    OperatingSystem
 
@@ -25,40 +26,90 @@ Start Studio Pro With Extension
     Skip Sign In If Present
 
 Skip Sign In If Present
-    [Documentation]    If the sign-in dialog appears, find and click the skip button
+    [Documentation]    If the sign-in dialog appears, explore and skip it
     ${exists}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
     IF    not ${exists}
-        Log    No sign-in window detected, skipping
+        Log    No sign-in window detected
         RETURN
     END
-    Log    Sign-in window detected, exploring children...
-    Dump Element Children    ${SIGN_IN_WINDOW}
+    Log    Sign-in window detected, exploring UI tree...
+    Dump UI Tree
     Try Click Skip Button
 
-Dump Element Children
-    [Documentation]    Log all children of an element for XPath discovery
-    [Arguments]    ${xpath}
-    ${children}=    Find All Elements    ${xpath}
-    FOR    ${child}    IN    @{children}
-        Log    XPath: ${child.Xpath} | Name: ${child.Name} | AutomationId: ${child.AutomationId} | ClassName: ${child.ClassName}
+Dump UI Tree
+    [Documentation]    Explore the sign-in window at multiple depth levels
+    @{search_paths}=    Create List
+    ...    ${MAIN_WINDOW}
+    ...    ${MAIN_WINDOW}/Window
+    ...    ${MAIN_WINDOW}/Button
+    ...    ${MAIN_WINDOW}/Pane
+    ...    ${MAIN_WINDOW}/Text
+    ...    ${MAIN_WINDOW}/Hyperlink
+    ...    ${MAIN_WINDOW}/Custom
+    ...    ${MAIN_WINDOW}/Document
+    ...    ${MAIN_WINDOW}/Group
+    ...    ${SIGN_IN_WINDOW}/Button
+    ...    ${SIGN_IN_WINDOW}/Pane
+    ...    ${SIGN_IN_WINDOW}/Text
+    ...    ${SIGN_IN_WINDOW}/Hyperlink
+    ...    ${SIGN_IN_WINDOW}/Custom
+    ...    ${SIGN_IN_WINDOW}/Document
+    ...    ${SIGN_IN_WINDOW}/Group
+    FOR    ${path}    IN    @{search_paths}
+        ${elements}=    Find All Elements    ${path}
+        ${count}=    Get Length    ${elements}
+        IF    ${count} > 0
+            Log    === Found ${count} elements at ${path} ===
+            FOR    ${el}    IN    @{elements}
+                Log    XPath: ${el.Xpath} | Name: ${el.Name} | AutomationId: ${el.AutomationId} | ClassName: ${el.ClassName}
+            END
+        END
+    END
+    # Also try one more level deep inside any Pane children
+    ${panes}=    Find All Elements    ${MAIN_WINDOW}/Pane
+    FOR    ${pane}    IN    @{panes}
+        Log    === Exploring pane children: ${pane.Xpath} ===
+        @{pane_search}=    Create List
+        ...    ${pane.Xpath}/Button
+        ...    ${pane.Xpath}/Text
+        ...    ${pane.Xpath}/Hyperlink
+        ...    ${pane.Xpath}/Pane
+        ...    ${pane.Xpath}/Custom
+        ...    ${pane.Xpath}/Document
+        FOR    ${sub_path}    IN    @{pane_search}
+            ${sub_els}=    Find All Elements    ${sub_path}
+            ${sub_count}=    Get Length    ${sub_els}
+            IF    ${sub_count} > 0
+                Log    === Found ${sub_count} at ${sub_path} ===
+                FOR    ${sub_el}    IN    @{sub_els}
+                    Log    XPath: ${sub_el.Xpath} | Name: ${sub_el.Name} | AutomationId: ${sub_el.AutomationId} | ClassName: ${sub_el.ClassName}
+                END
+            END
+        END
     END
 
 Try Click Skip Button
-    [Documentation]    Try common skip/close button patterns on the sign-in window
-    # Try various possible button names
-    ${patterns}=    Create List
+    [Documentation]    Try to find and click skip/close button on sign-in
+    @{patterns}=    Create List
     ...    ${SIGN_IN_WINDOW}/Button[@Name='Skip']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='skip']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Skip Sign In']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Cancel']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Close']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Not now']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Later']
-    ...    ${SIGN_IN_WINDOW}/Hyperlink[@Name='Skip']
-    ...    ${SIGN_IN_WINDOW}/Text[@Name='Skip']
     ...    ${MAIN_WINDOW}/Button[@Name='Skip']
+    ...    ${MAIN_WINDOW}/Pane/Button[@Name='Skip']
+    ...    ${MAIN_WINDOW}/Pane/Pane/Button[@Name='Skip']
+    ...    ${SIGN_IN_WINDOW}/Hyperlink[@Name='Skip']
+    ...    ${MAIN_WINDOW}/Hyperlink[@Name='Skip']
+    ...    ${MAIN_WINDOW}/Pane/Hyperlink[@Name='Skip']
+    ...    ${SIGN_IN_WINDOW}/Button[@Name='Cancel']
     ...    ${MAIN_WINDOW}/Button[@Name='Cancel']
+    ...    ${SIGN_IN_WINDOW}/Button[@Name='Close']
     ...    ${MAIN_WINDOW}/Button[@Name='Close']
+    ...    ${MAIN_WINDOW}/Pane/Button[@Name='Close']
+    ...    ${SIGN_IN_WINDOW}/Button[@Name='Not now']
+    ...    ${MAIN_WINDOW}/Button[@Name='Not now']
+    ...    ${SIGN_IN_WINDOW}/Button[@Name='Later']
+    ...    ${MAIN_WINDOW}/Button[@Name='Later']
+    ...    ${SIGN_IN_WINDOW}/Button[@Name='Continue offline']
+    ...    ${MAIN_WINDOW}/Button[@Name='Continue offline']
+    ...    ${MAIN_WINDOW}/Pane/Button[@Name='Continue offline']
     FOR    ${pattern}    IN    @{patterns}
         ${found}=    Element Should Exist    ${pattern}    ${False}
         IF    ${found}
@@ -68,8 +119,7 @@ Try Click Skip Button
             RETURN
         END
     END
-    Log    WARN: Could not find skip button - check Dump Element Children output
-    Fail    Could not find skip button on sign-in window. Check log for UI tree.
+    Fail    Could not find skip button. Check Dump UI Tree log output for available elements.
 
 Stop Studio Pro
     [Documentation]    Gracefully stop Studio Pro
