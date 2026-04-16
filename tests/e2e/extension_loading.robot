@@ -11,23 +11,20 @@ Extension DLL Is Deployed
     [Documentation]    The extension DLL should be in the app extensions folder
     Extension DLL Should Be Deployed
 
+Manifest Is Deployed
+    [Documentation]    The extension manifest.json must be present alongside the DLL
+    ${manifest}=    Join Path    ${APP_DIR}    extensions    MxLintExtension    manifest.json
+    File Should Exist    ${manifest}
+    ${content}=    Get File    ${manifest}
+    Should Contain    ${content}    MxLintExtension.dll
+
 Studio Pro Main Window Is Visible
     [Documentation]    The Studio Pro main window should be present
     [Tags]    ui
     Element Should Exist    ${MAIN_WINDOW}
 
-Inspect Studio Pro UI Tree
-    [Documentation]    Dump the UI tree for debugging menu XPaths
-    [Tags]    debug
-    Dump Window Children
-
-Open MxLint Pane
-    [Documentation]    Open the MxLint pane to trigger extension initialization
-    [Tags]    ui
-    Open MxLint Pane Via Menu
-
-Extension Creates Config After Pane Opens
-    [Documentation]    After the pane is opened the extension creates the default config
+Extension Creates Config On First Run
+    [Documentation]    After sign-in is skipped the extension should create the config
     [Tags]    config
     Wait Until Keyword Succeeds    120s    5s
     ...    Extension Config Should Exist
