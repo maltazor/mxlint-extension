@@ -16,7 +16,7 @@ public class MxLint
     private readonly string _cachePath;
     private readonly string _cliBaseUrl;
 
-    private const string CliVersion = "v3.14.0";
+    private const string CliVersion = "v3.14.1";
     private const string RulesVersion = "v3.3.0";
 
     public MxLint(IModel model, ILogService logService)
