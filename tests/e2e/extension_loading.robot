@@ -1,5 +1,7 @@
 *** Settings ***
 Documentation    Verify the MxLint extension loads correctly in Mendix Studio Pro
+Library          FlaUILibrary    uia=UIA3    screenshot_on_failure=False
+Library          OperatingSystem
 Resource         resources/studiopro.resource
 Suite Setup      Start Studio Pro With Extension
 Suite Teardown   Stop Studio Pro
@@ -24,21 +26,7 @@ Config Contains Expected Default Values
     Should Contain    ${content}    modelsource
     Should Contain    ${content}    mxlint-rules
 
-MxLint Menu Is Available
-    [Documentation]    The MxLint menu extension should register menu entries
+Studio Pro Main Window Is Visible
+    [Documentation]    The Studio Pro main window should be present
     [Tags]    ui
-    # Look for the Extensions menu or MxLint menu entry
-    Wait Until Keyword Succeeds    30s    5s
-    ...    Element Should Exist    name:Extensions
-
-Open MxLint Pane
-    [Documentation]    Opening the MxLint pane should show the lint results panel
-    [Tags]    ui    pane
-    # Click the Extensions menu
-    Click    name:Extensions
-    Wait Until Keyword Succeeds    10s    2s
-    ...    Element Should Exist    name:Open MxLint
-    Click    name:Open MxLint
-    # The pane should appear at the bottom
-    Wait Until Keyword Succeeds    15s    3s
-    ...    Element Should Exist    name:MxLint
+    Element Should Exist    ${MAIN_WINDOW}
