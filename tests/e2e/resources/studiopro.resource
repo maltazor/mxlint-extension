@@ -33,6 +33,18 @@ Extension DLL Should Be Deployed
     ${dll_path}=    Join Path    ${APP_DIR}    extensions    MxLintExtension    MxLintExtension.dll
     File Should Exist    ${dll_path}
 
+Open MxLint Pane Via Menu
+    [Documentation]    Open the MxLint pane through Extensions > Open MxLint menu
+    ${menu_bar}=    Set Variable    ${MAIN_WINDOW}/MenuBar
+    Wait Until Element Exist    ${menu_bar}    30
+    ${extensions_menu}=    Set Variable    ${menu_bar}/MenuItem[@Name='Extensions']
+    Wait Until Element Exist    ${extensions_menu}    10
+    Click    ${extensions_menu}
+    ${open_mxlint}=    Set Variable    /Menu/MenuItem[@Name='Open MxLint']
+    Wait Until Element Exist    ${open_mxlint}    10
+    Click    ${open_mxlint}
+    Log    MxLint pane opened
+
 Extension Config Should Exist
     [Documentation]    Verify the extension config file was created
     ${config_path}=    Join Path    ${APP_DIR}    .mendix-cache    mxlint-extension.yaml

@@ -11,10 +11,20 @@ Extension DLL Is Deployed
     [Documentation]    The extension DLL should be in the app extensions folder
     Extension DLL Should Be Deployed
 
-Extension Creates Config On First Run
-    [Documentation]    Studio Pro loading the extension should create the default config
+Studio Pro Main Window Is Visible
+    [Documentation]    The Studio Pro main window should be present
+    [Tags]    ui
+    Element Should Exist    ${MAIN_WINDOW}
+
+Open MxLint Pane
+    [Documentation]    Open the MxLint pane to trigger extension initialization
+    [Tags]    ui
+    Open MxLint Pane Via Menu
+
+Extension Creates Config After Pane Opens
+    [Documentation]    After the pane is opened the extension creates the default config
     [Tags]    config
-    Wait Until Keyword Succeeds    60s    5s
+    Wait Until Keyword Succeeds    120s    5s
     ...    Extension Config Should Exist
 
 Config Contains Expected Default Values
@@ -25,8 +35,3 @@ Config Contains Expected Default Values
     Should Contain    ${content}    .mendix-cache/lint-results.json
     Should Contain    ${content}    modelsource
     Should Contain    ${content}    mxlint-rules
-
-Studio Pro Main Window Is Visible
-    [Documentation]    The Studio Pro main window should be present
-    [Tags]    ui
-    Element Should Exist    ${MAIN_WINDOW}

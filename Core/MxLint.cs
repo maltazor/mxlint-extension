@@ -39,8 +39,8 @@ public class MxLint
         try
         {
             EnsureCacheDirectory();
-            await EnsureCli();
             await EnsureConfigFile();
+            await EnsureCli();
             await ExportModel();
             await LintModel();
         }
