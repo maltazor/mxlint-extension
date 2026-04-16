@@ -17,9 +17,9 @@ public static class HttpListenerResponseUtils
         response.Close();
     }
 
-    public static void SendJsonAndClose(this HttpListenerResponse response, MemoryStream jsonStream)
+    public static void SendJsonAndClose(this HttpListenerResponse response, MemoryStream jsonStream, int statusCode = 200)
     {
-        response.AddDefaultHeaders(200);
+        response.AddDefaultHeaders(statusCode);
         response.ContentType = "application/json";
         response.ContentEncoding = Encoding.UTF8;
         response.ContentLength64 = jsonStream.Length;

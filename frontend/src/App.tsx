@@ -98,6 +98,10 @@ const App: React.FC = () => {
 
   // UI state
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('mxlint:autoRefreshEnabled');
+    return saved == null ? true : saved === 'true';
+  });
   const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
   const [selectedIssues, setSelectedIssues] = useState<Set<string>>(() => new Set());
   const [showIssueModal, setShowIssueModal] = useState(false);
@@ -281,16 +285,34 @@ const App: React.FC = () => {
   // Auto-refresh - use setTimeout to avoid synchronous setState in effect
   useEffect(() => {
     const timeoutId = setTimeout(() => void refreshData(), 0);
-    if (!window.chrome?.webview) return () => clearTimeout(timeoutId);
+    if (!autoRefreshEnabled) return () => clearTimeout(timeoutId);
+
+    if (!window.chrome?.webview) {
+      const interval = setInterval(() => {
+        void refreshData();
+      }, 1000);
+      return () => {
+        clearTimeout(timeoutId);
+        clearInterval(interval);
+      };
+    }
+
     const interval = setInterval(() => {
       postMessage('refreshData');
-      void refreshData();
     }, 1000);
+
     return () => {
       clearTimeout(timeoutId);
       clearInterval(interval);
     };
-  }, [refreshData]);
+  }, [refreshData, autoRefreshEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('mxlint:autoRefreshEnabled', String(autoRefreshEnabled));
+    if (window.chrome?.webview) {
+      postMessage('setAutoRefresh', { enabled: autoRefreshEnabled });
+    }
+  }, [autoRefreshEnabled]);
 
   // Scroll selected row into view
   useEffect(() => {
@@ -390,13 +412,64 @@ const App: React.FC = () => {
   }, [sortColumn]);
 
   const handleManualRefresh = useCallback(async () => {
-    const ok = await refreshData();
-    if (ok) {
-      success('Lint results refreshed.');
-    } else {
-      toastError('Failed to refresh lint results.');
+    if (window.chrome?.webview) {
+      postMessage('runLintNow');
+      success('Manual lint run started.');
+      return;
     }
+
+    const ok = await refreshData();
+    if (ok) success('Lint results refreshed.');
+    else toastError('Failed to refresh lint results.');
   }, [refreshData, success, toastError]);
+
+  const handleNoqaSelected = useCallback(async () => {
+    if (!window.chrome?.webview) {
+      toastError('NOQA management is only available inside Studio Pro.');
+      return;
+    }
+
+    const entriesMap = new Map<string, Set<string>>();
+    for (const tc of filteredTestcases) {
+      if (!selectedIssues.has(tc.id)) continue;
+      const ruleNumber = tc.rule?.ruleNumber?.trim();
+      if (!tc.module || !tc.docname || !ruleNumber) continue;
+      const documentPath = `${tc.module}/${tc.docname}`;
+      if (!entriesMap.has(documentPath)) {
+        entriesMap.set(documentPath, new Set<string>());
+      }
+      entriesMap.get(documentPath)?.add(ruleNumber);
+    }
+
+    if (entriesMap.size === 0) {
+      toastError('Select issues with valid document and rule numbers first.');
+      return;
+    }
+
+    const entries = [...entriesMap.entries()].map(([document, rules]) => ({
+      document,
+      rules: [...rules],
+    }));
+
+    try {
+      const response = await fetch('./api/noqa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entries }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`NOQA update failed with status ${response.status}`);
+      }
+
+      const totalRules = entries.reduce((sum, entry) => sum + entry.rules.length, 0);
+      success(`Added NOQA for ${entries.length} document(s), ${totalRules} rule(s).`);
+      postMessage('runLintNow');
+    } catch (err) {
+      console.error('Failed to update NOQA config:', err);
+      toastError('Failed to update NOQA configuration.');
+    }
+  }, [filteredTestcases, selectedIssues, success, toastError]);
 
   const clearAllFilters = useCallback(() => {
     setSeverityFilters(['HIGH', 'MEDIUM', 'LOW']);
@@ -747,8 +820,17 @@ const App: React.FC = () => {
 
         <div className="toolbar-separator" />
 
-        <Button variant="ghost" icon={<RefreshIcon />} onClick={() => void handleManualRefresh()} title="Fetch latest lint results (R)">
-          Refresh
+        <Button variant="ghost" icon={<RefreshIcon />} onClick={() => void handleManualRefresh()} title="Run lint now (R)">
+          Run now
+        </Button>
+
+        <Button
+          variant="ghost"
+          onClick={() => setAutoRefreshEnabled(prev => !prev)}
+          title="Toggle automatic lint refresh"
+          className={autoRefreshEnabled ? 'active' : ''}
+        >
+          Auto refresh: {autoRefreshEnabled ? 'On' : 'Off'}
         </Button>
 
         <Button
@@ -776,6 +858,16 @@ const App: React.FC = () => {
         >
           Create Issue
           {selectedCount > 0 && <Badge variant="info" size="sm">{selectedCount}</Badge>}
+        </Button>
+
+        <Button
+          variant="ghost"
+          icon={<SkipIcon />}
+          onClick={() => void handleNoqaSelected()}
+          disabled={selectedCount === 0}
+          title={selectedCount > 0 ? 'Add selected issues to lint.skip config' : 'Select issues first'}
+        >
+          NOQA Selected
         </Button>
 
         {selectedCount > 0 && (

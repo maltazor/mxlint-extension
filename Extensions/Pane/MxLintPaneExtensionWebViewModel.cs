@@ -15,7 +15,9 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
     private readonly Func<IModel?> _getCurrentApp;
     private readonly ILogService _logService;
     private readonly IDockingWindowService _dockingWindowService;
+    private readonly SemaphoreSlim _lintLock = new(1, 1);
     private DateTime _lastUpdateTime;
+    private bool _autoRefreshEnabled = true;
     private IWebView? _webView;
 
     public MxLintPaneExtensionWebViewModel(
@@ -49,12 +51,26 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
 
         if (args.Message == "refreshData")
         {
-            await Refresh(currentApp);
+            if (_autoRefreshEnabled)
+            {
+                await RunLint(currentApp, force: false);
+            }
         }
 
         if (args.Message == "toggleDebug")
         {
             _webView?.ShowDevTools();
+        }
+
+        if (args.Message == "setAutoRefresh")
+        {
+            _autoRefreshEnabled = ParseBoolean(args.Data);
+            _logService.Info($"Auto refresh set to {_autoRefreshEnabled}");
+        }
+
+        if (args.Message == "runLintNow")
+        {
+            await RunLint(currentApp, force: true);
         }
 
         if (args.Message == "openDocument")
@@ -126,8 +142,11 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
             : folder.GetDocuments().FirstOrDefault(d => d.Name == documentName);
     }
 
-    private async Task<bool> Refresh(IModel currentApp)
+    private async Task<bool> RunLint(IModel currentApp, bool force)
     {
+        await _lintLock.WaitAsync();
+        try
+        {
         var mprFile = GetMprFile(currentApp.Root.DirectoryPath);
         if (mprFile == null)
         {
@@ -135,7 +154,7 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         }
 
         var lastWrite = File.GetLastWriteTime(mprFile);
-        if (lastWrite <= _lastUpdateTime)
+        if (!force && lastWrite <= _lastUpdateTime)
         {
             _logService.Debug("No changes detected");
             return false;
@@ -143,7 +162,7 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
 
         _webView?.PostMessage("start");
         _lastUpdateTime = lastWrite;
-        _logService.Info($"Changes detected: {_lastUpdateTime}");
+        _logService.Info(force ? "Manual lint run requested" : $"Changes detected: {_lastUpdateTime}");
 
         var cmd = new MxLint(currentApp, _logService);
         await cmd.Lint();
@@ -151,6 +170,11 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         _webView?.PostMessage("end");
         _webView?.PostMessage("refreshData");
         return true;
+        }
+        finally
+        {
+            _lintLock.Release();
+        }
     }
 
     private string? GetMprFile(string directoryPath)
@@ -162,5 +186,11 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         }
 
         return mprFile;
+    }
+
+    private static bool ParseBoolean(JsonObject data)
+    {
+        var value = data["enabled"]?.ToString();
+        return bool.TryParse(value, out var parsed) && parsed;
     }
 }
