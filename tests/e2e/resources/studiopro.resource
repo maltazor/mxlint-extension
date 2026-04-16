@@ -33,14 +33,30 @@ Extension DLL Should Be Deployed
     ${dll_path}=    Join Path    ${APP_DIR}    extensions    MxLintExtension    MxLintExtension.dll
     File Should Exist    ${dll_path}
 
+Dump Window Children
+    [Documentation]    Log all direct children of the Studio Pro window for XPath discovery
+    ${children}=    Find All Elements    ${MAIN_WINDOW}
+    FOR    ${child}    IN    @{children}
+        Log    XPath: ${child.Xpath} | Name: ${child.Name} | AutomationId: ${child.AutomationId} | ClassName: ${child.ClassName}
+    END
+
 Open MxLint Pane Via Menu
     [Documentation]    Open the MxLint pane through Extensions > Open MxLint menu
-    ${menu_bar}=    Set Variable    ${MAIN_WINDOW}/MenuBar
-    Wait Until Element Exist    ${menu_bar}    30
-    ${extensions_menu}=    Set Variable    ${menu_bar}/MenuItem[@Name='Extensions']
-    Wait Until Element Exist    ${extensions_menu}    10
-    Click    ${extensions_menu}
-    ${open_mxlint}=    Set Variable    /Menu/MenuItem[@Name='Open MxLint']
+    Dump Window Children
+    ${extensions_menu}=    Set Variable    ${MAIN_WINDOW}/Menu/MenuItem[@Name='Extensions']
+    ${exists}=    Element Should Exist    ${extensions_menu}    ${False}
+    IF    ${exists}
+        Click    ${extensions_menu}
+    ELSE
+        ${extensions_menu}=    Set Variable    ${MAIN_WINDOW}/MenuItem[@Name='Extensions']
+        ${exists}=    Element Should Exist    ${extensions_menu}    ${False}
+        IF    ${exists}
+            Click    ${extensions_menu}
+        ELSE
+            Fail    Could not find Extensions menu - check Dump Window Children log output
+        END
+    END
+    ${open_mxlint}=    Set Variable    /MenuItem[@Name='Open MxLint']
     Wait Until Element Exist    ${open_mxlint}    10
     Click    ${open_mxlint}
     Log    MxLint pane opened

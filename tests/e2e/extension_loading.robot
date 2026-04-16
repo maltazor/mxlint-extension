@@ -16,6 +16,11 @@ Studio Pro Main Window Is Visible
     [Tags]    ui
     Element Should Exist    ${MAIN_WINDOW}
 
+Inspect Studio Pro UI Tree
+    [Documentation]    Dump the UI tree for debugging menu XPaths
+    [Tags]    debug
+    Dump Window Children
+
 Open MxLint Pane
     [Documentation]    Open the MxLint pane to trigger extension initialization
     [Tags]    ui
