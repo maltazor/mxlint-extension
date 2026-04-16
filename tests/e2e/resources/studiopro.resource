@@ -26,100 +26,66 @@ Start Studio Pro With Extension
     Skip Sign In If Present
 
 Skip Sign In If Present
-    [Documentation]    If the sign-in dialog appears, explore and skip it
+    [Documentation]    If the sign-in dialog appears, skip it using keyboard navigation.
+    ...    The sign-in content is rendered in a WebView2 which FlaUI cannot
+    ...    inspect directly, so we use Tab and Enter to reach the skip button.
     ${exists}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
     IF    not ${exists}
         Log    No sign-in window detected
         RETURN
     END
-    Log    Sign-in window detected, exploring UI tree...
-    Dump UI Tree
-    Try Click Skip Button
-
-Dump UI Tree
-    [Documentation]    Explore the sign-in window at multiple depth levels
-    @{search_paths}=    Create List
-    ...    ${MAIN_WINDOW}
-    ...    ${MAIN_WINDOW}/Window
-    ...    ${MAIN_WINDOW}/Button
-    ...    ${MAIN_WINDOW}/Pane
-    ...    ${MAIN_WINDOW}/Text
-    ...    ${MAIN_WINDOW}/Hyperlink
-    ...    ${MAIN_WINDOW}/Custom
-    ...    ${MAIN_WINDOW}/Document
-    ...    ${MAIN_WINDOW}/Group
-    ...    ${SIGN_IN_WINDOW}/Button
-    ...    ${SIGN_IN_WINDOW}/Pane
-    ...    ${SIGN_IN_WINDOW}/Text
-    ...    ${SIGN_IN_WINDOW}/Hyperlink
-    ...    ${SIGN_IN_WINDOW}/Custom
-    ...    ${SIGN_IN_WINDOW}/Document
-    ...    ${SIGN_IN_WINDOW}/Group
-    FOR    ${path}    IN    @{search_paths}
-        ${elements}=    Find All Elements    ${path}
-        ${count}=    Get Length    ${elements}
-        IF    ${count} > 0
-            Log    === Found ${count} elements at ${path} ===
-            FOR    ${el}    IN    @{elements}
-                Log    XPath: ${el.Xpath} | Name: ${el.Name} | AutomationId: ${el.AutomationId} | ClassName: ${el.ClassName}
-            END
-        END
+    Log    Sign-in window detected, attempting keyboard skip...
+    Focus    ${MAIN_WINDOW}
+    Sleep    2s
+    # Try Escape first — may dismiss the sign-in dialog
+    Press Keys    ${MAIN_WINDOW}    ESCAPE
+    Sleep    3s
+    ${still_sign_in}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
+    IF    not ${still_sign_in}
+        Log    Sign-in dismissed with Escape
+        RETURN
     END
-    # Also try one more level deep inside any Pane children
-    ${panes}=    Find All Elements    ${MAIN_WINDOW}/Pane
-    FOR    ${pane}    IN    @{panes}
-        Log    === Exploring pane children: ${pane.Xpath} ===
-        @{pane_search}=    Create List
-        ...    ${pane.Xpath}/Button
-        ...    ${pane.Xpath}/Text
-        ...    ${pane.Xpath}/Hyperlink
-        ...    ${pane.Xpath}/Pane
-        ...    ${pane.Xpath}/Custom
-        ...    ${pane.Xpath}/Document
-        FOR    ${sub_path}    IN    @{pane_search}
-            ${sub_els}=    Find All Elements    ${sub_path}
-            ${sub_count}=    Get Length    ${sub_els}
-            IF    ${sub_count} > 0
-                Log    === Found ${sub_count} at ${sub_path} ===
-                FOR    ${sub_el}    IN    @{sub_els}
-                    Log    XPath: ${sub_el.Xpath} | Name: ${sub_el.Name} | AutomationId: ${sub_el.AutomationId} | ClassName: ${sub_el.ClassName}
-                END
-            END
-        END
+    # Escape didn't work. Tab through the WebView2 content to find Skip.
+    # Try increasing Tab counts to locate the skip button/link.
+    Focus    ${MAIN_WINDOW}
+    FOR    ${tab_count}    IN RANGE    1    15
+        Press Keys    ${MAIN_WINDOW}    TAB
+        Sleep    0.3s
     END
-
-Try Click Skip Button
-    [Documentation]    Try to find and click skip/close button on sign-in
-    @{patterns}=    Create List
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Skip']
-    ...    ${MAIN_WINDOW}/Button[@Name='Skip']
-    ...    ${MAIN_WINDOW}/Pane/Button[@Name='Skip']
-    ...    ${MAIN_WINDOW}/Pane/Pane/Button[@Name='Skip']
-    ...    ${SIGN_IN_WINDOW}/Hyperlink[@Name='Skip']
-    ...    ${MAIN_WINDOW}/Hyperlink[@Name='Skip']
-    ...    ${MAIN_WINDOW}/Pane/Hyperlink[@Name='Skip']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Cancel']
-    ...    ${MAIN_WINDOW}/Button[@Name='Cancel']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Close']
-    ...    ${MAIN_WINDOW}/Button[@Name='Close']
-    ...    ${MAIN_WINDOW}/Pane/Button[@Name='Close']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Not now']
-    ...    ${MAIN_WINDOW}/Button[@Name='Not now']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Later']
-    ...    ${MAIN_WINDOW}/Button[@Name='Later']
-    ...    ${SIGN_IN_WINDOW}/Button[@Name='Continue offline']
-    ...    ${MAIN_WINDOW}/Button[@Name='Continue offline']
-    ...    ${MAIN_WINDOW}/Pane/Button[@Name='Continue offline']
-    FOR    ${pattern}    IN    @{patterns}
-        ${found}=    Element Should Exist    ${pattern}    ${False}
-        IF    ${found}
-            Log    Found skip element at: ${pattern}
-            Click    ${pattern}
-            Log    Clicked skip button successfully
-            RETURN
-        END
+    Press Keys    ${MAIN_WINDOW}    RETURN
+    Sleep    3s
+    ${still_sign_in2}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
+    IF    not ${still_sign_in2}
+        Log    Sign-in skipped with Tab+Enter (14 tabs)
+        RETURN
     END
-    Fail    Could not find skip button. Check Dump UI Tree log output for available elements.
+    # Try fewer tabs — the skip link might be earlier
+    Focus    ${MAIN_WINDOW}
+    FOR    ${tab_count}    IN RANGE    1    6
+        Press Keys    ${MAIN_WINDOW}    TAB
+        Sleep    0.3s
+    END
+    Press Keys    ${MAIN_WINDOW}    RETURN
+    Sleep    3s
+    ${still_sign_in3}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
+    IF    not ${still_sign_in3}
+        Log    Sign-in skipped with Tab+Enter (5 tabs)
+        RETURN
+    END
+    # Try Shift+Tab in case Skip is before the focused element
+    Focus    ${MAIN_WINDOW}
+    FOR    ${tab_count}    IN RANGE    1    6
+        Press Keys    ${MAIN_WINDOW}    SHIFT TAB
+        Sleep    0.3s
+    END
+    Press Keys    ${MAIN_WINDOW}    RETURN
+    Sleep    3s
+    ${still_sign_in4}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
+    IF    not ${still_sign_in4}
+        Log    Sign-in skipped with Shift+Tab+Enter
+        RETURN
+    END
+    Log    WARN: All keyboard skip attempts failed. Proceeding anyway.
 
 Stop Studio Pro
     [Documentation]    Gracefully stop Studio Pro

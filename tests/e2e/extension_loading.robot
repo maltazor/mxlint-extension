@@ -18,10 +18,14 @@ Manifest Is Deployed
     ${content}=    Get File    ${manifest}
     Should Contain    ${content}    MxLintExtension.dll
 
-Studio Pro Main Window Is Visible
-    [Documentation]    The Studio Pro main window should be present
+Studio Pro Loaded Past Sign In
+    [Documentation]    After setup, Studio Pro should no longer be on the sign-in screen
     [Tags]    ui
     Element Should Exist    ${MAIN_WINDOW}
+    ${sign_in}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
+    IF    ${sign_in}
+        Fail    Studio Pro is still on the sign-in screen
+    END
 
 Extension Creates Config On First Run
     [Documentation]    After sign-in is skipped the extension should create the config
