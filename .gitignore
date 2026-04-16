@@ -7,3 +7,4 @@ resources/App/extensions/MxLintExtension/*
 .DS_Store
 dist
 node_modules
+results/

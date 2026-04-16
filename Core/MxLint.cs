@@ -190,6 +190,7 @@ public class MxLint
             return;
         }
 
+        EnsureCacheDirectory();
         var config = CreateDefaultConfig();
         await WriteConfig(config);
     }
