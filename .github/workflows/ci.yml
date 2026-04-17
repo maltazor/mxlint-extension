@@ -135,13 +135,14 @@ jobs:
       shell: pwsh
       run: |
         if (Test-Path results\output.xml) {
-          Write-Host "=== Robot Framework Error Summary ==="
           [xml]$doc = Get-Content results\output.xml
           $msgs = $doc.SelectNodes("//msg[@level='FAIL' or @level='ERROR']")
-          foreach ($m in $msgs) { Write-Host "[$($m.level)] $($m.'#text')" }
-          Write-Host "=== End Error Summary ==="
+          foreach ($m in $msgs) {
+            $text = ($m.'#text' -replace "`n"," " -replace "`r","").Substring(0, [Math]::Min(500, $m.'#text'.Length))
+            Write-Host "::error::[$($m.level)] $text"
+          }
         } else {
-          Write-Host "No output.xml found"
+          Write-Host "::error::No output.xml found"
         }
 
     - name: Upload Robot Framework results

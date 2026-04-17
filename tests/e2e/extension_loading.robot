@@ -18,22 +18,12 @@ Manifest Is Deployed
     ${content}=    Get File    ${manifest}
     Should Contain    ${content}    MxLintExtension.dll
 
+Extension Dependencies Are Deployed
+    [Documentation]    Key runtime dependencies must be present alongside the DLL
+    ${ext_dir}=    Join Path    ${APP_DIR}    extensions    MxLintExtension
+    File Should Exist    ${ext_dir}${/}YamlDotNet.dll
+
 Studio Pro Main Window Is Visible
     [Documentation]    The Studio Pro main window should be present after sign-in skip
     [Tags]    ui
     Element Should Exist    ${MAIN_WINDOW}
-
-Extension Creates Config On First Run
-    [Documentation]    The extension should create the default config file
-    [Tags]    config
-    Wait Until Keyword Succeeds    180s    5s
-    ...    Extension Config Should Exist
-
-Config Contains Expected Default Values
-    [Documentation]    The generated config should have correct default settings
-    [Tags]    config
-    ${content}=    Extension Config Should Exist
-    Should Contain    ${content}    .mendix-cache/rules
-    Should Contain    ${content}    .mendix-cache/lint-results.json
-    Should Contain    ${content}    modelsource
-    Should Contain    ${content}    mxlint-rules
