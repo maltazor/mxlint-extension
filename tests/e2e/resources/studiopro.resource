@@ -30,6 +30,7 @@ Start Studio Pro With Extension
     Log    Sign-in skip result: ${signin_status} - ${signin_msg}    level=WARN
     ${load_status}    ${load_msg}=    Run Keyword And Ignore Error    Wait For Project To Load
     Log    Project load result: ${load_status} - ${load_msg}    level=WARN
+    Try Open MxLint Pane During Setup
 
 Skip Sign In If Present
     [Documentation]    Dismiss the sign-in dialog by pressing Escape.
@@ -102,3 +103,9 @@ Open MxLint Pane Once
     Click Hold    ${EXTENSIONS_MENU}    750
     Click    ${MXLINT_MENU_ITEM}
     Wait Until Element Exist    ${MXLINT_PANE}    20
+
+Try Open MxLint Pane During Setup
+    [Documentation]    Attempt to open pane during setup and store result
+    ${opened}=    Run Keyword And Return Status    Open MxLint Pane Via Menu
+    Set Suite Variable    ${MXLINT_PANE_OPENED}    ${opened}
+    Log    MxLint pane opened during setup: ${opened}

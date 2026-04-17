@@ -26,4 +26,4 @@ Studio Pro Launched Successfully
 MxLint Panel Can Be Opened
     [Documentation]    MxLint pane can be opened through Studio Pro menu
     [Tags]    ui
-    Open MxLint Pane Via Menu
+    Should Be True    ${MXLINT_PANE_OPENED}    Could not open MxLint pane during suite setup
