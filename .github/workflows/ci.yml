@@ -76,6 +76,7 @@ jobs:
       with:
         path: ${{ runner.temp }}\MendixSetup.exe
         key: mendix-studiopro-10.24.16.96987
+        save-always: true
 
     - name: Download Mendix Studio Pro
       if: steps.cache-mendix.outputs.cache-hit != 'true'
