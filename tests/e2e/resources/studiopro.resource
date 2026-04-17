@@ -42,7 +42,7 @@ Skip Sign In If Present
         Focus    ${MAIN_WINDOW}
         Run Keyword And Ignore Error    Focus    ${WEBVIEW_PANE}
         Sleep    1s
-        Press Keys    ${MAIN_WINDOW}    ESCAPE
+        Press Key    s'ESCAPE'    ${MAIN_WINDOW}
         Sleep    5s
         ${still_sign_in}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
         IF    not ${still_sign_in}

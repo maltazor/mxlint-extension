@@ -109,13 +109,40 @@ jobs:
         }
       timeout-minutes: 15
 
+    - name: Verify test prerequisites
+      shell: pwsh
+      env:
+        APP_DIR: ${{ github.workspace }}\resources\App
+      run: |
+        Write-Host "STUDIOPRO_EXE = $env:STUDIOPRO_EXE"
+        if (Test-Path $env:STUDIOPRO_EXE) { Write-Host "  -> EXISTS" } else { Write-Host "::error::studiopro.exe not found at $env:STUDIOPRO_EXE"; exit 1 }
+        Write-Host "APP_DIR = $env:APP_DIR"
+        if (Test-Path "$env:APP_DIR\App.mpr") { Write-Host "  -> App.mpr EXISTS" } else { Write-Host "::error::App.mpr not found"; exit 1 }
+        $dll = "$env:APP_DIR\extensions\MxLintExtension\MxLintExtension.dll"
+        if (Test-Path $dll) { Write-Host "  -> Extension DLL EXISTS" } else { Write-Host "::error::Extension DLL not found at $dll"; exit 1 }
+        python -c "import FlaUILibrary; print('FlaUILibrary imported OK')"
+
     - name: Run Robot Framework E2E tests
       shell: pwsh
       env:
         APP_DIR: ${{ github.workspace }}\resources\App
       run: |
-        robot --outputdir results tests/e2e/
+        robot --loglevel DEBUG --console verbose --outputdir results tests/e2e/
       timeout-minutes: 15
+
+    - name: Print Robot Framework errors
+      if: failure()
+      shell: pwsh
+      run: |
+        if (Test-Path results\output.xml) {
+          Write-Host "=== Robot Framework Error Summary ==="
+          [xml]$doc = Get-Content results\output.xml
+          $msgs = $doc.SelectNodes("//msg[@level='FAIL' or @level='ERROR']")
+          foreach ($m in $msgs) { Write-Host "[$($m.level)] $($m.'#text')" }
+          Write-Host "=== End Error Summary ==="
+        } else {
+          Write-Host "No output.xml found"
+        }
 
     - name: Upload Robot Framework results
       if: always()
