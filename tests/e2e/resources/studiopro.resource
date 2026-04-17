@@ -39,13 +39,8 @@ Skip Sign In If Present
     Sleep    10s
     FOR    ${attempt}    IN RANGE    1    6
         Log    Escape attempt ${attempt}/5
-        # Focus the inner WebView2 pane, fall back to main window
-        ${pane_exists}=    Element Should Exist    ${WEBVIEW_PANE}    ${False}
-        IF    ${pane_exists}
-            Focus    ${WEBVIEW_PANE}
-        ELSE
-            Focus    ${MAIN_WINDOW}
-        END
+        Focus    ${MAIN_WINDOW}
+        Run Keyword And Ignore Error    Focus    ${WEBVIEW_PANE}
         Sleep    1s
         Press Keys    ${MAIN_WINDOW}    ESCAPE
         Sleep    5s
