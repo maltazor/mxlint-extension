@@ -23,14 +23,18 @@ Start Studio Pro With Extension
     ...    ${STUDIOPRO_EXE}
     ...    --enable-extension-development "${mpr_file}"
     Set Suite Variable    ${STUDIOPRO_PID}    ${pid}
+    Set Suite Variable    ${MXLINT_PANE_OPENED}    ${False}
     Should Not Be Equal As Integers    ${pid}    0
     Log    Studio Pro launched with PID ${pid}
     Wait Until Element Exist    ${MAIN_WINDOW}    ${STARTUP_TIMEOUT}
+    Try Open MxLint Pane During Setup
     ${signin_status}    ${signin_msg}=    Run Keyword And Ignore Error    Skip Sign In If Present
     Log    Sign-in skip result: ${signin_status} - ${signin_msg}    level=WARN
     ${load_status}    ${load_msg}=    Run Keyword And Ignore Error    Wait For Project To Load
     Log    Project load result: ${load_status} - ${load_msg}    level=WARN
-    Try Open MxLint Pane During Setup
+    IF    not ${MXLINT_PANE_OPENED}
+        Try Open MxLint Pane During Setup
+    END
 
 Skip Sign In If Present
     [Documentation]    Dismiss the sign-in dialog by pressing Escape.
@@ -95,7 +99,7 @@ Extension Config Should Exist
 
 Open MxLint Pane Via Menu
     [Documentation]    Open MxLint pane from Studio Pro menu and assert it is visible
-    Wait Until Keyword Succeeds    60s    5s
+    Wait Until Keyword Succeeds    20s    2s
     ...    Open MxLint Pane Once
 
 Open MxLint Pane Once
