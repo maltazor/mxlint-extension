@@ -1,6 +1,5 @@
 *** Settings ***
 Library    FlaUILibrary    uia=UIA3    screenshot_on_failure=False
-Library    Collections
 Library    Process
 Library    OperatingSystem
 
@@ -10,10 +9,11 @@ ${APP_DIR}            %{APP_DIR}
 ${STARTUP_TIMEOUT}    180
 ${MAIN_WINDOW}        /Window[contains(@Name,'Mendix Studio Pro')]
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
+${WEBVIEW_PANE}       /Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane
 
 *** Keywords ***
 Start Studio Pro With Extension
-    [Documentation]    Launch Studio Pro with --enable-extension-development flag
+    [Documentation]    Launch Studio Pro with --enable-extension-development and skip sign-in
     ${mpr_file}=    Join Path    ${APP_DIR}    App.mpr
     File Should Exist    ${mpr_file}
     ${pid}=    Launch Application With Args
@@ -24,68 +24,52 @@ Start Studio Pro With Extension
     Log    Studio Pro launched with PID ${pid}
     Wait Until Element Exist    ${MAIN_WINDOW}    ${STARTUP_TIMEOUT}
     Skip Sign In If Present
+    Wait For Project To Load
 
 Skip Sign In If Present
-    [Documentation]    If the sign-in dialog appears, skip it using keyboard navigation.
-    ...    The sign-in content is rendered in a WebView2 which FlaUI cannot
-    ...    inspect directly, so we use Tab and Enter to reach the skip button.
+    [Documentation]    Dismiss the sign-in dialog by pressing Escape.
+    ...    The sign-in content is rendered in a WebView2 so we cannot click
+    ...    UI elements directly. Pressing Escape skips the sign-in.
     ${exists}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
     IF    not ${exists}
         Log    No sign-in window detected
         RETURN
     END
-    Log    Sign-in window detected, attempting keyboard skip...
-    Focus    ${MAIN_WINDOW}
-    Sleep    2s
-    # Try Escape first — may dismiss the sign-in dialog
-    Press Keys    ${MAIN_WINDOW}    ESCAPE
-    Sleep    3s
-    ${still_sign_in}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
-    IF    not ${still_sign_in}
-        Log    Sign-in dismissed with Escape
-        RETURN
+    Log    Sign-in window detected, waiting for WebView2 to load...
+    Sleep    10s
+    FOR    ${attempt}    IN RANGE    1    6
+        Log    Escape attempt ${attempt}/5
+        # Focus the inner WebView2 pane, fall back to main window
+        ${pane_exists}=    Element Should Exist    ${WEBVIEW_PANE}    ${False}
+        IF    ${pane_exists}
+            Focus    ${WEBVIEW_PANE}
+        ELSE
+            Focus    ${MAIN_WINDOW}
+        END
+        Sleep    1s
+        Press Keys    ${MAIN_WINDOW}    ESCAPE
+        Sleep    5s
+        ${still_sign_in}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
+        IF    not ${still_sign_in}
+            Log    Sign-in dismissed with Escape (attempt ${attempt})
+            RETURN
+        END
+        Log    Sign-in still present after attempt ${attempt}
     END
-    # Escape didn't work. Tab through the WebView2 content to find Skip.
-    # Try increasing Tab counts to locate the skip button/link.
-    Focus    ${MAIN_WINDOW}
-    FOR    ${tab_count}    IN RANGE    1    15
-        Press Keys    ${MAIN_WINDOW}    TAB
-        Sleep    0.3s
-    END
-    Press Keys    ${MAIN_WINDOW}    RETURN
-    Sleep    3s
-    ${still_sign_in2}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
-    IF    not ${still_sign_in2}
-        Log    Sign-in skipped with Tab+Enter (14 tabs)
-        RETURN
-    END
-    # Try fewer tabs — the skip link might be earlier
-    Focus    ${MAIN_WINDOW}
-    FOR    ${tab_count}    IN RANGE    1    6
-        Press Keys    ${MAIN_WINDOW}    TAB
-        Sleep    0.3s
-    END
-    Press Keys    ${MAIN_WINDOW}    RETURN
-    Sleep    3s
-    ${still_sign_in3}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
-    IF    not ${still_sign_in3}
-        Log    Sign-in skipped with Tab+Enter (5 tabs)
-        RETURN
-    END
-    # Try Shift+Tab in case Skip is before the focused element
-    Focus    ${MAIN_WINDOW}
-    FOR    ${tab_count}    IN RANGE    1    6
-        Press Keys    ${MAIN_WINDOW}    SHIFT TAB
-        Sleep    0.3s
-    END
-    Press Keys    ${MAIN_WINDOW}    RETURN
-    Sleep    3s
-    ${still_sign_in4}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
-    IF    not ${still_sign_in4}
-        Log    Sign-in skipped with Shift+Tab+Enter
-        RETURN
-    END
-    Log    WARN: All keyboard skip attempts failed. Proceeding anyway.
+    Fail    Could not dismiss sign-in dialog after 5 Escape attempts
+
+Wait For Project To Load
+    [Documentation]    After sign-in is dismissed a loading modal appears.
+    ...    Wait until the window title no longer contains "Sign In".
+    Log    Waiting for project to finish loading...
+    Wait Until Keyword Succeeds    120s    5s
+    ...    Sign In Window Should Be Gone
+    Log    Project loaded successfully
+
+Sign In Window Should Be Gone
+    [Documentation]    Assert that no sign-in window exists
+    ${exists}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
+    Should Not Be True    ${exists}    Studio Pro is still showing the sign-in window
 
 Stop Studio Pro
     [Documentation]    Gracefully stop Studio Pro

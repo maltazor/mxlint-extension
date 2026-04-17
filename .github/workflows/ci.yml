@@ -114,7 +114,7 @@ jobs:
         APP_DIR: ${{ github.workspace }}\resources\App
       run: |
         robot --outputdir results tests/e2e/
-      timeout-minutes: 10
+      timeout-minutes: 15
 
     - name: Upload Robot Framework results
       if: always()
