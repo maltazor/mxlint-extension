@@ -10,6 +10,9 @@ ${STARTUP_TIMEOUT}    180
 ${MAIN_WINDOW}        /Window[contains(@Name,'Mendix Studio Pro')]
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       /Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane
+${EXTENSIONS_MENU}    /Window[contains(@Name,'Mendix Studio Pro')]/MenuBar/MenuItem[@Name='Extensions']
+${MXLINT_MENU_ITEM}   /Window[contains(@Name,'Mendix Studio Pro')]/Menu/MenuItem[contains(@Name,'MxLint')]
+${MXLINT_PANE}        /Window[contains(@Name,'Mendix Studio Pro')]//*[@Name='MxLint']
 
 *** Keywords ***
 Start Studio Pro With Extension
@@ -88,3 +91,14 @@ Extension Config Should Exist
     Should Contain    ${content}    lint
     Should Contain    ${content}    modelsource
     RETURN    ${content}
+
+Open MxLint Pane Via Menu
+    [Documentation]    Open MxLint pane from Studio Pro menu and assert it is visible
+    Wait Until Keyword Succeeds    60s    5s
+    ...    Open MxLint Pane Once
+
+Open MxLint Pane Once
+    Focus    ${MAIN_WINDOW}
+    Click Hold    ${EXTENSIONS_MENU}    750
+    Click    ${MXLINT_MENU_ITEM}
+    Wait Until Element Exist    ${MXLINT_PANE}    20

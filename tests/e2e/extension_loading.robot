@@ -22,3 +22,8 @@ Studio Pro Launched Successfully
     [Documentation]    Studio Pro should have started and shown a window during suite setup
     [Tags]    ui
     Log    Studio Pro launched and sign-in handled during suite setup
+
+MxLint Panel Can Be Opened
+    [Documentation]    MxLint pane can be opened through Studio Pro menu
+    [Tags]    ui
+    Open MxLint Pane Via Menu
