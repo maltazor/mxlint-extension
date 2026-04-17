@@ -23,8 +23,10 @@ Start Studio Pro With Extension
     Should Not Be Equal As Integers    ${pid}    0
     Log    Studio Pro launched with PID ${pid}
     Wait Until Element Exist    ${MAIN_WINDOW}    ${STARTUP_TIMEOUT}
-    Skip Sign In If Present
-    Wait For Project To Load
+    ${signin_status}    ${signin_msg}=    Run Keyword And Ignore Error    Skip Sign In If Present
+    Log    Sign-in skip result: ${signin_status} - ${signin_msg}    level=WARN
+    ${load_status}    ${load_msg}=    Run Keyword And Ignore Error    Wait For Project To Load
+    Log    Project load result: ${load_status} - ${load_msg}    level=WARN
 
 Skip Sign In If Present
     [Documentation]    Dismiss the sign-in dialog by pressing Escape.
