@@ -31,7 +31,7 @@ public class MxLint
         _cachePath = Path.Combine(_model.Root.DirectoryPath, ".mendix-cache");
         _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(GetCurrentOSPlatform()));
         _lintResultsPath = Path.Combine(_cachePath, "lint-results.json");
-        _configPath = Path.Combine(_cachePath, "mxlint-extension.yaml");
+        _configPath = Path.Combine(_model.Root.DirectoryPath, "mxlint.yaml");
         _cliBaseUrl = $"https://github.com/mxlint/mxlint-cli/releases/download/{CliVersion}/";
     }
 

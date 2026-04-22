@@ -19,7 +19,7 @@ public sealed class TestFixture : IDisposable
         Directory.CreateDirectory(ProjectDir);
 
         CachePath = Path.Combine(ProjectDir, ".mendix-cache");
-        ConfigPath = Path.Combine(CachePath, "mxlint-extension.yaml");
+        ConfigPath = Path.Combine(ProjectDir, "mxlint.yaml");
 
         var root = Substitute.For<IProject>();
         root.DirectoryPath.Returns(ProjectDir);

@@ -89,7 +89,7 @@ Extension DLL Should Be Deployed
 
 Extension Config Should Exist
     [Documentation]    Verify the extension config file was created
-    ${config_path}=    Join Path    ${APP_DIR}    .mendix-cache    mxlint-extension.yaml
+    ${config_path}=    Join Path    ${APP_DIR}    mxlint.yaml
     File Should Exist    ${config_path}
     ${content}=    Get File    ${config_path}
     Should Contain    ${content}    rules
