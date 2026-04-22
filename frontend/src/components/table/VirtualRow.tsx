@@ -30,6 +30,7 @@ export const VirtualRow: React.FC<VirtualRowProps> = React.memo(({
   const { id, rule, status, module, docname, doctype } = testcase;
   const isClickable = isOpenableDocument(docname);
   const severityClass = rule?.severity?.toLowerCase() || 'low';
+  const skipReason = status === 'skip' ? testcase.skipped?.message?.trim() : '';
 
   const handleDocClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -84,7 +85,14 @@ export const VirtualRow: React.FC<VirtualRowProps> = React.memo(({
       <td title={doctype}>{doctype}</td>
       <td title={rule?.ruleName || 'Unknown'}>{rule?.ruleName || 'Unknown'}</td>
       <td>{rule?.category || 'N/A'}</td>
-      <td><span className={`status-label ${status}`}>{status}</span></td>
+      <td>
+        <span
+          className={`status-label ${status}`}
+          title={skipReason || undefined}
+        >
+          {status}
+        </span>
+      </td>
     </tr>
   );
 });

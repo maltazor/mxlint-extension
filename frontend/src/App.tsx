@@ -438,8 +438,18 @@ const App: React.FC = () => {
     for (const tc of filteredTestcases) {
       if (!selectedIssues.has(tc.id)) continue;
       const ruleNumber = tc.rule?.ruleNumber?.trim();
-      if (!tc.docname || !ruleNumber) continue;
-      const documentPath = tc.module ? `${tc.module}/${tc.docname}` : tc.docname;
+      if (!tc.name || !ruleNumber) continue;
+
+      let documentPath = tc.name.replace(/\\/g, '/');
+      const modelsourceIndex = documentPath.toLowerCase().indexOf('modelsource/');
+      if (modelsourceIndex !== -1) {
+        documentPath = documentPath.substring(modelsourceIndex + 'modelsource/'.length);
+      }
+      if (documentPath.endsWith('.yaml')) {
+        documentPath = documentPath.substring(0, documentPath.length - '.yaml'.length);
+      }
+      if (!documentPath) continue;
+
       if (!entriesMap.has(documentPath)) {
         entriesMap.set(documentPath, new Set<string>());
       }
@@ -949,7 +959,7 @@ const App: React.FC = () => {
           icon={<SkipIcon />}
           onClick={() => void handleNoqaSelected()}
           disabled={selectedCount === 0}
-          title={selectedCount > 0 ? 'Add selected issues to lint.skip config' : 'Select issues first'}
+          title={selectedCount > 0 ? 'Exclude selected issues from linting' : 'Select issues first'}
         />
 
         {selectedCount > 0 && <Badge variant="info" size="sm">{selectedCount}</Badge>}
