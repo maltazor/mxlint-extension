@@ -27,8 +27,8 @@ public class MxLint
 
         var currentOsPlatform = GetCurrentOSPlatform();
         _cachePath = Path.Combine(_model.Root.DirectoryPath, ".mendix-cache");
-        var defaultCliAssetName = ResolveCliAssetName(currentOsPlatform, RuntimeInformation.OSArchitecture);
-        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(defaultCliAssetName, DefaultCliVersion));
+        var defaultCliAssetName = ResolveCliAssetName(DefaultCliVersion, currentOsPlatform, RuntimeInformation.OSArchitecture);
+        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(defaultCliAssetName));
         _lintResultsPath = Path.Combine(_cachePath, "lint-results.json");
         _configPath = Path.Combine(_model.Root.DirectoryPath, "mxlint.yaml");
     }
@@ -160,8 +160,8 @@ public class MxLint
     {
         var currentOsPlatform = GetCurrentOSPlatform();
         var cliVersion = await ResolveConfiguredCliVersion();
-        var cliAssetName = ResolveCliAssetName(currentOsPlatform, RuntimeInformation.OSArchitecture);
-        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(cliAssetName, cliVersion));
+        var cliAssetName = ResolveCliAssetName(cliVersion, currentOsPlatform, RuntimeInformation.OSArchitecture);
+        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(cliAssetName));
 
         if (File.Exists(_executablePath))
         {
@@ -193,14 +193,15 @@ public class MxLint
             : configuredVersion.Trim();
     }
 
-    internal static string ResolveCliAssetName(OSPlatform osPlatform, Architecture architecture)
+    internal static string ResolveCliAssetName(string cliVersion, OSPlatform osPlatform, Architecture architecture)
     {
+        var normalizedVersion = ResolveCliVersion(cliVersion);
         if (osPlatform == OSPlatform.Windows)
         {
             return architecture switch
             {
-                Architecture.Arm64 => "mxlint-windows-arm64.exe",
-                _ => "mxlint-windows-amd64.exe"
+                Architecture.Arm64 => $"mxlint-{normalizedVersion}-windows-arm64.exe",
+                _ => $"mxlint-{normalizedVersion}-windows-amd64.exe"
             };
         }
 
@@ -208,23 +209,21 @@ public class MxLint
         {
             return architecture switch
             {
-                Architecture.Arm64 => "mxlint-darwin-arm64",
-                _ => "mxlint-darwin-amd64"
+                Architecture.Arm64 => $"mxlint-{normalizedVersion}-darwin-arm64",
+                _ => $"mxlint-{normalizedVersion}-darwin-amd64"
             };
         }
 
         return architecture switch
         {
-            Architecture.Arm64 => "mxlint-linux-arm64",
-            _ => "mxlint-linux-amd64"
+            Architecture.Arm64 => $"mxlint-{normalizedVersion}-linux-arm64",
+            _ => $"mxlint-{normalizedVersion}-linux-amd64"
         };
     }
 
-    internal static string ResolveLocalExecutableName(string cliAssetName, string cliVersion)
+    internal static string ResolveLocalExecutableName(string cliAssetName)
     {
-        var extension = Path.GetExtension(cliAssetName);
-        var basename = Path.GetFileNameWithoutExtension(cliAssetName);
-        return $"{basename}-{cliVersion}{extension}";
+        return cliAssetName;
     }
 
     private static OSPlatform GetCurrentOSPlatform()

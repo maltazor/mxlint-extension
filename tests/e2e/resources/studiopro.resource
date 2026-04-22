@@ -10,8 +10,8 @@ ${STARTUP_TIMEOUT}    180
 ${MAIN_WINDOW}        /Window[contains(@Name,'Mendix Studio Pro')]
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       /Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane
-${EXTENSIONS_MENU}    /Window[contains(@Name,'Mendix Studio Pro')]/MenuBar/MenuItem[@Name='Extensions']
-${MXLINT_MENU_ITEM}   /Window[contains(@Name,'Mendix Studio Pro')]/Menu/MenuItem[contains(@Name,'MxLint')]
+${EXTENSIONS_MENU}    ${MAIN_WINDOW}//MenuItem[@Name='Extensions']
+${MXLINT_MENU_ITEM}   ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
 ${MXLINT_PANE}        /Window[contains(@Name,'Mendix Studio Pro')]//*[@Name='MxLint']
 ${MXLINT_EMPTY_STATE}    ${MXLINT_PANE}//*[contains(@Name,'No test cases found')]
 ${MXLINT_RESULTS_RULE}   ${MXLINT_PANE}//*[contains(@Name,'DemoUsersDisabled') or contains(@Name,'SecurityChecks') or contains(@Name,'StrongPasswordPolicy')]
@@ -105,12 +105,19 @@ Open MxLint Pane Via Menu
     [Documentation]    Open MxLint pane from Studio Pro menu and assert it is visible
     Wait Until Keyword Succeeds    20s    2s
     ...    Open MxLint Pane Once
+    Set Suite Variable    ${MXLINT_PANE_OPENED}    ${True}
 
 Open MxLint Pane Once
+    ${already_open}=    Element Should Exist    ${MXLINT_PANE}    ${False}
+    IF    ${already_open}
+        RETURN
+    END
     Focus    ${MAIN_WINDOW}
-    Click Hold    ${EXTENSIONS_MENU}    750
+    Wait Until Element Exist    ${EXTENSIONS_MENU}    10
+    Click    ${EXTENSIONS_MENU}
+    Wait Until Element Exist    ${MXLINT_MENU_ITEM}    10
     Click    ${MXLINT_MENU_ITEM}
-    Wait Until Element Exist    ${MXLINT_PANE}    20
+    Wait Until Element Exist    ${MXLINT_PANE}    30
 
 Try Open MxLint Pane During Setup
     [Documentation]    Attempt to open pane during setup and store result
@@ -120,7 +127,10 @@ Try Open MxLint Pane During Setup
 
 MxLint Pane Should Show Lint Results
     [Documentation]    Verify lint results are visible in the pane table.
-    Open MxLint Pane Via Menu
+    IF    not ${MXLINT_PANE_OPENED}
+        Open MxLint Pane Via Menu
+    END
+    Wait Until Element Exist    ${MXLINT_PANE}    20
     ${is_empty}=    Element Should Exist    ${MXLINT_EMPTY_STATE}    ${False}
     Should Not Be True    ${is_empty}    MxLint pane shows empty state instead of lint results
     Wait Until Keyword Succeeds    120s    5s
