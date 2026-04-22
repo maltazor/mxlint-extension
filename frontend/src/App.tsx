@@ -107,6 +107,10 @@ const App: React.FC = () => {
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [issueContent, setIssueContent] = useState('');
   const [issueFormat, setIssueFormat] = useState<IssueFormat>('markdown');
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [configContent, setConfigContent] = useState('');
+  const [configLoading, setConfigLoading] = useState(false);
+  const [configSaving, setConfigSaving] = useState(false);
   const [closedPanelForId, setClosedPanelForId] = useState<string | null>(null);
 
   const dataHashRef = useRef(0);
@@ -669,6 +673,65 @@ const App: React.FC = () => {
     }
   }, [issueContent, success, toastError]);
 
+  const loadConfig = useCallback(async () => {
+    setConfigLoading(true);
+    try {
+      const response = await fetch('./api/config');
+      if (!response.ok) {
+        throw new Error(`Failed to load config (${response.status})`);
+      }
+      const payload = await response.json() as { success?: boolean; content?: string; error?: string };
+      if (!payload.success) {
+        throw new Error(payload.error || 'Failed to load config.');
+      }
+      setConfigContent(payload.content ?? '');
+    } catch (err) {
+      console.error('Failed to load config:', err);
+      toastError('Failed to load mxlint.yaml.');
+    } finally {
+      setConfigLoading(false);
+    }
+  }, [toastError]);
+
+  const openConfigModal = useCallback(() => {
+    setShowConfigModal(true);
+    void loadConfig();
+  }, [loadConfig]);
+
+  const saveConfig = useCallback(async () => {
+    if (!configContent.trim()) {
+      toastError('Config cannot be empty.');
+      return;
+    }
+
+    setConfigSaving(true);
+    try {
+      const response = await fetch('./api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: configContent }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to save config (${response.status})`);
+      }
+
+      const payload = await response.json() as { success?: boolean; error?: string };
+      if (!payload.success) {
+        throw new Error(payload.error || 'Failed to save config.');
+      }
+
+      success('mxlint.yaml saved.');
+      setShowConfigModal(false);
+      postMessage('runLintNow');
+    } catch (err) {
+      console.error('Failed to save config:', err);
+      toastError('Failed to save mxlint.yaml.');
+    } finally {
+      setConfigSaving(false);
+    }
+  }, [configContent, success, toastError]);
+
   const handleSelectRow = useCallback((index: number) => {
     setSelectedRowIndex(index);
     setClosedPanelForId(null);
@@ -868,6 +931,14 @@ const App: React.FC = () => {
           title={selectedCount > 0 ? 'Add selected issues to lint.skip config' : 'Select issues first'}
         >
           NOQA Selected
+        </Button>
+
+        <Button
+          variant="ghost"
+          onClick={openConfigModal}
+          title="Edit mxlint.yaml configuration"
+        >
+          Edit Config
         </Button>
 
         {selectedCount > 0 && (
@@ -1125,6 +1196,40 @@ const App: React.FC = () => {
           </Button>
         </div>
         <IssueContentOutput value={issueContent} />
+      </Dialog>
+
+      <Dialog
+        isOpen={showConfigModal}
+        onClose={() => setShowConfigModal(false)}
+        title="Edit mxlint.yaml"
+        size="lg"
+        id="config-dialog"
+        className="config-modal"
+      >
+        <div className="config-modal-actions">
+          <Button
+            variant="secondary"
+            onClick={() => void loadConfig()}
+            disabled={configLoading || configSaving}
+          >
+            Reload
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => void saveConfig()}
+            disabled={configLoading || configSaving}
+          >
+            {configSaving ? 'Saving...' : 'Save'}
+          </Button>
+        </div>
+        <textarea
+          className="config-editor"
+          value={configContent}
+          onChange={e => setConfigContent(e.target.value)}
+          spellCheck={false}
+          placeholder={configLoading ? 'Loading mxlint.yaml...' : 'mxlint.yaml content'}
+          disabled={configLoading || configSaving}
+        />
       </Dialog>
     </div>
   );

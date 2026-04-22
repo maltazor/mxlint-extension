@@ -30,17 +30,21 @@ public class MxLintWebServerExtension : WebServerExtension
     public override void InitializeWebServer(IWebServer webServer)
     {
         var wwwrootPath = _extensionFileService.ResolvePath("wwwroot");
-        var files = Directory.GetFiles(wwwrootPath);
+        var files = Directory.GetFiles(wwwrootPath, "*", SearchOption.AllDirectories);
+        _logService.Info($"Initializing web server from wwwroot: {wwwrootPath}");
 
         foreach (var file in files)
         {
-            var route = Path.GetFileName(file);
+            var route = Path.GetRelativePath(wwwrootPath, file).Replace('\\', '/');
             webServer.AddRoute(route, (request, response, ct) => ServeFile(file, response, ct));
+            _logService.Info($"Registered web route '{route}' -> '{file}'");
         }
 
         webServer.AddRoute("api", ServeApi);
         webServer.AddRoute("api/theme", ServeTheme);
         webServer.AddRoute("api/noqa", ServeNoqa);
+        webServer.AddRoute("api/config", ServeConfig);
+        _logService.Info("Registered API routes: api, api/theme, api/noqa, api/config");
     }
 
     private static async Task ServeFile(string filePath, HttpListenerResponse response, CancellationToken ct)
@@ -139,6 +143,63 @@ public class MxLintWebServerExtension : WebServerExtension
         }
     }
 
+    private async Task ServeConfig(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
+    {
+        if (CurrentApp == null)
+        {
+            response.SendNoBodyAndClose(404);
+            return;
+        }
+
+        var configPath = Path.Combine(CurrentApp.Root.DirectoryPath, "mxlint.yaml");
+
+        if (string.Equals(request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var mxlint = new MxLint(CurrentApp, _logService);
+                await mxlint.EnsureConfigFile();
+                var content = await File.ReadAllTextAsync(configPath, ct);
+                SendJson(response, new { success = true, content });
+            }
+            catch (Exception ex)
+            {
+                _logService.Error($"Failed to read config file: {ex.Message}");
+                SendJson(response, new { success = false, error = ex.Message }, 500);
+            }
+
+            return;
+        }
+
+        if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                using var reader = new StreamReader(request.InputStream, request.ContentEncoding ?? Encoding.UTF8);
+                var body = await reader.ReadToEndAsync(ct);
+                var payload = JsonSerializer.Deserialize<ConfigUpdateRequest>(body);
+
+                if (payload == null || string.IsNullOrWhiteSpace(payload.Content))
+                {
+                    SendJson(response, new { success = false, error = "Config content cannot be empty." }, 400);
+                    return;
+                }
+
+                await File.WriteAllTextAsync(configPath, payload.Content, Encoding.UTF8, ct);
+                SendJson(response, new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logService.Error($"Failed to update config file: {ex.Message}");
+                SendJson(response, new { success = false, error = ex.Message }, 500);
+            }
+
+            return;
+        }
+
+        response.SendNoBodyAndClose(405);
+    }
+
     private static void SendJson(HttpListenerResponse response, object payload, int statusCode = 200)
     {
         var json = JsonSerializer.Serialize(payload);
@@ -150,4 +211,9 @@ public class MxLintWebServerExtension : WebServerExtension
 public sealed class NoqaRequest
 {
     public List<NoqaDocumentRules> Entries { get; set; } = new();
+}
+
+public sealed class ConfigUpdateRequest
+{
+    public string Content { get; set; } = string.Empty;
 }
