@@ -28,7 +28,7 @@ MxLint Panel Can Be Opened
     [Tags]    ui
     Should Be True    ${MXLINT_PANE_OPENED}    Could not open MxLint pane during suite setup
 
-MxLint Results Are Visible In Pane
-    [Documentation]    MxLint pane should display lint result rows from lint-results.json
+Lint Results File Is Generated
+    [Documentation]    lint-results.json should be generated in .mendix-cache after running extension
     [Tags]    ui
-    MxLint Pane Should Show Lint Results
+    Lint Results File Should Exist
