@@ -27,3 +27,8 @@ MxLint Panel Can Be Opened
     [Documentation]    MxLint pane can be opened through Studio Pro menu
     [Tags]    ui
     Should Be True    ${MXLINT_PANE_OPENED}    Could not open MxLint pane during suite setup
+
+MxLint Results Are Visible In Pane
+    [Documentation]    MxLint pane should display lint result rows from lint-results.json
+    [Tags]    ui
+    MxLint Pane Should Show Lint Results

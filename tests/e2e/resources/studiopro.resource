@@ -13,6 +13,8 @@ ${WEBVIEW_PANE}       /Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane
 ${EXTENSIONS_MENU}    /Window[contains(@Name,'Mendix Studio Pro')]/MenuBar/MenuItem[@Name='Extensions']
 ${MXLINT_MENU_ITEM}   /Window[contains(@Name,'Mendix Studio Pro')]/Menu/MenuItem[contains(@Name,'MxLint')]
 ${MXLINT_PANE}        /Window[contains(@Name,'Mendix Studio Pro')]//*[@Name='MxLint']
+${MXLINT_EMPTY_STATE}    ${MXLINT_PANE}//*[contains(@Name,'No test cases found')]
+${MXLINT_RESULTS_RULE}   ${MXLINT_PANE}//*[contains(@Name,'DemoUsersDisabled') or contains(@Name,'SecurityChecks') or contains(@Name,'StrongPasswordPolicy')]
 
 *** Keywords ***
 Start Studio Pro With Extension
@@ -113,3 +115,11 @@ Try Open MxLint Pane During Setup
     ${opened}=    Run Keyword And Return Status    Open MxLint Pane Via Menu
     Set Suite Variable    ${MXLINT_PANE_OPENED}    ${opened}
     Log    MxLint pane opened during setup: ${opened}
+
+MxLint Pane Should Show Lint Results
+    [Documentation]    Verify lint results are visible in the pane table.
+    Open MxLint Pane Via Menu
+    ${is_empty}=    Element Should Exist    ${MXLINT_EMPTY_STATE}    ${False}
+    Should Not Be True    ${is_empty}    MxLint pane shows empty state instead of lint results
+    Wait Until Keyword Succeeds    120s    5s
+    ...    Wait Until Element Exist    ${MXLINT_RESULTS_RULE}    10
