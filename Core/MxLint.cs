@@ -21,7 +21,6 @@ public class MxLint
     private readonly string _cliBaseUrl;
 
     private const string CliVersion = "v3.14.1";
-    private const string RulesVersion = "v3.3.0";
 
     public MxLint(IModel model, ILogService logService)
     {
@@ -300,11 +299,7 @@ public class MxLint
         {
             Rules = new MxLintConfigRules
             {
-                Path = ".mendix-cache/rules",
-                Rulesets = new List<string>
-                {
-                    $"https://github.com/mxlint/mxlint-rules/releases/download/{RulesVersion}/rules-{RulesVersion}.zip"
-                }
+                Path = ".mendix-cache/rules"
             },
             Lint = new MxLintConfigLint
             {
