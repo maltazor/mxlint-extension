@@ -189,6 +189,27 @@ public class NoqaTests : IDisposable
     }
 
     [Fact]
+    public async Task AddNoqaRules_UsesProvidedReason()
+    {
+        var mxlint = new MxLint(_fixture.Model, _fixture.LogService);
+        await mxlint.EnsureConfigFile();
+
+        await mxlint.AddNoqaRules(new[]
+        {
+            new NoqaDocumentRules
+            {
+                Document = "Mod/Doc",
+                Rules = new List<string> { "001_0001" },
+                Reason = "Accepted technical debt"
+            }
+        });
+
+        var config = await ReadConfig();
+        var rule = config.Lint.Skip["Mod/Doc"][0];
+        Assert.Equal("Accepted technical debt", rule.Reason);
+    }
+
+    [Fact]
     public async Task AddNoqaRules_CreatesConfigIfMissing()
     {
         var mxlint = new MxLint(_fixture.Model, _fixture.LogService);

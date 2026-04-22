@@ -45,6 +45,7 @@ import {
   IssueIcon,
   ClipboardIcon,
   BookmarkIcon,
+  SettingsIcon,
 } from '@/components/icons';
 
 // Components
@@ -437,8 +438,8 @@ const App: React.FC = () => {
     for (const tc of filteredTestcases) {
       if (!selectedIssues.has(tc.id)) continue;
       const ruleNumber = tc.rule?.ruleNumber?.trim();
-      if (!tc.module || !tc.docname || !ruleNumber) continue;
-      const documentPath = `${tc.module}/${tc.docname}`;
+      if (!tc.docname || !ruleNumber) continue;
+      const documentPath = tc.module ? `${tc.module}/${tc.docname}` : tc.docname;
       if (!entriesMap.has(documentPath)) {
         entriesMap.set(documentPath, new Set<string>());
       }
@@ -450,9 +451,21 @@ const App: React.FC = () => {
       return;
     }
 
+    const reasonInput = window.prompt('Reason for skipping selected rule(s):', 'Skipped from MxLint extension');
+    if (reasonInput === null) {
+      return;
+    }
+
+    const reason = reasonInput.trim();
+    if (!reason) {
+      toastError('Reason is required to skip selected rules.');
+      return;
+    }
+
     const entries = [...entriesMap.entries()].map(([document, rules]) => ({
       document,
       rules: [...rules],
+      reason,
     }));
 
     try {
@@ -463,7 +476,17 @@ const App: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`NOQA update failed with status ${response.status}`);
+        let serverError = '';
+        try {
+          const payload = await response.json() as { error?: string };
+          serverError = payload.error || '';
+        } catch {
+          // ignore JSON parse failures and fall back to status text
+        }
+        const message = serverError
+          ? `NOQA update failed (${response.status}): ${serverError}`
+          : `NOQA update failed with status ${response.status}`;
+        throw new Error(message);
       }
 
       const totalRules = entries.reduce((sum, entry) => sum + entry.rules.length, 0);
@@ -471,7 +494,8 @@ const App: React.FC = () => {
       postMessage('runLintNow');
     } catch (err) {
       console.error('Failed to update NOQA config:', err);
-      toastError('Failed to update NOQA configuration.');
+      const message = err instanceof Error ? err.message : 'Failed to update NOQA configuration.';
+      toastError(message);
     }
   }, [filteredTestcases, selectedIssues, success, toastError]);
 
@@ -930,16 +954,9 @@ const App: React.FC = () => {
           disabled={selectedCount === 0}
           title={selectedCount > 0 ? 'Add selected issues to lint.skip config' : 'Select issues first'}
         >
-          NOQA Selected
+          Skip
         </Button>
 
-        <Button
-          variant="ghost"
-          onClick={openConfigModal}
-          title="Edit mxlint.yaml configuration"
-        >
-          Edit Config
-        </Button>
 
         {selectedCount > 0 && (
           <Button variant="ghost" icon={<ClearIcon />} onClick={clearSelection} title="Clear selection" />
@@ -957,6 +974,12 @@ const App: React.FC = () => {
           Bookmarks ({bookmarkedIds.size})
         </Button>
 
+        <Button
+          variant="ghost"
+          onClick={openConfigModal}
+          icon={<SettingsIcon />}
+          title="Edit mxlint.yaml configuration"
+        />
         <Button variant="ghost" icon={<KeyboardIcon />} onClick={() => setShowKeyboardShortcuts(true)} title="Show keyboard shortcuts (?)" />
       </div>
 

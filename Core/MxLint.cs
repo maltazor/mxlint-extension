@@ -11,7 +11,7 @@ namespace com.cinaq.MxLintExtension.Core;
 
 public class MxLint
 {
-    private const string NoqaReason = "Skipped from MxLint extension";
+    private const string DefaultNoqaReason = "Skipped from MxLint extension";
     internal const string DefaultCliVersion = "v3.14.1";
     private readonly IModel _model;
     private readonly ILogService _logService;
@@ -104,7 +104,7 @@ public class MxLint
                 skipRules.Add(new MxLintConfigSkipRule
                 {
                     Rule = ruleNumber,
-                    Reason = NoqaReason,
+                    Reason = string.IsNullOrWhiteSpace(entry.Reason) ? DefaultNoqaReason : entry.Reason.Trim(),
                     Date = DateTime.UtcNow.ToString("yyyy-MM-dd")
                 });
 
@@ -420,6 +420,7 @@ public sealed class NoqaDocumentRules
 {
     public string Document { get; set; } = string.Empty;
     public List<string> Rules { get; set; } = new();
+    public string Reason { get; set; } = string.Empty;
 }
 
 public sealed class MxLintConfig

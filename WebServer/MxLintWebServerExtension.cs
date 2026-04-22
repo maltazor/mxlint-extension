@@ -15,6 +15,10 @@ public class MxLintWebServerExtension : WebServerExtension
     private readonly IExtensionFileService _extensionFileService;
     private readonly ILogService _logService;
     private readonly IConfigurationService _configurationService;
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     [ImportingConstructor]
     public MxLintWebServerExtension(
@@ -124,21 +128,27 @@ public class MxLintWebServerExtension : WebServerExtension
         {
             using var reader = new StreamReader(request.InputStream, request.ContentEncoding ?? Encoding.UTF8);
             var body = await reader.ReadToEndAsync(ct);
-            var payload = JsonSerializer.Deserialize<NoqaRequest>(body);
+            _logService.Info($"NOQA request received. Body length={body.Length}");
+            var payload = JsonSerializer.Deserialize<NoqaRequest>(body, JsonOptions);
 
             if (payload?.Entries == null || payload.Entries.Count == 0)
             {
-                response.SendNoBodyAndClose(400);
+                _logService.Error("NOQA request rejected: no entries provided.");
+                SendJson(response, new { success = false, error = "No NOQA entries provided." }, 400);
                 return;
             }
 
+            var totalRules = payload.Entries.Sum(e => e.Rules?.Count ?? 0);
+            _logService.Info($"Applying NOQA entries. Documents={payload.Entries.Count}, Rules={totalRules}");
+
             var mxlint = new MxLint(CurrentApp, _logService);
             await mxlint.AddNoqaRules(payload.Entries);
+            _logService.Info("NOQA update completed successfully.");
             SendJson(response, new { success = true });
         }
         catch (Exception ex)
         {
-            _logService.Error($"Failed to update NOQA config: {ex.Message}");
+            _logService.Error($"Failed to update NOQA config: {ex}");
             SendJson(response, new { success = false, error = ex.Message }, 500);
         }
     }
@@ -177,7 +187,7 @@ public class MxLintWebServerExtension : WebServerExtension
             {
                 using var reader = new StreamReader(request.InputStream, request.ContentEncoding ?? Encoding.UTF8);
                 var body = await reader.ReadToEndAsync(ct);
-                var payload = JsonSerializer.Deserialize<ConfigUpdateRequest>(body);
+                var payload = JsonSerializer.Deserialize<ConfigUpdateRequest>(body, JsonOptions);
 
                 if (payload == null || string.IsNullOrWhiteSpace(payload.Content))
                 {
