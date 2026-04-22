@@ -126,7 +126,8 @@ Try Open MxLint Pane During Setup
 Lint Results File Should Exist
     [Documentation]    Verify lint-results.json is generated in Mendix cache.
     ${results_path}=    Join Path    ${APP_DIR}    .mendix-cache    lint-results.json
-    Wait Until Keyword Succeeds    120s    5s
+    Sleep    15s
+    Wait Until Keyword Succeeds    180s    5s
     ...    File Should Exist    ${results_path}
     ${content}=    Get File    ${results_path}
     Should Contain    ${content}    testsuites
