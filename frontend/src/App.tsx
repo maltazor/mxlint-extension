@@ -908,7 +908,7 @@ const App: React.FC = () => {
         <div className="toolbar-separator" />
 
         <Button variant="ghost" icon={<RefreshIcon />} onClick={() => void handleManualRefresh()} title="Run lint now (R)">
-          Run now
+          Run
         </Button>
 
         <Button
@@ -917,7 +917,7 @@ const App: React.FC = () => {
           title="Toggle automatic lint refresh"
           className={autoRefreshEnabled ? 'active' : ''}
         >
-          Auto refresh: {autoRefreshEnabled ? 'On' : 'Off'}
+          Auto: {autoRefreshEnabled ? 'On' : 'Off'}
         </Button>
 
         <Button
@@ -932,7 +932,7 @@ const App: React.FC = () => {
         </Button>
 
         <Button variant="ghost" icon={<ExportIcon />} onClick={handleExport} title="Export current results to CSV (E)">
-          Export
+          CSV
         </Button>
 
         <Button
@@ -942,10 +942,7 @@ const App: React.FC = () => {
           disabled={selectedCount === 0}
           title={selectedCount > 0 ? `Create issue for ${selectedCount} selected items` : 'Select issues to create ticket'}
           className={selectedCount > 0 ? 'has-selection' : ''}
-        >
-          Create Issue
-          {selectedCount > 0 && <Badge variant="info" size="sm">{selectedCount}</Badge>}
-        </Button>
+        />
 
         <Button
           variant="ghost"
@@ -953,9 +950,9 @@ const App: React.FC = () => {
           onClick={() => void handleNoqaSelected()}
           disabled={selectedCount === 0}
           title={selectedCount > 0 ? 'Add selected issues to lint.skip config' : 'Select issues first'}
-        >
-          Skip
-        </Button>
+        />
+
+        {selectedCount > 0 && <Badge variant="info" size="sm">{selectedCount}</Badge>}
 
 
         {selectedCount > 0 && (
@@ -970,9 +967,9 @@ const App: React.FC = () => {
           onClick={toggleBookmarkedOnly}
           title="Show bookmarked items only"
           className={showBookmarkedOnly ? 'active' : ''}
-        >
-          Bookmarks ({bookmarkedIds.size})
-        </Button>
+        />
+
+        <Badge variant="info" size="sm">{bookmarkedIds.size}</Badge>
 
         <Button
           variant="ghost"

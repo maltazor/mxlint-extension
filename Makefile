@@ -10,6 +10,7 @@ frontend:
 	cd frontend && npm install
 	cd frontend && npm run build
 	rm -f wwwroot/index.html wwwroot/index-*.css wwwroot/index-*.js
+	rm -rf wwwroot/assets
 	cp -r frontend/dist/* wwwroot/
 
 rebuild: clean frontend
