@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -28,7 +29,7 @@ public class MxLint
         _logService = logService;
 
         _cachePath = Path.Combine(_model.Root.DirectoryPath, ".mendix-cache");
-        _executablePath = Path.Combine(_cachePath, "mxlint-local.exe");
+        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(GetCurrentOSPlatform()));
         _lintResultsPath = Path.Combine(_cachePath, "lint-results.json");
         _configPath = Path.Combine(_cachePath, "mxlint-extension.yaml");
         _cliBaseUrl = $"https://github.com/mxlint/mxlint-cli/releases/download/{CliVersion}/";
@@ -166,12 +167,83 @@ public class MxLint
         }
 
         using var client = new HttpClient();
-        var downloadUrl = $"{_cliBaseUrl}mxlint-windows-amd64.exe";
+        var currentOsPlatform = GetCurrentOSPlatform();
+        var cliAssetName = ResolveCliAssetName(currentOsPlatform, RuntimeInformation.OSArchitecture);
+        var downloadUrl = $"{_cliBaseUrl}{cliAssetName}";
         _logService.Info($"Downloading CLI from {downloadUrl}");
         var response = await client.GetAsync(downloadUrl);
         response.EnsureSuccessStatusCode();
         await using var fs = new FileStream(_executablePath, FileMode.CreateNew);
         await response.Content.CopyToAsync(fs);
+        EnsureExecutablePermissions(currentOsPlatform);
+    }
+
+    internal static string ResolveCliAssetName(OSPlatform osPlatform, Architecture architecture)
+    {
+        if (osPlatform == OSPlatform.Windows)
+        {
+            return architecture switch
+            {
+                Architecture.Arm64 => "mxlint-windows-arm64.exe",
+                _ => "mxlint-windows-amd64.exe"
+            };
+        }
+
+        if (osPlatform == OSPlatform.OSX)
+        {
+            return architecture switch
+            {
+                Architecture.Arm64 => "mxlint-darwin-arm64",
+                _ => "mxlint-darwin-amd64"
+            };
+        }
+
+        return architecture switch
+        {
+            Architecture.Arm64 => "mxlint-linux-arm64",
+            _ => "mxlint-linux-amd64"
+        };
+    }
+
+    internal static string ResolveLocalExecutableName(OSPlatform osPlatform)
+    {
+        return osPlatform == OSPlatform.Windows ? "mxlint-local.exe" : "mxlint-local";
+    }
+
+    private static OSPlatform GetCurrentOSPlatform()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return OSPlatform.Windows;
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return OSPlatform.OSX;
+        }
+
+        return OSPlatform.Linux;
+    }
+
+    private void EnsureExecutablePermissions(OSPlatform osPlatform)
+    {
+        if (OperatingSystem.IsWindows() || osPlatform == OSPlatform.Windows)
+        {
+            return;
+        }
+
+        try
+        {
+            File.SetUnixFileMode(
+                _executablePath,
+                UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
+                UnixFileMode.GroupRead | UnixFileMode.GroupExecute |
+                UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
+        }
+        catch (Exception ex)
+        {
+            _logService.Error($"Unable to set executable permissions on CLI: {ex.Message}");
+        }
     }
 
     private void EnsureCacheDirectory()
