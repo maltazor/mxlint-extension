@@ -96,6 +96,8 @@ Extension Config Should Exist
     ${content}=    Get File    ${config_path}
     Should Contain    ${content}    rules
     Should Contain    ${content}    lint
+    Should Contain    ${content}    cli
+    Should Contain    ${content}    version:
     Should Contain    ${content}    modelsource
     RETURN    ${content}
 

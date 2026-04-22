@@ -12,26 +12,25 @@ namespace com.cinaq.MxLintExtension.Core;
 public class MxLint
 {
     private const string NoqaReason = "Skipped from MxLint extension";
+    internal const string DefaultCliVersion = "v3.14.1";
     private readonly IModel _model;
     private readonly ILogService _logService;
-    private readonly string _executablePath;
+    private string _executablePath;
     private readonly string _lintResultsPath;
     private readonly string _configPath;
     private readonly string _cachePath;
-    private readonly string _cliBaseUrl;
-
-    private const string CliVersion = "v3.14.1";
 
     public MxLint(IModel model, ILogService logService)
     {
         _model = model;
         _logService = logService;
 
+        var currentOsPlatform = GetCurrentOSPlatform();
         _cachePath = Path.Combine(_model.Root.DirectoryPath, ".mendix-cache");
-        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(GetCurrentOSPlatform()));
+        var defaultCliAssetName = ResolveCliAssetName(currentOsPlatform, RuntimeInformation.OSArchitecture);
+        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(defaultCliAssetName, DefaultCliVersion));
         _lintResultsPath = Path.Combine(_cachePath, "lint-results.json");
         _configPath = Path.Combine(_model.Root.DirectoryPath, "mxlint.yaml");
-        _cliBaseUrl = $"https://github.com/mxlint/mxlint-cli/releases/download/{CliVersion}/";
     }
 
     public async Task Lint()
@@ -159,22 +158,39 @@ public class MxLint
 
     private async Task EnsureCli()
     {
+        var currentOsPlatform = GetCurrentOSPlatform();
+        var cliVersion = await ResolveConfiguredCliVersion();
+        var cliAssetName = ResolveCliAssetName(currentOsPlatform, RuntimeInformation.OSArchitecture);
+        _executablePath = Path.Combine(_cachePath, ResolveLocalExecutableName(cliAssetName, cliVersion));
+
         if (File.Exists(_executablePath))
         {
-            _logService.Info("CLI already exists");
+            _logService.Info($"CLI already exists for version {cliVersion}");
             return;
         }
 
+        var cliBaseUrl = $"https://github.com/mxlint/mxlint-cli/releases/download/{cliVersion}/";
         using var client = new HttpClient();
-        var currentOsPlatform = GetCurrentOSPlatform();
-        var cliAssetName = ResolveCliAssetName(currentOsPlatform, RuntimeInformation.OSArchitecture);
-        var downloadUrl = $"{_cliBaseUrl}{cliAssetName}";
+        var downloadUrl = $"{cliBaseUrl}{cliAssetName}";
         _logService.Info($"Downloading CLI from {downloadUrl}");
         var response = await client.GetAsync(downloadUrl);
         response.EnsureSuccessStatusCode();
         await using var fs = new FileStream(_executablePath, FileMode.CreateNew);
         await response.Content.CopyToAsync(fs);
         EnsureExecutablePermissions(currentOsPlatform);
+    }
+
+    private async Task<string> ResolveConfiguredCliVersion()
+    {
+        var config = await ReadConfig();
+        return ResolveCliVersion(config.Cli?.Version);
+    }
+
+    internal static string ResolveCliVersion(string? configuredVersion)
+    {
+        return string.IsNullOrWhiteSpace(configuredVersion)
+            ? DefaultCliVersion
+            : configuredVersion.Trim();
     }
 
     internal static string ResolveCliAssetName(OSPlatform osPlatform, Architecture architecture)
@@ -204,9 +220,11 @@ public class MxLint
         };
     }
 
-    internal static string ResolveLocalExecutableName(OSPlatform osPlatform)
+    internal static string ResolveLocalExecutableName(string cliAssetName, string cliVersion)
     {
-        return osPlatform == OSPlatform.Windows ? "mxlint-local.exe" : "mxlint-local";
+        var extension = Path.GetExtension(cliAssetName);
+        var basename = Path.GetFileNameWithoutExtension(cliAssetName);
+        return $"{basename}-{cliVersion}{extension}";
     }
 
     private static OSPlatform GetCurrentOSPlatform()
@@ -323,6 +341,10 @@ public class MxLint
                 Filter = ".*",
                 Raw = false,
                 Appstore = false
+            },
+            Cli = new MxLintConfigCli
+            {
+                Version = DefaultCliVersion
             }
         };
     }
@@ -354,6 +376,7 @@ public sealed class MxLintConfig
     public MxLintConfigCache Cache { get; set; } = new();
     public MxLintConfigExport Export { get; set; } = new();
     public MxLintConfigServe Serve { get; set; } = new();
+    public MxLintConfigCli Cli { get; set; } = new();
     public string Modelsource { get; set; } = "modelsource";
     public string ProjectDirectory { get; set; } = ".";
 }
@@ -392,6 +415,11 @@ public sealed class MxLintConfigServe
 {
     public int Port { get; set; } = 8082;
     public int Debounce { get; set; } = 500;
+}
+
+public sealed class MxLintConfigCli
+{
+    public string Version { get; set; } = MxLint.DefaultCliVersion;
 }
 
 public sealed class MxLintConfigSkipRule

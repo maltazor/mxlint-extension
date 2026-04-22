@@ -7,6 +7,23 @@ namespace MxLintExtension.Tests;
 public class CliAssetResolutionTests
 {
     [Fact]
+    public void ResolveCliVersion_ReturnsConfiguredValue_WhenProvided()
+    {
+        var version = MxLint.ResolveCliVersion("v9.9.9");
+        Assert.Equal("v9.9.9", version);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData(null)]
+    public void ResolveCliVersion_ReturnsDefault_WhenValueMissing(string? configuredVersion)
+    {
+        var version = MxLint.ResolveCliVersion(configuredVersion);
+        Assert.Equal(MxLint.DefaultCliVersion, version);
+    }
+
+    [Fact]
     public void ResolveCliAssetName_ReturnsWindowsArm64Asset_ForWindowsArm64()
     {
         var assetName = MxLint.ResolveCliAssetName(OSPlatform.Windows, Architecture.Arm64);
@@ -42,16 +59,16 @@ public class CliAssetResolutionTests
     }
 
     [Fact]
-    public void ResolveLocalExecutableName_ReturnsExe_ForWindows()
+    public void ResolveLocalExecutableName_IncludesVersionAndExe_ForWindowsAsset()
     {
-        var executableName = MxLint.ResolveLocalExecutableName(OSPlatform.Windows);
-        Assert.Equal("mxlint-local.exe", executableName);
+        var executableName = MxLint.ResolveLocalExecutableName("mxlint-windows-arm64.exe", "v3.14.1");
+        Assert.Equal("mxlint-windows-arm64-v3.14.1.exe", executableName);
     }
 
     [Fact]
-    public void ResolveLocalExecutableName_ReturnsNoExtension_ForMac()
+    public void ResolveLocalExecutableName_IncludesVersionWithoutExtension_ForMacAsset()
     {
-        var executableName = MxLint.ResolveLocalExecutableName(OSPlatform.OSX);
-        Assert.Equal("mxlint-local", executableName);
+        var executableName = MxLint.ResolveLocalExecutableName("mxlint-darwin-arm64", "v3.14.1");
+        Assert.Equal("mxlint-darwin-arm64-v3.14.1", executableName);
     }
 }

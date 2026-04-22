@@ -167,6 +167,7 @@ public class NoqaTests : IDisposable
 
         var config = await ReadConfig();
         Assert.Equal("modelsource", config.Modelsource);
+        Assert.Equal(MxLint.DefaultCliVersion, config.Cli.Version);
         Assert.Equal(".mendix-cache/rules", config.Rules.Path);
         Assert.Empty(config.Rules.Rulesets);
     }
