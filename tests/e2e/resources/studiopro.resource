@@ -161,8 +161,6 @@ Open MxLint Pane Once
     IF    ${already_open}
         RETURN
     END
-    Log Pane Diagnostics
-    Resolve Main Window Locator
     Wait Until Element Exist    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
     ${extensions_exists}=    Resolve Extensions Trigger Locator
