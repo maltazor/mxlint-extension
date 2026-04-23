@@ -13,7 +13,7 @@ ${MAIN_WINDOW_APP}        /Window[@Name='App']
 ${MAIN_WINDOW}            ${MAIN_WINDOW_PRIMARY}
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       ${MAIN_WINDOW}/Pane/Pane
-${EXTENSIONS_MENU}    ${MAIN_WINDOW}//MenuItem[@Name='Extensions']
+${EXTENSIONS_MENU}    ${MAIN_WINDOW}//MenuItem[contains(@Name,'Extension')]
 ${MXLINT_MENU_ITEM}   ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
 ${MXLINT_PANE}        ${MAIN_WINDOW}//*[@Name='MxLint']
 
@@ -85,7 +85,18 @@ Wait For Project To Load
     ...    Sign In Window Should Be Gone
     Wait Until Keyword Succeeds    30s    5s
     ...    Resolve Main Window Locator
+    Wait Until Keyword Succeeds    90s    5s
+    ...    Extensions Menu Should Be Available
     Log    Project loaded successfully
+
+Extensions Menu Should Be Available
+    [Documentation]    Wait until the Extensions menu appears in the resolved Studio Pro main window.
+    Resolve Main Window Locator
+    ${main_exists}=    Element Should Exist    ${MAIN_WINDOW}    ${False}
+    Should Be True    ${main_exists}    Main Studio Pro window is not available yet.
+    ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    Log    Extensions menu visible=${extensions_exists} for locator=${EXTENSIONS_MENU}    level=WARN
+    Should Be True    ${extensions_exists}    Extensions menu is not visible yet.
 
 Sign In Window Should Be Gone
     [Documentation]    Assert that no sign-in window exists
@@ -130,7 +141,7 @@ Open MxLint Pane Once
     Resolve Main Window Locator
     Wait Until Element Exist    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
-    Wait Until Element Exist    ${EXTENSIONS_MENU}    15
+    Wait Until Element Exist    ${EXTENSIONS_MENU}    30
     Click    ${EXTENSIONS_MENU}
     Sleep    1s
     Log Pane Diagnostics
