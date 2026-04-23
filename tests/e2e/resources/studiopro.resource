@@ -161,7 +161,7 @@ Open MxLint Pane Once
     IF    ${already_open}
         RETURN
     END
-    Wait Until Element Exist    ${MAIN_WINDOW}    15
+    Element Should Appear Within    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
     ${extensions_exists}=    Resolve Extensions Trigger Locator
     IF    not ${extensions_exists}
@@ -181,7 +181,19 @@ Open MxLint Pane Once
     Run Keyword And Ignore Error    Press Key    s'M'    ${MAIN_WINDOW}
     Run Keyword And Ignore Error    Press Key    s'DOWN'    ${MAIN_WINDOW}
     Run Keyword And Ignore Error    Press Key    s'ENTER'    ${MAIN_WINDOW}
-    Wait Until Element Exist    ${MXLINT_PANE}    30
+    Element Should Appear Within    ${MXLINT_PANE}    30
+
+Element Should Appear Within
+    [Documentation]    Poll element existence with explicit timeout to avoid long UIA hangs.
+    [Arguments]    ${locator}    ${timeout_seconds}=30
+    FOR    ${index}    IN RANGE    ${timeout_seconds}
+        ${exists}=    Element Should Exist    ${locator}    ${False}
+        IF    ${exists}
+            RETURN
+        END
+        Sleep    1s
+    END
+    Fail    Element '${locator}' did not appear within ${timeout_seconds}s.
 
 Try Open MxLint Pane During Setup
     [Documentation]    Attempt to open pane during setup and store result
