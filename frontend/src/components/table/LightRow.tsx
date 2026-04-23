@@ -15,6 +15,7 @@ export const LightRow: React.FC<LightRowProps> = ({ tc, isChecked, isSelected, o
   const isClickable = isOpenableDocument(tc.docname);
   const severityClass = tc.rule?.severity?.toLowerCase() || 'low';
   const rowClass = `${isChecked ? 'checked-row ' : ''}${isSelected ? 'selected-row' : ''}`.trim();
+  const skipReason = tc.status === 'skip' ? tc.skipped?.message?.trim() : '';
 
   return (
     <tr className={rowClass || undefined} onClick={() => onSelectRow(tc.id)}>
@@ -39,7 +40,14 @@ export const LightRow: React.FC<LightRowProps> = ({ tc, isChecked, isSelected, o
       </td>
       <td title={tc.module}>{tc.module}</td>
       <td>{tc.rule?.ruleName || 'Unknown'}</td>
-      <td><span className={`status-label ${tc.status}`}>{tc.status}</span></td>
+      <td>
+        <span
+          className={`status-label ${tc.status}`}
+          title={skipReason || undefined}
+        >
+          {tc.status}
+        </span>
+      </td>
     </tr>
   );
 };

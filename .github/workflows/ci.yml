@@ -7,8 +7,11 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  MENDIX_DOWNLOAD_URL: https://artifacts.rnd.mendix.com/modelers/Mendix-10.24.16.96987-User-x64-Setup.exe
+
 jobs:
-  Build:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -18,8 +21,140 @@ jobs:
       with:
         dotnet-version: "8.x"
 
-    - name: Display dotnet version
-      run: dotnet --version
-
     - name: Compile
-      run: 	make
+      run: make
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: "8.x"
+
+    - name: Run tests
+      run: dotnet test tests/MxLintExtension.Tests/ --logger "console;verbosity=detailed"
+
+  integration:
+    runs-on: windows-latest
+    needs: [build, test]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: "8.x"
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install Robot Framework
+      run: pip install -r tests/e2e/requirements.txt
+
+    - name: Build extension (Release)
+      run: dotnet build MxLintExtension.sln -c Release
+
+    - name: Deploy extension into test project
+      shell: pwsh
+      run: |
+        $extDir = "resources\App\extensions\MxLintExtension"
+        if (Test-Path $extDir) {
+          Remove-Item -Recurse -Force "$extDir\*" -ErrorAction SilentlyContinue
+        } else {
+          New-Item -ItemType Directory -Path $extDir -Force | Out-Null
+        }
+        Copy-Item -Recurse bin\Release\net8.0\* $extDir -Force
+
+    - name: Cache Mendix Studio Pro installer
+      id: cache-mendix
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}\MendixSetup.exe
+        key: mendix-studiopro-10.24.16.96987
+        save-always: true
+
+    - name: Download Mendix Studio Pro
+      if: steps.cache-mendix.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        $installerPath = "$env:RUNNER_TEMP\MendixSetup.exe"
+        Write-Host "Downloading Studio Pro installer..."
+        Invoke-WebRequest -Uri $env:MENDIX_DOWNLOAD_URL -OutFile $installerPath -UseBasicParsing
+        Write-Host "Downloaded $(((Get-Item $installerPath).Length / 1MB).ToString('F1')) MB"
+
+    - name: Install Mendix Studio Pro (silent)
+      shell: pwsh
+      run: |
+        $installerPath = "$env:RUNNER_TEMP\MendixSetup.exe"
+        $installDir = "$env:RUNNER_TEMP\Mendix"
+        Write-Host "Installing Studio Pro silently to $installDir..."
+        Start-Process -FilePath $installerPath `
+          -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/DIR=$installDir" `
+          -Wait -NoNewWindow
+        Write-Host "Installation complete"
+
+        $exePath = Get-ChildItem -Path $installDir -Filter "studiopro.exe" -Recurse | Select-Object -First 1
+        if ($exePath) {
+          Write-Host "Found Studio Pro at: $($exePath.FullName)"
+          echo "STUDIOPRO_EXE=$($exePath.FullName)" >> $env:GITHUB_ENV
+        } else {
+          Write-Host "::error::studiopro.exe not found after installation"
+          Get-ChildItem -Path $installDir -Recurse -Depth 2 | Select-Object FullName
+          exit 1
+        }
+      timeout-minutes: 15
+
+    - name: Verify test prerequisites
+      shell: pwsh
+      env:
+        APP_DIR: ${{ github.workspace }}\resources\App
+      run: |
+        Write-Host "STUDIOPRO_EXE = $env:STUDIOPRO_EXE"
+        if (Test-Path $env:STUDIOPRO_EXE) { Write-Host "  -> EXISTS" } else { Write-Host "::error::studiopro.exe not found at $env:STUDIOPRO_EXE"; exit 1 }
+        Write-Host "APP_DIR = $env:APP_DIR"
+        if (Test-Path "$env:APP_DIR\App.mpr") { Write-Host "  -> App.mpr EXISTS" } else { Write-Host "::error::App.mpr not found"; exit 1 }
+        $dll = "$env:APP_DIR\extensions\MxLintExtension\MxLintExtension.dll"
+        if (Test-Path $dll) { Write-Host "  -> Extension DLL EXISTS" } else { Write-Host "::error::Extension DLL not found at $dll"; exit 1 }
+        python -c "import FlaUILibrary; print('FlaUILibrary imported OK')"
+
+    - name: Run Robot Framework E2E tests
+      shell: pwsh
+      env:
+        APP_DIR: ${{ github.workspace }}\resources\App
+      run: |
+        robot --loglevel DEBUG --console verbose --outputdir results tests/e2e/
+      timeout-minutes: 15
+
+    - name: Print Robot Framework errors
+      if: failure()
+      shell: pwsh
+      run: |
+        if (Test-Path results\output.xml) {
+          [xml]$doc = Get-Content results\output.xml
+          $msgs = $doc.SelectNodes("//msg[@level='FAIL' or @level='ERROR']")
+          foreach ($m in $msgs) {
+            $text = ($m.'#text' -replace "`n"," " -replace "`r","").Substring(0, [Math]::Min(500, $m.'#text'.Length))
+            Write-Host "::error::[$($m.level)] $text"
+          }
+        } else {
+          Write-Host "::error::No output.xml found"
+        }
+
+    - name: Upload Robot Framework results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: robot-results
+        path: results/
+
+    - name: Cleanup Studio Pro
+      if: always()
+      shell: pwsh
+      run: |
+        Get-Process -Name "studiopro" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        Get-Process -Name "MxBuild" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue

@@ -22,24 +22,27 @@ export const processTestCase = (
     statusCode = 3;
   }
 
-  let name = testcase.name;
-  if (name.startsWith('modelsource\\')) {
-    name = name.substring(12);
+  let name = testcase.name.replace(/\\/g, '/');
+  const modelsourceIndex = name.indexOf('modelsource/');
+  if (modelsourceIndex !== -1) {
+    name = name.substring(modelsourceIndex + 'modelsource/'.length);
+  } else if (name.startsWith('modelsource/')) {
+    name = name.substring('modelsource/'.length);
   }
 
-  const firstBackslash = name.indexOf('\\');
+  const firstSlash = name.indexOf('/');
   let module = '';
   let docname = '';
   let doctype = '';
 
-  if (firstBackslash !== -1) {
-    module = name.substring(0, firstBackslash);
-    const rest = name.substring(firstBackslash + 1);
+  if (firstSlash !== -1) {
+    module = name.substring(0, firstSlash);
+    const rest = name.substring(firstSlash + 1);
     const lastDot = rest.lastIndexOf('.');
     const secondLastDot = rest.lastIndexOf('.', lastDot - 1);
 
     if (secondLastDot !== -1) {
-      docname = rest.substring(0, secondLastDot).replace(/\\/g, '/');
+      docname = rest.substring(0, secondLastDot);
       doctype = rest.substring(secondLastDot + 1, lastDot);
     } else if (lastDot !== -1) {
       docname = rest.substring(0, lastDot);

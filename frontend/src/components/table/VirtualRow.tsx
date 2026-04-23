@@ -27,9 +27,10 @@ export const VirtualRow: React.FC<VirtualRowProps> = React.memo(({
   onToggleSelection,
   onSelectRow,
 }) => {
-  const { id, rule, status, module, docname, doctype } = testcase;
+  const { id, name, rule, status, module, docname, doctype } = testcase;
   const isClickable = isOpenableDocument(docname);
   const severityClass = rule?.severity?.toLowerCase() || 'low';
+  const skipReason = status === 'skip' ? testcase.skipped?.message?.trim() : '';
 
   const handleDocClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -41,8 +42,8 @@ export const VirtualRow: React.FC<VirtualRowProps> = React.memo(({
 
   const handleBookmark = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    onToggleBookmark(id);
-  }, [id, onToggleBookmark]);
+    onToggleBookmark(name);
+  }, [name, onToggleBookmark]);
 
   const handleCheck = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
@@ -84,7 +85,14 @@ export const VirtualRow: React.FC<VirtualRowProps> = React.memo(({
       <td title={doctype}>{doctype}</td>
       <td title={rule?.ruleName || 'Unknown'}>{rule?.ruleName || 'Unknown'}</td>
       <td>{rule?.category || 'N/A'}</td>
-      <td><span className={`status-label ${status}`}>{status}</span></td>
+      <td>
+        <span
+          className={`status-label ${status}`}
+          title={skipReason || undefined}
+        >
+          {status}
+        </span>
+      </td>
     </tr>
   );
 });

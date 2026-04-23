@@ -1,0 +1,42 @@
+using System.Net;
+using System.Text;
+
+namespace com.cinaq.MxLintExtension.WebServer;
+
+public static class HttpListenerResponseUtils
+{
+    public static async Task SendFileAndClose(this HttpListenerResponse response, string contentType, string filePath, CancellationToken ct)
+    {
+        response.AddDefaultHeaders(200);
+
+        var fileContents = await File.ReadAllBytesAsync(filePath, ct);
+        response.ContentType = contentType;
+        response.ContentLength64 = fileContents.Length;
+
+        await response.OutputStream.WriteAsync(fileContents, ct);
+        response.Close();
+    }
+
+    public static void SendJsonAndClose(this HttpListenerResponse response, MemoryStream jsonStream, int statusCode = 200)
+    {
+        response.AddDefaultHeaders(statusCode);
+        response.ContentType = "application/json";
+        response.ContentEncoding = Encoding.UTF8;
+        response.ContentLength64 = jsonStream.Length;
+
+        jsonStream.WriteTo(response.OutputStream);
+        response.Close();
+    }
+
+    public static void SendNoBodyAndClose(this HttpListenerResponse response, int statusCode)
+    {
+        response.AddDefaultHeaders(statusCode);
+        response.Close();
+    }
+
+    private static void AddDefaultHeaders(this HttpListenerResponse response, int statusCode)
+    {
+        response.StatusCode = statusCode;
+        response.AddHeader("Access-Control-Allow-Origin", "*");
+    }
+}

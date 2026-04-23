@@ -5,7 +5,7 @@ export { ErrorIcon, CheckIcon, SkipIcon } from './StatusIcons';
 export { RefreshIcon, FilterIcon, ExportIcon, SearchIcon, ClearIcon } from './ActionIcons';
 
 // UI icons
-export { SortAscIcon, SortDescIcon, GroupIcon, KeyboardIcon, PresetIcon } from './UIIcons';
+export { SortAscIcon, SortDescIcon, GroupIcon, KeyboardIcon, PresetIcon, SettingsIcon } from './UIIcons';
 
 // Issue-related icons
 export { IssueIcon, ClipboardIcon, BookmarkIcon } from './IssueIcons';

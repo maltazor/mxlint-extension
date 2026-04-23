@@ -1,0 +1,28 @@
+﻿rules:
+  path: .mendix-cache/rules
+  rulesets:
+  - https://github.com/mxlint/mxlint-rules/releases/download/v3.3.0/rules-v3.3.0.zip
+lint:
+  xunitReport: yolo.xml
+  jsonFile: .mendix-cache/lint-results.json
+  ignoreNoqa: false
+  noCache: false
+  concurrency: 4
+  regoTrace: false
+  skip: {}
+cache:
+  directory: .mendix-cache/mxlint
+  enable: true
+export:
+  filter: .*
+  raw: false
+  appstore: false
+serve:
+  port: 8082
+  debounce: 500
+cli:
+  version: v3.14.2
+ui:
+  bookmarks: []
+modelsource: modelsource
+projectDirectory: .

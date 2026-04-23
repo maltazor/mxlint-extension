@@ -1,0 +1,79 @@
+content:
+    - name: MendixCLIExtension
+      type: directory
+      path: MendixCLIExtension
+      content:
+        - name: Constant.Constants$Constant.yaml
+          type: file
+          path: MendixCLIExtension/Constant.Constants$Constant.yaml
+        - name: Constant22.Constants$Constant.yaml
+          type: file
+          path: MendixCLIExtension/Constant22.Constants$Constant.yaml
+        - name: Constant4.Constants$Constant.yaml
+          type: file
+          path: MendixCLIExtension/Constant4.Constants$Constant.yaml
+        - name: Constant7.Constants$Constant.yaml
+          type: file
+          path: MendixCLIExtension/Constant7.Constants$Constant.yaml
+        - name: Constant9.Constants$Constant.yaml
+          type: file
+          path: MendixCLIExtension/Constant9.Constants$Constant.yaml
+        - name: DomainModels$DomainModel.yaml
+          type: file
+          path: MendixCLIExtension/DomainModels$DomainModel.yaml
+        - name: Projects$ModuleSettings.yaml
+          type: file
+          path: MendixCLIExtension/Projects$ModuleSettings.yaml
+        - name: Security$ModuleSecurity.yaml
+          type: file
+          path: MendixCLIExtension/Security$ModuleSecurity.yaml
+    - name: Metadata.yaml
+      type: file
+      path: Metadata.yaml
+    - name: MyFirstModule
+      type: directory
+      path: MyFirstModule
+      content:
+        - name: DomainModels$DomainModel.yaml
+          type: file
+          path: MyFirstModule/DomainModels$DomainModel.yaml
+        - name: Home_Web.Forms$Page.yaml
+          type: file
+          path: MyFirstModule/Home_Web.Forms$Page.yaml
+        - name: Images.Images$ImageCollection.yaml
+          type: file
+          path: MyFirstModule/Images.Images$ImageCollection.yaml
+        - name: MyFirstLogic.Microflows$Microflow.yaml
+          type: file
+          path: MyFirstModule/MyFirstLogic.Microflows$Microflow.yaml
+        - name: MyFirstLogic_2.Microflows$Microflow.yaml
+          type: file
+          path: MyFirstModule/MyFirstLogic_2.Microflows$Microflow.yaml
+        - name: Page.Forms$Page.yaml
+          type: file
+          path: MyFirstModule/Page.Forms$Page.yaml
+        - name: Projects$ModuleSettings.yaml
+          type: file
+          path: MyFirstModule/Projects$ModuleSettings.yaml
+        - name: Security$ModuleSecurity.yaml
+          type: file
+          path: MyFirstModule/Security$ModuleSecurity.yaml
+        - name: test
+          type: directory
+          path: MyFirstModule/test
+          content:
+            - name: MyFirstLogic_2.Microflows$Microflow.yaml
+              type: file
+              path: MyFirstModule/test/MyFirstLogic_2.Microflows$Microflow.yaml
+    - name: Navigation$NavigationDocument.yaml
+      type: file
+      path: Navigation$NavigationDocument.yaml
+    - name: Security$ProjectSecurity.yaml
+      type: file
+      path: Security$ProjectSecurity.yaml
+    - name: Settings$ProjectSettings.yaml
+      type: file
+      path: Settings$ProjectSettings.yaml
+    - name: Texts$SystemTextCollection.yaml
+      type: file
+      path: Texts$SystemTextCollection.yaml

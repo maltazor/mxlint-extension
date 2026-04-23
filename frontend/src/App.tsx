@@ -24,7 +24,16 @@ import type { FilterPreset } from '@/constants';
 import { useVirtualList } from '@/hooks';
 
 // Utilities
-import { postMessage, djb2Hash, processTestCase, isOpenableDocument } from '@/utils';
+import {
+  postMessage,
+  sendExtensionMessage,
+  isWebviewBridgeAvailable,
+  addWebviewMessageListener,
+  removeWebviewMessageListener,
+  djb2Hash,
+  processTestCase,
+  isOpenableDocument,
+} from '@/utils';
 
 // Context
 import { useToast } from '@/context';
@@ -45,6 +54,7 @@ import {
   IssueIcon,
   ClipboardIcon,
   BookmarkIcon,
+  SettingsIcon,
 } from '@/components/icons';
 
 // Components
@@ -74,6 +84,26 @@ import { GroupedView } from '@/components/grouped';
 
 import './App.css';
 
+type NoqaEntryDraft = {
+  document: string;
+  rules: string[];
+};
+
+const normalizeBookmarkKey = (value: string): string => {
+  let normalized = value.trim().replace(/\\/g, '/');
+  const separatorIndex = normalized.indexOf('::');
+  if (separatorIndex !== -1) {
+    normalized = normalized.substring(separatorIndex + 2);
+  }
+
+  const modelsourceIndex = normalized.toLowerCase().indexOf('modelsource/');
+  if (modelsourceIndex !== -1) {
+    normalized = normalized.substring(modelsourceIndex + 'modelsource/'.length);
+  }
+
+  return normalized;
+};
+
 const App: React.FC = () => {
   // Core state
   const [data, setData] = useState<LintResultsData>({ testsuites: [], rules: [] });
@@ -95,15 +125,37 @@ const App: React.FC = () => {
   const [groupBy, setGroupBy] = useState<GroupBy>('none');
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => new Set());
+  const [bookmarksReady, setBookmarksReady] = useState(false);
 
   // UI state
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('mxlint:autoRefreshEnabled');
+    return saved == null ? true : saved === 'true';
+  });
   const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
   const [selectedIssues, setSelectedIssues] = useState<Set<string>>(() => new Set());
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [issueContent, setIssueContent] = useState('');
   const [issueFormat, setIssueFormat] = useState<IssueFormat>('markdown');
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [configContent, setConfigContent] = useState('');
+  const [configLoading, setConfigLoading] = useState(false);
+  const [configSaving, setConfigSaving] = useState(false);
+  const [showNoqaReasonModal, setShowNoqaReasonModal] = useState(false);
+  const [noqaReasonInput, setNoqaReasonInput] = useState('Skipped from MxLint extension');
+  const [pendingNoqaAddEntries, setPendingNoqaAddEntries] = useState<NoqaEntryDraft[]>([]);
+  const [pendingNoqaRemoveEntries, setPendingNoqaRemoveEntries] = useState<NoqaEntryDraft[]>([]);
   const [closedPanelForId, setClosedPanelForId] = useState<string | null>(null);
+
+  const sendDiag = useCallback((event: string, detail: string) => {
+    const url = `./api/diag?source=app&event=${encodeURIComponent(event)}&detail=${encodeURIComponent(detail)}`;
+    void fetch(url).catch(() => {
+      // Ignore diagnostics failures to avoid impacting user actions.
+    });
+  }, []);
+
+  const getBookmarkKey = useCallback((testcase: ProcessedTestCaseWithId) => normalizeBookmarkKey(testcase.name), []);
 
   const dataHashRef = useRef(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -165,7 +217,7 @@ const App: React.FC = () => {
       if (moduleSet && !moduleSet.has(tc.module)) continue;
       if (categorySet && (!tc.rule?.category || !categorySet.has(tc.rule.category))) continue;
       if (docTypeSet && !docTypeSet.has(tc.doctype)) continue;
-      if (showBookmarkedOnly && !bookmarkedIds.has(tc.id)) continue;
+      if (showBookmarkedOnly && !bookmarkedIds.has(getBookmarkKey(tc))) continue;
 
       if (searchLower) {
         const searchable = `${tc.docname} ${tc.module} ${tc.doctype} ${tc.rule?.ruleName || ''} ${tc.rule?.category || ''} ${tc.rule?.title || ''}`.toLowerCase();
@@ -179,7 +231,7 @@ const App: React.FC = () => {
 
     return { pass, skip, fail, total: pass + skip + fail, rules: data.rules.length };
   }, [allTestcases, severityFilters, selectedModules, selectedCategories, selectedDocTypes,
-    searchQuery, showBookmarkedOnly, bookmarkedIds, data.rules.length]);
+    searchQuery, showBookmarkedOnly, bookmarkedIds, data.rules.length, getBookmarkKey]);
 
   // Filter and sort for display
   const filteredTestcases = useMemo((): ProcessedTestCaseWithId[] => {
@@ -198,7 +250,7 @@ const App: React.FC = () => {
       if (moduleSet && !moduleSet.has(tc.module)) continue;
       if (categorySet && (!tc.rule?.category || !categorySet.has(tc.rule.category))) continue;
       if (docTypeSet && !docTypeSet.has(tc.doctype)) continue;
-      if (showBookmarkedOnly && !bookmarkedIds.has(tc.id)) continue;
+      if (showBookmarkedOnly && !bookmarkedIds.has(getBookmarkKey(tc))) continue;
 
       if (searchLower) {
         const searchable = `${tc.docname} ${tc.module} ${tc.doctype} ${tc.rule?.ruleName || ''} ${tc.rule?.category || ''} ${tc.rule?.title || ''} ${tc.failure?.message || ''}`.toLowerCase();
@@ -224,7 +276,7 @@ const App: React.FC = () => {
 
     return filtered;
   }, [allTestcases, severityFilters, statusFilters, selectedModules, selectedCategories,
-    selectedDocTypes, searchQuery, showBookmarkedOnly, bookmarkedIds, sortColumn, sortDirection]);
+    selectedDocTypes, searchQuery, showBookmarkedOnly, bookmarkedIds, sortColumn, sortDirection, getBookmarkKey]);
 
   // Virtual list
   const { visibleItems, totalHeight, offsetY } = useVirtualList(
@@ -242,16 +294,30 @@ const App: React.FC = () => {
 
   // Data fetching
   const refreshData = useCallback(async () => {
+    const endpoints = ['./api', './lint-results.json', '/lint-results.json'];
+
     try {
-      const endpoint = window.chrome?.webview ? './api' : '/lint-results.json';
-      const response = await fetch(endpoint);
-      const text = await response.text();
-      const newHash = djb2Hash(text);
-      if (newHash !== dataHashRef.current) {
-        dataHashRef.current = newHash;
-        setData(JSON.parse(text));
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint);
+          if (!response.ok) {
+            continue;
+          }
+
+          const text = await response.text();
+          const newHash = djb2Hash(text);
+          if (newHash !== dataHashRef.current) {
+            dataHashRef.current = newHash;
+            setData(JSON.parse(text));
+          }
+          return true;
+        } catch {
+          // Try next endpoint.
+        }
       }
-      return true;
+
+      console.error('Failed to fetch lint results from all known endpoints.');
+      return false;
     } catch (error) {
       console.error('Failed to fetch data:', error);
       return false;
@@ -260,6 +326,8 @@ const App: React.FC = () => {
 
   // WebView message listener
   useEffect(() => {
+    sendDiag('appMounted', `href=${window.location.href};hasBridge=${isWebviewBridgeAvailable()}`);
+
     const handleMessage = async (event: MessageEvent<WebViewMessage>) => {
       const { message } = event.data;
       if (message === 'refreshData') await refreshData();
@@ -267,30 +335,82 @@ const App: React.FC = () => {
       else if (message === 'end') setIsLoading(false);
     };
 
-    if (window.chrome?.webview) {
-      window.chrome.webview.addEventListener('message', handleMessage);
+    if (addWebviewMessageListener(handleMessage)) {
       postMessage('MessageListenerRegistered');
     }
     return () => {
-      if (window.chrome?.webview) {
-        window.chrome.webview.removeEventListener('message', handleMessage);
-      }
+      removeWebviewMessageListener(handleMessage);
     };
-  }, [refreshData]);
+  }, [refreshData, sendDiag]);
 
   // Auto-refresh - use setTimeout to avoid synchronous setState in effect
   useEffect(() => {
     const timeoutId = setTimeout(() => void refreshData(), 0);
-    if (!window.chrome?.webview) return () => clearTimeout(timeoutId);
+    if (!autoRefreshEnabled) return () => clearTimeout(timeoutId);
+
     const interval = setInterval(() => {
-      postMessage('refreshData');
-      void refreshData();
+      void (async () => {
+        const result = await sendExtensionMessage('refreshData');
+        // In no-bridge environments (macOS), the backend cannot push refreshData events.
+        // Pull updated results after a successful refresh trigger.
+        if (result.transport === 'http' && result.success) {
+          await refreshData();
+        }
+      })();
     }, 1000);
+
     return () => {
       clearTimeout(timeoutId);
       clearInterval(interval);
     };
-  }, [refreshData]);
+  }, [refreshData, autoRefreshEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('mxlint:autoRefreshEnabled', String(autoRefreshEnabled));
+    void sendExtensionMessage('setAutoRefresh', { enabled: autoRefreshEnabled });
+  }, [autoRefreshEnabled]);
+
+  useEffect(() => {
+    const loadBookmarks = async () => {
+      try {
+        const response = await fetch('./api/bookmarks');
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = await response.json() as { success?: boolean; bookmarks?: string[] };
+        if (payload.success && Array.isArray(payload.bookmarks)) {
+          setBookmarkedIds(new Set(payload.bookmarks.map(normalizeBookmarkKey)));
+        }
+      } catch {
+        // Keep empty bookmarks set if loading fails.
+      } finally {
+        setBookmarksReady(true);
+      }
+    };
+
+    void loadBookmarks();
+  }, []);
+
+  useEffect(() => {
+    if (!bookmarksReady) {
+      return;
+    }
+
+    const saveBookmarks = async () => {
+      try {
+        await fetch('./api/bookmarks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bookmarks: [...bookmarkedIds] }),
+        });
+      } catch {
+        // Avoid surfacing transient write errors in the main UI flow.
+      }
+    };
+
+    void saveBookmarks();
+  }, [bookmarkedIds, bookmarksReady]);
 
   // Scroll selected row into view
   useEffect(() => {
@@ -361,7 +481,8 @@ const App: React.FC = () => {
   const toggleBookmark = useCallback((id: string) => {
     setBookmarkedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      const key = normalizeBookmarkKey(id);
+      if (next.has(key)) next.delete(key); else next.add(key);
       return next;
     });
   }, []);
@@ -390,13 +511,154 @@ const App: React.FC = () => {
   }, [sortColumn]);
 
   const handleManualRefresh = useCallback(async () => {
-    const ok = await refreshData();
-    if (ok) {
-      success('Lint results refreshed.');
-    } else {
-      toastError('Failed to refresh lint results.');
+    sendDiag('manualRefreshClicked', `href=${window.location.href};hasBridge=${isWebviewBridgeAvailable()}`);
+    try {
+      const payload = await sendExtensionMessage('runLintNow');
+      if (!payload.success) {
+        throw new Error(payload.error || 'Run lint failed.');
+      }
+
+      if (payload.transport === 'bridge') {
+        success('Manual lint run started.');
+      } else {
+        await refreshData();
+        success('Manual lint run completed.');
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to run lint.';
+      toastError(message);
     }
-  }, [refreshData, success, toastError]);
+  }, [refreshData, sendDiag, success, toastError]);
+
+  const applyNoqaChanges = useCallback(async (
+    addEntriesDraft: NoqaEntryDraft[],
+    removeEntriesDraft: NoqaEntryDraft[],
+    reason: string
+  ) => {
+    const addEntries = addEntriesDraft.map(entry => ({ ...entry, reason }));
+    const removeEntries = removeEntriesDraft.map(entry => ({ ...entry, reason: '' }));
+
+    try {
+      const updateNoqa = async (action: 'add' | 'remove', entries: typeof addEntries): Promise<void> => {
+        if (entries.length === 0) {
+          return;
+        }
+
+        const response = await fetch('./api/noqa', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action, entries }),
+        });
+
+        if (!response.ok) {
+          let serverError = '';
+          try {
+            const payload = await response.json() as { error?: string };
+            serverError = payload.error || '';
+          } catch {
+            // ignore JSON parse failures and fall back to status text
+          }
+          const message = serverError
+            ? `NOQA ${action} failed (${response.status}): ${serverError}`
+            : `NOQA ${action} failed with status ${response.status}`;
+          throw new Error(message);
+        }
+      };
+
+      await updateNoqa('add', addEntries);
+      await updateNoqa('remove', removeEntries);
+
+      const addedRules = addEntries.reduce((sum, entry) => sum + entry.rules.length, 0);
+      const removedRules = removeEntries.reduce((sum, entry) => sum + entry.rules.length, 0);
+      const messages: string[] = [];
+      if (addedRules > 0) {
+        messages.push(`added NOQA for ${addEntries.length} document(s), ${addedRules} rule(s)`);
+      }
+      if (removedRules > 0) {
+        messages.push(`removed NOQA for ${removeEntries.length} document(s), ${removedRules} rule(s)`);
+      }
+      success(messages.length > 0 ? `${messages.join('; ')}.` : 'NOQA updated.');
+      void sendExtensionMessage('runLintNow');
+    } catch (err) {
+      console.error('Failed to update NOQA config:', err);
+      const message = err instanceof Error ? err.message : 'Failed to update NOQA configuration.';
+      toastError(message);
+    }
+  }, [success, toastError]);
+
+  const cancelNoqaReasonModal = useCallback(() => {
+    setShowNoqaReasonModal(false);
+    setPendingNoqaAddEntries([]);
+    setPendingNoqaRemoveEntries([]);
+    setNoqaReasonInput('Skipped from MxLint extension');
+  }, []);
+
+  const confirmNoqaReasonModal = useCallback(() => {
+    const reason = noqaReasonInput.trim();
+    if (!reason) {
+      toastError('Reason is required to skip selected rules.');
+      return;
+    }
+
+    const addEntries = pendingNoqaAddEntries;
+    const removeEntries = pendingNoqaRemoveEntries;
+    setShowNoqaReasonModal(false);
+    setPendingNoqaAddEntries([]);
+    setPendingNoqaRemoveEntries([]);
+    setNoqaReasonInput('Skipped from MxLint extension');
+    void applyNoqaChanges(addEntries, removeEntries, reason);
+  }, [applyNoqaChanges, noqaReasonInput, pendingNoqaAddEntries, pendingNoqaRemoveEntries, toastError]);
+
+  const handleNoqaSelected = useCallback(async () => {
+    const addEntriesMap = new Map<string, Set<string>>();
+    const removeEntriesMap = new Map<string, Set<string>>();
+    for (const tc of filteredTestcases) {
+      if (!selectedIssues.has(tc.id)) continue;
+      const ruleNumber = tc.rule?.ruleNumber?.trim();
+      if (!tc.name || !ruleNumber) continue;
+
+      let documentPath = tc.name.replace(/\\/g, '/');
+      const modelsourceIndex = documentPath.toLowerCase().indexOf('modelsource/');
+      if (modelsourceIndex !== -1) {
+        documentPath = documentPath.substring(modelsourceIndex + 'modelsource/'.length);
+      }
+      if (documentPath.endsWith('.yaml')) {
+        documentPath = documentPath.substring(0, documentPath.length - '.yaml'.length);
+      }
+      if (!documentPath) continue;
+
+      const targetMap = tc.status === 'skip' ? removeEntriesMap : addEntriesMap;
+      if (!targetMap.has(documentPath)) {
+        targetMap.set(documentPath, new Set<string>());
+      }
+      targetMap.get(documentPath)?.add(ruleNumber);
+    }
+
+    if (addEntriesMap.size === 0 && removeEntriesMap.size === 0) {
+      toastError('Select issues with valid document and rule numbers first.');
+      return;
+    }
+
+    const addEntries = [...addEntriesMap.entries()].map(([document, rules]) => ({
+      document,
+      rules: [...rules],
+    }));
+    const removeEntries = [...removeEntriesMap.entries()].map(([document, rules]) => ({
+      document,
+      rules: [...rules],
+    }));
+
+    if (addEntries.length > 0) {
+      setPendingNoqaAddEntries(addEntries);
+      setPendingNoqaRemoveEntries(removeEntries);
+      setNoqaReasonInput('Skipped from MxLint extension');
+      setShowNoqaReasonModal(true);
+      return;
+    }
+
+    // Pure unskip operation does not need a reason.
+    await applyNoqaChanges([], removeEntries, '');
+  }, [filteredTestcases, selectedIssues, toastError, applyNoqaChanges]);
 
   const clearAllFilters = useCallback(() => {
     setSeverityFilters(['HIGH', 'MEDIUM', 'LOW']);
@@ -596,6 +858,65 @@ const App: React.FC = () => {
     }
   }, [issueContent, success, toastError]);
 
+  const loadConfig = useCallback(async () => {
+    setConfigLoading(true);
+    try {
+      const response = await fetch('./api/config');
+      if (!response.ok) {
+        throw new Error(`Failed to load config (${response.status})`);
+      }
+      const payload = await response.json() as { success?: boolean; content?: string; error?: string };
+      if (!payload.success) {
+        throw new Error(payload.error || 'Failed to load config.');
+      }
+      setConfigContent(payload.content ?? '');
+    } catch (err) {
+      console.error('Failed to load config:', err);
+      toastError('Failed to load mxlint.yaml.');
+    } finally {
+      setConfigLoading(false);
+    }
+  }, [toastError]);
+
+  const openConfigModal = useCallback(() => {
+    setShowConfigModal(true);
+    void loadConfig();
+  }, [loadConfig]);
+
+  const saveConfig = useCallback(async () => {
+    if (!configContent.trim()) {
+      toastError('Config cannot be empty.');
+      return;
+    }
+
+    setConfigSaving(true);
+    try {
+      const response = await fetch('./api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: configContent }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to save config (${response.status})`);
+      }
+
+      const payload = await response.json() as { success?: boolean; error?: string };
+      if (!payload.success) {
+        throw new Error(payload.error || 'Failed to save config.');
+      }
+
+      success('mxlint.yaml saved.');
+      setShowConfigModal(false);
+      postMessage('runLintNow');
+    } catch (err) {
+      console.error('Failed to save config:', err);
+      toastError('Failed to save mxlint.yaml.');
+    } finally {
+      setConfigSaving(false);
+    }
+  }, [configContent, success, toastError]);
+
   const handleSelectRow = useCallback((index: number) => {
     setSelectedRowIndex(index);
     setClosedPanelForId(null);
@@ -639,7 +960,7 @@ const App: React.FC = () => {
         case 'r': case 'R': void handleManualRefresh(); break;
         case 'b': case 'B':
           if (selectedRowIndex >= 0 && filteredTestcases[selectedRowIndex]) {
-            toggleBookmark(filteredTestcases[selectedRowIndex].id);
+            toggleBookmark(getBookmarkKey(filteredTestcases[selectedRowIndex]));
           }
           break;
         case 'e': case 'E': handleExport(); break;
@@ -694,107 +1015,138 @@ const App: React.FC = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [selectedRowIndex, filteredTestcases, toggleBookmark, toggleIssueSelection,
     handleOpenDocument, handleExport, handleManualRefresh, selectAllVisible, clearSelection,
-    selectedCount, openIssueModal, clearSearch, setStatusOnly]);
+    selectedCount, openIssueModal, clearSearch, setStatusOnly, getBookmarkKey]);
 
   return (
     <div className="lint-pane">
       {/* Toolbar */}
       <div className="lint-pane-toolbar">
-        <StatusFilterButton
-          active={statusFilters.includes('fail') && statusFilters.length === 1}
-          onClick={() => setStatusOnly('fail')}
-          title="Show only failing test cases"
-          icon={<ErrorIcon />}
-          iconClassName="error"
-          count={stats.fail}
-          label="Errors"
-        />
+        <div className="toolbar-group toolbar-group--status">
+          <StatusFilterButton
+            active={statusFilters.includes('fail') && statusFilters.length === 1}
+            onClick={() => setStatusOnly('fail')}
+            title="Show only failing test cases"
+            icon={<ErrorIcon />}
+            iconClassName="error"
+            count={stats.fail}
+            label="Errors"
+          />
 
-        <StatusFilterButton
-          active={statusFilters.includes('skip') && statusFilters.length === 1}
-          onClick={() => setStatusOnly('skip')}
-          title="Show only skipped test cases"
-          icon={<SkipIcon />}
-          iconClassName="skip"
-          count={stats.skip}
-          label="Skipped"
-        />
+          <StatusFilterButton
+            active={statusFilters.includes('skip') && statusFilters.length === 1}
+            onClick={() => setStatusOnly('skip')}
+            title="Show only skipped test cases"
+            icon={<SkipIcon />}
+            iconClassName="skip"
+            count={stats.skip}
+            label="Skipped"
+          />
 
-        <StatusFilterButton
-          active={statusFilters.includes('pass') && statusFilters.length === 1}
-          onClick={() => setStatusOnly('pass')}
-          title="Show only passing test cases"
-          icon={<CheckIcon />}
-          iconClassName="pass"
-          count={stats.pass}
-          label="Passed"
-        />
-
-        <div className="toolbar-separator" />
-
-        <div className="toolbar-search">
-          <Input
-            ref={searchInputRef}
-            value={searchQuery}
-            onChange={e => handleSearchChange(e.target.value)}
-            placeholder="Search documents, rules, modules..."
-            leftIcon={<SearchIcon />}
-            clearable
-            onClear={clearSearch}
-            size="md"
+          <StatusFilterButton
+            active={statusFilters.includes('pass') && statusFilters.length === 1}
+            onClick={() => setStatusOnly('pass')}
+            title="Show only passing test cases"
+            icon={<CheckIcon />}
+            iconClassName="pass"
+            count={stats.pass}
+            label="Passed"
           />
         </div>
 
-        <div className="toolbar-separator" />
+        <div className="toolbar-group toolbar-group--search">
+          <div className="toolbar-search">
+            <Input
+              ref={searchInputRef}
+              value={searchQuery}
+              onChange={e => handleSearchChange(e.target.value)}
+              placeholder="Search documents, rules, modules..."
+              leftIcon={<SearchIcon />}
+              clearable
+              onClear={clearSearch}
+              size="sm"
+            />
+          </div>
+        </div>
 
-        <Button variant="ghost" icon={<RefreshIcon />} onClick={() => void handleManualRefresh()} title="Fetch latest lint results (R)">
-          Refresh
-        </Button>
+        <div className="toolbar-group">
+          <Button size="sm" variant="ghost" icon={<RefreshIcon />} onClick={() => void handleManualRefresh()} title="Run lint now (R)">
+            Run
+          </Button>
 
-        <Button
-          variant="ghost"
-          icon={<FilterIcon />}
-          onClick={() => setShowFilterPanel(v => !v)}
-          title="Toggle advanced filters"
-          className={showFilterPanel ? 'active' : ''}
-        >
-          Filters
-          {hasActiveFilters && <Badge variant="error" dot className="filter-badge-dot" />}
-        </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setAutoRefreshEnabled(prev => !prev)}
+            title="Toggle automatic lint refresh"
+            className={autoRefreshEnabled ? 'active' : ''}
+          >
+            Auto {autoRefreshEnabled ? 'On' : 'Off'}
+          </Button>
 
-        <Button variant="ghost" icon={<ExportIcon />} onClick={handleExport} title="Export current results to CSV (E)">
-          Export
-        </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<FilterIcon />}
+            onClick={() => setShowFilterPanel(v => !v)}
+            title="Toggle advanced filters"
+            className={showFilterPanel ? 'active' : ''}
+          >
+            Filters
+            {hasActiveFilters && <Badge variant="error" dot className="filter-badge-dot" />}
+          </Button>
 
-        <Button
-          variant="ghost"
-          icon={<IssueIcon />}
-          onClick={openIssueModal}
-          disabled={selectedCount === 0}
-          title={selectedCount > 0 ? `Create issue for ${selectedCount} selected items` : 'Select issues to create ticket'}
-          className={selectedCount > 0 ? 'has-selection' : ''}
-        >
-          Create Issue
-          {selectedCount > 0 && <Badge variant="info" size="sm">{selectedCount}</Badge>}
-        </Button>
+          <Button size="sm" variant="ghost" icon={<ExportIcon />} onClick={handleExport} title="Export current results to CSV (E)">
+            CSV
+          </Button>
+        </div>
 
         {selectedCount > 0 && (
-          <Button variant="ghost" icon={<ClearIcon />} onClick={clearSelection} title="Clear selection" />
+          <div className="toolbar-group toolbar-group--selection">
+            <Badge variant="info" size="sm">{selectedCount} selected</Badge>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={<IssueIcon />}
+              onClick={openIssueModal}
+              title={`Create issue for ${selectedCount} selected items`}
+              className="has-selection"
+            >
+              Issue
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={<SkipIcon />}
+              onClick={() => void handleNoqaSelected()}
+              title="Toggle skip for selected issues"
+            >
+              (Un)Skip
+            </Button>
+            <Button size="sm" variant="ghost" icon={<ClearIcon />} onClick={clearSelection} title="Clear selection" />
+          </div>
         )}
 
-        <div className="toolbar-separator" />
-
-        <Button
-          variant="ghost"
-          icon={<BookmarkIcon filled={showBookmarkedOnly} />}
-          onClick={toggleBookmarkedOnly}
-          title="Show bookmarked items only"
-          className={showBookmarkedOnly ? 'active' : ''}
-        >
-          Bookmarks ({bookmarkedIds.size})
-        </Button>
-
-        <Button variant="ghost" icon={<KeyboardIcon />} onClick={() => setShowKeyboardShortcuts(true)} title="Show keyboard shortcuts (?)" />
+        <div className="toolbar-group toolbar-group--secondary">
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<BookmarkIcon filled={showBookmarkedOnly} />}
+            onClick={toggleBookmarkedOnly}
+            title="Show bookmarked items only"
+            className={showBookmarkedOnly ? 'active' : ''}
+          >
+            Bookmarks
+          </Button>
+          <Badge variant="info" size="sm">{bookmarkedIds.size}</Badge>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={openConfigModal}
+            icon={<SettingsIcon />}
+            title="Edit mxlint.yaml configuration"
+          />
+          <Button size="sm" variant="ghost" icon={<KeyboardIcon />} onClick={() => setShowKeyboardShortcuts(true)} title="Show keyboard shortcuts (?)" />
+        </div>
       </div>
 
       {/* Summary Section */}
@@ -955,7 +1307,7 @@ const App: React.FC = () => {
                 )}
                 {visibleItems.map(({ item, index }) => (
                   <VirtualRow key={item.id} testcase={item} index={index}
-                    isBookmarked={bookmarkedIds.has(item.id)}
+                    isBookmarked={bookmarkedIds.has(getBookmarkKey(item))}
                     isSelected={selectedRowIndex === index}
                     isChecked={selectedIssues.has(item.id)}
                     onOpenDocument={handleOpenDocument}
@@ -1033,6 +1385,79 @@ const App: React.FC = () => {
           </Button>
         </div>
         <IssueContentOutput value={issueContent} />
+      </Dialog>
+
+      <Dialog
+        isOpen={showConfigModal}
+        onClose={() => setShowConfigModal(false)}
+        title="Edit mxlint.yaml"
+        size="lg"
+        id="config-dialog"
+        className="config-modal"
+      >
+        <div className="config-modal-actions">
+          <Button
+            variant="secondary"
+            onClick={() => void loadConfig()}
+            disabled={configLoading || configSaving}
+          >
+            Reload
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => void saveConfig()}
+            disabled={configLoading || configSaving}
+          >
+            {configSaving ? 'Saving...' : 'Save'}
+          </Button>
+        </div>
+        <textarea
+          className="config-editor"
+          value={configContent}
+          onChange={e => setConfigContent(e.target.value)}
+          spellCheck={false}
+          placeholder={configLoading ? 'Loading mxlint.yaml...' : 'mxlint.yaml content'}
+          disabled={configLoading || configSaving}
+        />
+      </Dialog>
+
+      <Dialog
+        isOpen={showNoqaReasonModal}
+        onClose={cancelNoqaReasonModal}
+        title="Reason for skip"
+        size="sm"
+        id="noqa-reason-dialog"
+        className="noqa-modal"
+      >
+        <p className="noqa-modal-description">
+          Provide a reason for the selected failing issues that will be added to NOQA.
+        </p>
+        <div className="noqa-modal-summary">
+          <span>{pendingNoqaAddEntries.length} document(s) to skip</span>
+          <span>{pendingNoqaAddEntries.reduce((sum, entry) => sum + entry.rules.length, 0)} rule(s)</span>
+        </div>
+        <textarea
+          className="noqa-reason-input"
+          value={noqaReasonInput}
+          onChange={e => setNoqaReasonInput(e.target.value)}
+          spellCheck={false}
+          placeholder="Enter skip reason"
+          autoFocus
+        />
+        <div className="noqa-modal-actions">
+          <Button
+            variant="secondary"
+            onClick={cancelNoqaReasonModal}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={confirmNoqaReasonModal}
+          >
+            Apply
+          </Button>
+        </div>
       </Dialog>
     </div>
   );
