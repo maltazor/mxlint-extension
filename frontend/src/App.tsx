@@ -315,18 +315,15 @@ const App: React.FC = () => {
     const timeoutId = setTimeout(() => void refreshData(), 0);
     if (!autoRefreshEnabled) return () => clearTimeout(timeoutId);
 
-    if (!window.chrome?.webview) {
-      const interval = setInterval(() => {
-        void refreshData();
-      }, 1000);
-      return () => {
-        clearTimeout(timeoutId);
-        clearInterval(interval);
-      };
-    }
-
     const interval = setInterval(() => {
-      postMessage('refreshData');
+      void (async () => {
+        const result = await sendExtensionMessage('refreshData');
+        // In no-bridge environments (macOS), the backend cannot push refreshData events.
+        // Pull updated results after a successful refresh trigger.
+        if (!window.chrome?.webview && result.success) {
+          await refreshData();
+        }
+      })();
     }, 1000);
 
     return () => {
@@ -337,9 +334,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('mxlint:autoRefreshEnabled', String(autoRefreshEnabled));
-    if (window.chrome?.webview) {
-      postMessage('setAutoRefresh', { enabled: autoRefreshEnabled });
-    }
+    void sendExtensionMessage('setAutoRefresh', { enabled: autoRefreshEnabled });
   }, [autoRefreshEnabled]);
 
   // Scroll selected row into view
