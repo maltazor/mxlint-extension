@@ -17,6 +17,8 @@ ${MXLINT_PANE}        /Window[contains(@Name,'Mendix Studio Pro')]//*[@Name='MxL
 *** Keywords ***
 Start Studio Pro With Extension
     [Documentation]    Launch Studio Pro with --enable-extension-development and skip sign-in
+    Validate E2E Environment
+    Log E2E Environment Snapshot
     ${mpr_file}=    Join Path    ${APP_DIR}    App.mpr
     File Should Exist    ${mpr_file}
     ${pid}=    Launch Application With Args
@@ -126,6 +128,8 @@ Try Open MxLint Pane During Setup
     Log    MxLint pane opened during setup: ${opened}
     IF    not ${opened}
         Log Pane Diagnostics
+        Log Studio Pro Process Snapshot
+        Log Extension Directory Snapshot
     END
 
 Lint Results File Should Exist
@@ -139,6 +143,8 @@ Lint Results File Should Exist
         Log Cache Directory Snapshot
         Log MxLint Cache Logs
         Log Pane Diagnostics
+        Log Studio Pro Process Snapshot
+        Log Extension Directory Snapshot
         Fail    ${message}
     END
     ${content}=    Get File    ${results_path}
@@ -173,3 +179,41 @@ Log Pane Diagnostics
     ${menu_item_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
     ${pane_exists}=    Element Should Exist    ${MXLINT_PANE}    ${False}
     Log    Pane diagnostics: main_window=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
+
+Validate E2E Environment
+    [Documentation]    Assert key environment variables and files are present.
+    Should Not Be Empty    ${STUDIOPRO_EXE}
+    Should Not Be Empty    ${APP_DIR}
+    Directory Should Exist    ${APP_DIR}
+    File Should Exist    ${STUDIOPRO_EXE}
+    ${mpr_path}=    Join Path    ${APP_DIR}    App.mpr
+    File Should Exist    ${mpr_path}
+    ${ext_dir}=    Join Path    ${APP_DIR}    extensions    MxLintExtension
+    Directory Should Exist    ${ext_dir}
+    ${dll_path}=    Join Path    ${ext_dir}    MxLintExtension.dll
+    File Should Exist    ${dll_path}
+
+Log E2E Environment Snapshot
+    [Documentation]    Log critical environment paths for troubleshooting.
+    Log    STUDIOPRO_EXE=${STUDIOPRO_EXE}    level=WARN
+    Log    APP_DIR=${APP_DIR}    level=WARN
+    ${mpr_path}=    Join Path    ${APP_DIR}    App.mpr
+    Log    App.mpr path: ${mpr_path}    level=WARN
+    ${ext_dir}=    Join Path    ${APP_DIR}    extensions    MxLintExtension
+    Log    Extension dir: ${ext_dir}    level=WARN
+
+Log Studio Pro Process Snapshot
+    [Documentation]    Log tasklist output for Studio Pro process.
+    ${result}=    Run Process    tasklist    /FI    IMAGENAME eq studiopro.exe
+    Log    tasklist rc=${result.rc}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}    level=WARN
+
+Log Extension Directory Snapshot
+    [Documentation]    Log deployed extension directory contents.
+    ${ext_dir}=    Join Path    ${APP_DIR}    extensions    MxLintExtension
+    ${exists}=    Run Keyword And Return Status    Directory Should Exist    ${ext_dir}
+    IF    ${exists}
+        ${files}=    List Files In Directory    ${ext_dir}
+        Log    Extension files: ${files}    level=WARN
+    ELSE
+        Log    Extension directory missing at ${ext_dir}    level=WARN
+    END
