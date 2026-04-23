@@ -61,6 +61,7 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         {
             _webView?.ShowDevTools();
         }
+        _webView?.ShowDevTools();
 
         if (args.Message == "setAutoRefresh")
         {

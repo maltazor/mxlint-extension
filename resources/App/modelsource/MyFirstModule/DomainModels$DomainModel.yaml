@@ -1,235 +1,231 @@
 $Type: DomainModels$DomainModel
 Annotations:
-- $Type: DomainModels$Annotation
-  Caption: "This Domain model defines the data structure of this module. \r\n\r\nAdd
-    new entities and associations to define your database tables and their relations.
-    \r\nWe automatically provision the underlying database for you.\r\n\r\nTo define
-    in-memory data, you can turn off the 'persistable' property on the entity.\r\n\r\nMore
-    info: https://docs.mendix.com/refguide/domain-model"
-  ExportLevel: Hidden
-  Width: 440
-Associations: null
-CrossAssociations: null
+    - $Type: DomainModels$Annotation
+      Caption: "This Domain model defines the data structure of this module. \r\n\r\nAdd new entities and associations to define your database tables and their relations. \r\nWe automatically provision the underlying database for you.\r\n\r\nTo define in-memory data, you can turn off the 'persistable' property on the entity.\r\n\r\nMore info: https://docs.mendix.com/refguide/domain-model"
+      ExportLevel: Hidden
+      Width: 440
+Associations: []
+CrossAssociations: []
 Documentation: ""
 Entities:
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_2
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_3
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_4
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_5
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_6
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_7
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_8
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_9
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_10
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_11
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_12
-  Source: null
-  ValidationRules: null
-- $Type: DomainModels$EntityImpl
-  AccessRules: null
-  Attributes: null
-  Documentation: ""
-  Events: null
-  ExportLevel: Hidden
-  Indexes: null
-  MaybeGeneralization:
-    $Type: DomainModels$NoGeneralization
-    HasChangedByAttr: false
-    HasChangedDateAttr: false
-    HasCreatedDateAttr: false
-    HasOwnerAttr: false
-    Persistable: true
-  Name: Entity_13
-  Source: null
-  ValidationRules: null
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_2
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_3
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_4
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_5
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_6
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_7
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_8
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_9
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_10
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_11
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_12
+      Source: null
+      ValidationRules: []
+    - $Type: DomainModels$EntityImpl
+      AccessRules: []
+      Attributes: []
+      Documentation: ""
+      Events: []
+      ExportLevel: Hidden
+      Indexes: []
+      MaybeGeneralization:
+        $Type: DomainModels$NoGeneralization
+        HasChangedByAttr: false
+        HasChangedDateAttr: false
+        HasCreatedDateAttr: false
+        HasOwnerAttr: false
+        Persistable: true
+      Name: Entity_13
+      Source: null
+      ValidationRules: []
