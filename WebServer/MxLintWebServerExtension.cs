@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using com.cinaq.MxLintExtension.Core;
 using Mendix.StudioPro.ExtensionsAPI.Services;
+using Mendix.StudioPro.ExtensionsAPI.UI.Events;
 using Mendix.StudioPro.ExtensionsAPI.UI.WebServer;
 
 namespace com.cinaq.MxLintExtension.WebServer;
@@ -49,6 +50,34 @@ public class MxLintWebServerExtension : WebServerExtension
         webServer.AddRoute("api/noqa", ServeNoqa);
         webServer.AddRoute("api/config", ServeConfig);
         _logService.Info("Registered API routes: api, api/theme, api/noqa, api/config");
+
+        // Auto-run an initial lint when the app finishes loading so results are ready
+        // even if the MxLint pane has not been opened yet (e.g. in headless CI sessions).
+        Subscribe<ExtensionLoaded>(TriggerInitialLint);
+    }
+
+    private void TriggerInitialLint()
+    {
+        var currentApp = CurrentApp;
+        if (currentApp == null)
+        {
+            _logService.Info("ExtensionLoaded fired without a current app; skipping initial lint.");
+            return;
+        }
+
+        _logService.Info("ExtensionLoaded fired; starting initial lint in background.");
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var mxlint = new MxLint(currentApp, _logService);
+                await mxlint.Lint();
+            }
+            catch (Exception ex)
+            {
+                _logService.Error($"Initial lint run failed: {ex}");
+            }
+        });
     }
 
     private static async Task ServeFile(string filePath, HttpListenerResponse response, CancellationToken ct)
