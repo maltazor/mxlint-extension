@@ -14,8 +14,13 @@ ${MAIN_WINDOW}            ${MAIN_WINDOW_PRIMARY}
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       ${MAIN_WINDOW}/Pane/Pane
 ${MENU_BAR}           ${MAIN_WINDOW}//MenuBar
-${EXTENSIONS_MENU}    ${MAIN_WINDOW}//*[contains(@Name,'Extension')]
-${MXLINT_MENU_ITEM}   ${MAIN_WINDOW}//*[contains(@Name,'MxLint')]
+${EXTENSIONS_MENU_ITEM_LOCATOR}    ${MAIN_WINDOW}//MenuItem[contains(@Name,'Extension')]
+${EXTENSIONS_BUTTON_LOCATOR}       ${MAIN_WINDOW}//Button[contains(@Name,'Extension')]
+${EXTENSIONS_TAB_LOCATOR}          ${MAIN_WINDOW}//TabItem[contains(@Name,'Extension')]
+${EXTENSIONS_MENU}    ${EXTENSIONS_MENU_ITEM_LOCATOR}
+${MXLINT_MENU_ITEM_LOCATOR}    ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
+${MXLINT_BUTTON_LOCATOR}       ${MAIN_WINDOW}//Button[contains(@Name,'MxLint')]
+${MXLINT_MENU_ITEM}   ${MXLINT_MENU_ITEM_LOCATOR}
 ${MXLINT_PANE}        ${MAIN_WINDOW}//*[@Name='MxLint']
 
 *** Keywords ***
@@ -98,26 +103,23 @@ Extensions Menu Should Be Available
     Should Be True    ${main_exists}    Main Studio Pro window is not available yet.
     Focus    ${MAIN_WINDOW}
     ${menu_bar_exists}=    Element Should Exist    ${MENU_BAR}    ${False}
-    ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    ${extensions_exists}=    Resolve Extensions Trigger Locator
     IF    not ${extensions_exists}
         Run Keyword And Ignore Error    Press Key    s'ALT'    ${MAIN_WINDOW}
         Sleep    1s
-        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+        ${extensions_exists}=    Resolve Extensions Trigger Locator
     END
     IF    not ${extensions_exists}
         Run Keyword And Ignore Error    Press Key    s'F10'    ${MAIN_WINDOW}
         Sleep    1s
-        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+        ${extensions_exists}=    Resolve Extensions Trigger Locator
     END
     IF    not ${extensions_exists}
         Run Keyword And Ignore Error    Press Key    s'ALT+E'    ${MAIN_WINDOW}
         Sleep    1s
-        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+        ${extensions_exists}=    Resolve Extensions Trigger Locator
     END
     Log    Extensions menu visible=${extensions_exists}, menu_bar=${menu_bar_exists}, menu_locator=${EXTENSIONS_MENU}    level=WARN
-    IF    not ${extensions_exists}
-        Log Studio Pro UIA Matching Elements
-    END
     Should Be True    ${extensions_exists}    Extensions menu is not visible yet.
 
 Sign In Window Should Be Gone
@@ -163,30 +165,26 @@ Open MxLint Pane Once
     Resolve Main Window Locator
     Wait Until Element Exist    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
-    ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    ${extensions_exists}=    Resolve Extensions Trigger Locator
     IF    not ${extensions_exists}
         Run Keyword And Ignore Error    Press Key    s'ALT'    ${MAIN_WINDOW}
         Sleep    1s
-        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+        ${extensions_exists}=    Resolve Extensions Trigger Locator
     END
     IF    not ${extensions_exists}
         Run Keyword And Ignore Error    Press Key    s'F10'    ${MAIN_WINDOW}
         Sleep    1s
-        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+        ${extensions_exists}=    Resolve Extensions Trigger Locator
     END
     IF    ${extensions_exists}
         Click    ${EXTENSIONS_MENU}
     END
     Sleep    1s
-    Log Pane Diagnostics
-    ${mxlint_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
+    ${mxlint_exists}=    Resolve MxLint Trigger Locator
     IF    not ${mxlint_exists}
         Run Keyword And Ignore Error    Press Key    s'ALT+E'    ${MAIN_WINDOW}
         Sleep    1s
-        ${mxlint_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
-    END
-    IF    not ${mxlint_exists}
-        Log Studio Pro UIA Matching Elements
+        ${mxlint_exists}=    Resolve MxLint Trigger Locator
     END
     Wait Until Element Exist    ${MXLINT_MENU_ITEM}    20
     Click    ${MXLINT_MENU_ITEM}
@@ -293,15 +291,6 @@ Log Studio Pro Window Snapshot
     ...    Get-Process -Name studiopro -ErrorAction SilentlyContinue | Select-Object Id,MainWindowTitle,MainWindowHandle,Responding | Format-List | Out-String -Width 4096
     Log    powershell window snapshot rc=${ps.rc}\nstdout:\n${ps.stdout}\nstderr:\n${ps.stderr}    level=WARN
 
-Log Studio Pro UIA Matching Elements
-    [Documentation]    Log UIA descendants in Studio Pro whose names mention Extension or MxLint.
-    ${uia}=    Run Process
-    ...    powershell
-    ...    -NoProfile
-    ...    -Command
-    ...    $p = Get-Process -Name studiopro -ErrorAction SilentlyContinue | Select-Object -First 1; if (-not $p -or $p.MainWindowHandle -eq 0) { 'No Studio Pro main window handle available.'; exit 0 }; Add-Type -AssemblyName UIAutomationClient; $root = [System.Windows.Automation.AutomationElement]::FromHandle([IntPtr]$p.MainWindowHandle); $nodes = $root.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition); $hits = foreach ($n in $nodes) { $name = $n.Current.Name; if ([string]::IsNullOrWhiteSpace($name)) { continue }; if ($name -match 'Extension|MxLint') { [PSCustomObject]@{ Name = $name; Type = $n.Current.ControlType.ProgrammaticName; Class = $n.Current.ClassName } } }; if (-not $hits) { 'No UIA elements matched Extension|MxLint.' } else { $hits | Select-Object -First 80 | Format-Table -AutoSize | Out-String -Width 4096 }
-    Log    uia matching elements rc=${uia.rc}\nstdout:\n${uia.stdout}\nstderr:\n${uia.stderr}    level=WARN
-
 Log Extension Directory Snapshot
     [Documentation]    Log deployed extension directory contents.
     ${ext_dir}=    Join Path    ${APP_DIR}    extensions    MxLintExtension
@@ -316,16 +305,59 @@ Log Extension Directory Snapshot
 Set Main Window Dependent Locators
     [Documentation]    Rebuild locators that depend on the active main window.
     ${menu_bar}=    Set Variable    ${MAIN_WINDOW}//MenuBar
-    ${extensions_menu}=    Set Variable    ${MAIN_WINDOW}//*[contains(@Name,'Extension')]
-    ${mxlint_menu_item}=    Set Variable    ${MAIN_WINDOW}//*[contains(@Name,'MxLint')]
+    ${extensions_menu_item_locator}=    Set Variable    ${MAIN_WINDOW}//MenuItem[contains(@Name,'Extension')]
+    ${extensions_button_locator}=    Set Variable    ${MAIN_WINDOW}//Button[contains(@Name,'Extension')]
+    ${extensions_tab_locator}=    Set Variable    ${MAIN_WINDOW}//TabItem[contains(@Name,'Extension')]
+    ${extensions_menu}=    Set Variable    ${extensions_menu_item_locator}
+    ${mxlint_menu_item_locator}=    Set Variable    ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
+    ${mxlint_button_locator}=    Set Variable    ${MAIN_WINDOW}//Button[contains(@Name,'MxLint')]
+    ${mxlint_menu_item}=    Set Variable    ${mxlint_menu_item_locator}
     ${mxlint_pane}=    Set Variable    ${MAIN_WINDOW}//*[@Name='MxLint']
     ${webview_pane}=    Set Variable    ${MAIN_WINDOW}/Pane/Pane
     Set Suite Variable    ${MENU_BAR}    ${menu_bar}
+    Set Suite Variable    ${EXTENSIONS_MENU_ITEM_LOCATOR}    ${extensions_menu_item_locator}
+    Set Suite Variable    ${EXTENSIONS_BUTTON_LOCATOR}    ${extensions_button_locator}
+    Set Suite Variable    ${EXTENSIONS_TAB_LOCATOR}    ${extensions_tab_locator}
     Set Suite Variable    ${EXTENSIONS_MENU}    ${extensions_menu}
+    Set Suite Variable    ${MXLINT_MENU_ITEM_LOCATOR}    ${mxlint_menu_item_locator}
+    Set Suite Variable    ${MXLINT_BUTTON_LOCATOR}    ${mxlint_button_locator}
     Set Suite Variable    ${MXLINT_MENU_ITEM}    ${mxlint_menu_item}
     Set Suite Variable    ${MXLINT_PANE}    ${mxlint_pane}
     Set Suite Variable    ${WEBVIEW_PANE}    ${webview_pane}
     Log    Updated window-dependent locators for ${MAIN_WINDOW}    level=WARN
+
+Resolve Extensions Trigger Locator
+    [Documentation]    Select the best available Extensions trigger locator for current UI shape.
+    ${menu_item_exists}=    Element Should Exist    ${EXTENSIONS_MENU_ITEM_LOCATOR}    ${False}
+    IF    ${menu_item_exists}
+        Set Suite Variable    ${EXTENSIONS_MENU}    ${EXTENSIONS_MENU_ITEM_LOCATOR}
+        RETURN    ${True}
+    END
+    ${button_exists}=    Element Should Exist    ${EXTENSIONS_BUTTON_LOCATOR}    ${False}
+    IF    ${button_exists}
+        Set Suite Variable    ${EXTENSIONS_MENU}    ${EXTENSIONS_BUTTON_LOCATOR}
+        RETURN    ${True}
+    END
+    ${tab_exists}=    Element Should Exist    ${EXTENSIONS_TAB_LOCATOR}    ${False}
+    IF    ${tab_exists}
+        Set Suite Variable    ${EXTENSIONS_MENU}    ${EXTENSIONS_TAB_LOCATOR}
+        RETURN    ${True}
+    END
+    RETURN    ${False}
+
+Resolve MxLint Trigger Locator
+    [Documentation]    Select the best available MxLint trigger locator for current UI shape.
+    ${menu_item_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM_LOCATOR}    ${False}
+    IF    ${menu_item_exists}
+        Set Suite Variable    ${MXLINT_MENU_ITEM}    ${MXLINT_MENU_ITEM_LOCATOR}
+        RETURN    ${True}
+    END
+    ${button_exists}=    Element Should Exist    ${MXLINT_BUTTON_LOCATOR}    ${False}
+    IF    ${button_exists}
+        Set Suite Variable    ${MXLINT_MENU_ITEM}    ${MXLINT_BUTTON_LOCATOR}
+        RETURN    ${True}
+    END
+    RETURN    ${False}
 
 Resolve Main Window Locator
     [Documentation]    Resolve active Studio Pro main window locator based on current window title.
