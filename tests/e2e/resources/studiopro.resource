@@ -14,8 +14,8 @@ ${MAIN_WINDOW}            ${MAIN_WINDOW_PRIMARY}
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       ${MAIN_WINDOW}/Pane/Pane
 ${MENU_BAR}           ${MAIN_WINDOW}//MenuBar
-${EXTENSIONS_MENU}    ${MENU_BAR}//MenuItem[contains(@Name,'Extension')]
-${MXLINT_MENU_ITEM}   ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
+${EXTENSIONS_MENU}    ${MAIN_WINDOW}//*[contains(@Name,'Extension')]
+${MXLINT_MENU_ITEM}   ${MAIN_WINDOW}//*[contains(@Name,'MxLint')]
 ${MXLINT_PANE}        ${MAIN_WINDOW}//*[@Name='MxLint']
 
 *** Keywords ***
@@ -109,7 +109,15 @@ Extensions Menu Should Be Available
         Sleep    1s
         ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
     END
+    IF    not ${extensions_exists}
+        Run Keyword And Ignore Error    Press Key    s'ALT+E'    ${MAIN_WINDOW}
+        Sleep    1s
+        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    END
     Log    Extensions menu visible=${extensions_exists}, menu_bar=${menu_bar_exists}, menu_locator=${EXTENSIONS_MENU}    level=WARN
+    IF    not ${extensions_exists}
+        Log Studio Pro UIA Matching Elements
+    END
     Should Be True    ${extensions_exists}    Extensions menu is not visible yet.
 
 Sign In Window Should Be Gone
@@ -155,13 +163,32 @@ Open MxLint Pane Once
     Resolve Main Window Locator
     Wait Until Element Exist    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
-    Run Keyword And Ignore Error    Press Key    s'ALT'    ${MAIN_WINDOW}
-    Sleep    1s
-    Wait Until Element Exist    ${EXTENSIONS_MENU}    30
-    Click    ${EXTENSIONS_MENU}
+    ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    IF    not ${extensions_exists}
+        Run Keyword And Ignore Error    Press Key    s'ALT'    ${MAIN_WINDOW}
+        Sleep    1s
+        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    END
+    IF    not ${extensions_exists}
+        Run Keyword And Ignore Error    Press Key    s'F10'    ${MAIN_WINDOW}
+        Sleep    1s
+        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    END
+    IF    ${extensions_exists}
+        Click    ${EXTENSIONS_MENU}
+    END
     Sleep    1s
     Log Pane Diagnostics
-    Wait Until Element Exist    ${MXLINT_MENU_ITEM}    15
+    ${mxlint_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
+    IF    not ${mxlint_exists}
+        Run Keyword And Ignore Error    Press Key    s'ALT+E'    ${MAIN_WINDOW}
+        Sleep    1s
+        ${mxlint_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
+    END
+    IF    not ${mxlint_exists}
+        Log Studio Pro UIA Matching Elements
+    END
+    Wait Until Element Exist    ${MXLINT_MENU_ITEM}    20
     Click    ${MXLINT_MENU_ITEM}
     Wait Until Element Exist    ${MXLINT_PANE}    30
 
@@ -266,6 +293,15 @@ Log Studio Pro Window Snapshot
     ...    Get-Process -Name studiopro -ErrorAction SilentlyContinue | Select-Object Id,MainWindowTitle,MainWindowHandle,Responding | Format-List | Out-String -Width 4096
     Log    powershell window snapshot rc=${ps.rc}\nstdout:\n${ps.stdout}\nstderr:\n${ps.stderr}    level=WARN
 
+Log Studio Pro UIA Matching Elements
+    [Documentation]    Log UIA descendants in Studio Pro whose names mention Extension or MxLint.
+    ${uia}=    Run Process
+    ...    powershell
+    ...    -NoProfile
+    ...    -Command
+    ...    $p = Get-Process -Name studiopro -ErrorAction SilentlyContinue | Select-Object -First 1; if (-not $p -or $p.MainWindowHandle -eq 0) { 'No Studio Pro main window handle available.'; exit 0 }; Add-Type -AssemblyName UIAutomationClient; $root = [System.Windows.Automation.AutomationElement]::FromHandle([IntPtr]$p.MainWindowHandle); $nodes = $root.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition); $hits = foreach ($n in $nodes) { $name = $n.Current.Name; if ([string]::IsNullOrWhiteSpace($name)) { continue }; if ($name -match 'Extension|MxLint') { [PSCustomObject]@{ Name = $name; Type = $n.Current.ControlType.ProgrammaticName; Class = $n.Current.ClassName } } }; if (-not $hits) { 'No UIA elements matched Extension|MxLint.' } else { $hits | Select-Object -First 80 | Format-Table -AutoSize | Out-String -Width 4096 }
+    Log    uia matching elements rc=${uia.rc}\nstdout:\n${uia.stdout}\nstderr:\n${uia.stderr}    level=WARN
+
 Log Extension Directory Snapshot
     [Documentation]    Log deployed extension directory contents.
     ${ext_dir}=    Join Path    ${APP_DIR}    extensions    MxLintExtension
@@ -280,8 +316,8 @@ Log Extension Directory Snapshot
 Set Main Window Dependent Locators
     [Documentation]    Rebuild locators that depend on the active main window.
     ${menu_bar}=    Set Variable    ${MAIN_WINDOW}//MenuBar
-    ${extensions_menu}=    Set Variable    ${menu_bar}//MenuItem[contains(@Name,'Extension')]
-    ${mxlint_menu_item}=    Set Variable    ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
+    ${extensions_menu}=    Set Variable    ${MAIN_WINDOW}//*[contains(@Name,'Extension')]
+    ${mxlint_menu_item}=    Set Variable    ${MAIN_WINDOW}//*[contains(@Name,'MxLint')]
     ${mxlint_pane}=    Set Variable    ${MAIN_WINDOW}//*[@Name='MxLint']
     ${webview_pane}=    Set Variable    ${MAIN_WINDOW}/Pane/Pane
     Set Suite Variable    ${MENU_BAR}    ${menu_bar}
