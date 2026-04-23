@@ -13,7 +13,8 @@ ${MAIN_WINDOW_APP}        /Window[@Name='App']
 ${MAIN_WINDOW}            ${MAIN_WINDOW_PRIMARY}
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       ${MAIN_WINDOW}/Pane/Pane
-${EXTENSIONS_MENU}    ${MAIN_WINDOW}//MenuItem[contains(@Name,'Extension')]
+${MENU_BAR}           ${MAIN_WINDOW}//MenuBar
+${EXTENSIONS_MENU}    ${MENU_BAR}//MenuItem[contains(@Name,'Extension')]
 ${MXLINT_MENU_ITEM}   ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
 ${MXLINT_PANE}        ${MAIN_WINDOW}//*[@Name='MxLint']
 
@@ -94,8 +95,20 @@ Extensions Menu Should Be Available
     Resolve Main Window Locator
     ${main_exists}=    Element Should Exist    ${MAIN_WINDOW}    ${False}
     Should Be True    ${main_exists}    Main Studio Pro window is not available yet.
+    Focus    ${MAIN_WINDOW}
+    ${menu_bar_exists}=    Element Should Exist    ${MENU_BAR}    ${False}
     ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
-    Log    Extensions menu visible=${extensions_exists} for locator=${EXTENSIONS_MENU}    level=WARN
+    IF    not ${extensions_exists}
+        Run Keyword And Ignore Error    Press Key    s'ALT'    ${MAIN_WINDOW}
+        Sleep    1s
+        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    END
+    IF    not ${extensions_exists}
+        Run Keyword And Ignore Error    Press Key    s'F10'    ${MAIN_WINDOW}
+        Sleep    1s
+        ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    END
+    Log    Extensions menu visible=${extensions_exists}, menu_bar=${menu_bar_exists}, menu_locator=${EXTENSIONS_MENU}    level=WARN
     Should Be True    ${extensions_exists}    Extensions menu is not visible yet.
 
 Sign In Window Should Be Gone
@@ -141,6 +154,8 @@ Open MxLint Pane Once
     Resolve Main Window Locator
     Wait Until Element Exist    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
+    Run Keyword And Ignore Error    Press Key    s'ALT'    ${MAIN_WINDOW}
+    Sleep    1s
     Wait Until Element Exist    ${EXTENSIONS_MENU}    30
     Click    ${EXTENSIONS_MENU}
     Sleep    1s
@@ -206,10 +221,11 @@ Log Pane Diagnostics
     ${app_mpr_exists}=    Element Should Exist    ${MAIN_WINDOW_APP_MPR}    ${False}
     ${app_exists}=    Element Should Exist    ${MAIN_WINDOW_APP}    ${False}
     ${main_exists}=    Element Should Exist    ${MAIN_WINDOW}    ${False}
+    ${menu_bar_exists}=    Element Should Exist    ${MENU_BAR}    ${False}
     ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
     ${menu_item_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
     ${pane_exists}=    Element Should Exist    ${MXLINT_PANE}    ${False}
-    Log    Pane diagnostics: primary_window=${primary_exists}, app_mpr_window=${app_mpr_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
+    Log    Pane diagnostics: primary_window=${primary_exists}, app_mpr_window=${app_mpr_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, menu_bar=${menu_bar_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
 
 Validate E2E Environment
     [Documentation]    Assert key environment variables and files are present.
