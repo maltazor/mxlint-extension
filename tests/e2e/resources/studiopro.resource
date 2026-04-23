@@ -110,10 +110,14 @@ Open MxLint Pane Once
     IF    ${already_open}
         RETURN
     END
+    Log Pane Diagnostics
+    Wait Until Element Exist    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
-    Wait Until Element Exist    ${EXTENSIONS_MENU}    10
+    Wait Until Element Exist    ${EXTENSIONS_MENU}    15
     Click    ${EXTENSIONS_MENU}
-    Wait Until Element Exist    ${MXLINT_MENU_ITEM}    10
+    Sleep    1s
+    Log Pane Diagnostics
+    Wait Until Element Exist    ${MXLINT_MENU_ITEM}    15
     Click    ${MXLINT_MENU_ITEM}
     Wait Until Element Exist    ${MXLINT_PANE}    30
 
@@ -122,6 +126,9 @@ Try Open MxLint Pane During Setup
     ${opened}=    Run Keyword And Return Status    Open MxLint Pane Via Menu
     Set Suite Variable    ${MXLINT_PANE_OPENED}    ${opened}
     Log    MxLint pane opened during setup: ${opened}
+    IF    not ${opened}
+        Log Pane Diagnostics
+    END
 
 Lint Results File Should Exist
     [Documentation]    Verify lint-results.json is generated in Mendix cache.
@@ -131,7 +138,9 @@ Lint Results File Should Exist
     ...    Wait Until Keyword Succeeds    180s    5s
     ...    File Should Exist    ${results_path}
     IF    '${status}' == 'FAIL'
+        Log Cache Directory Snapshot
         Log MxLint Cache Logs
+        Log Pane Diagnostics
         Fail    ${message}
     END
     ${content}=    Get File    ${results_path}
@@ -147,3 +156,22 @@ Log MxLint Cache Logs
     ELSE
         Log    mxlint.logs not found at ${log_path}    level=WARN
     END
+
+Log Cache Directory Snapshot
+    [Documentation]    Log files present in .mendix-cache to aid troubleshooting.
+    ${cache_dir}=    Join Path    ${APP_DIR}    .mendix-cache
+    ${exists}=    Run Keyword And Return Status    Directory Should Exist    ${cache_dir}
+    IF    ${exists}
+        ${files}=    List Files In Directory    ${cache_dir}
+        Log    .mendix-cache files: ${files}    level=WARN
+    ELSE
+        Log    .mendix-cache directory does not exist at ${cache_dir}    level=WARN
+    END
+
+Log Pane Diagnostics
+    [Documentation]    Log key UI element presence for pane troubleshooting.
+    ${main_exists}=    Element Should Exist    ${MAIN_WINDOW}    ${False}
+    ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
+    ${menu_item_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
+    ${pane_exists}=    Element Should Exist    ${MXLINT_PANE}    ${False}
+    Log    Pane diagnostics: main_window=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
