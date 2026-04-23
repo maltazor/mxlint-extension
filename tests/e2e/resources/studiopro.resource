@@ -7,7 +7,7 @@ Library    OperatingSystem
 ${STUDIOPRO_EXE}      %{STUDIOPRO_EXE}
 ${APP_DIR}            %{APP_DIR}
 ${STARTUP_TIMEOUT}    180
-${MAIN_WINDOW}        /Window[contains(@Name,'Mendix Studio Pro')]
+${MAIN_WINDOW}        /Window[contains(@Name,'Studio Pro')]
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       /Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane
 ${EXTENSIONS_MENU}    ${MAIN_WINDOW}//MenuItem[@Name='Extensions']
@@ -27,14 +27,11 @@ Start Studio Pro With Extension
     Should Not Be Equal As Integers    ${pid}    0
     Log    Studio Pro launched with PID ${pid}
     Wait Until Element Exist    ${MAIN_WINDOW}    ${STARTUP_TIMEOUT}
-    Try Open MxLint Pane During Setup
     ${signin_status}    ${signin_msg}=    Run Keyword And Ignore Error    Skip Sign In If Present
     Log    Sign-in skip result: ${signin_status} - ${signin_msg}    level=WARN
     ${load_status}    ${load_msg}=    Run Keyword And Ignore Error    Wait For Project To Load
     Log    Project load result: ${load_status} - ${load_msg}    level=WARN
-    IF    not ${MXLINT_PANE_OPENED}
-        Try Open MxLint Pane During Setup
-    END
+    Try Open MxLint Pane During Setup
 
 Skip Sign In If Present
     [Documentation]    Dismiss the sign-in dialog by pressing Escape.
@@ -69,6 +66,7 @@ Wait For Project To Load
     Log    Waiting for project to finish loading...
     Wait Until Keyword Succeeds    120s    5s
     ...    Sign In Window Should Be Gone
+    Wait Until Element Exist    ${MAIN_WINDOW}    30
     Log    Project loaded successfully
 
 Sign In Window Should Be Gone
