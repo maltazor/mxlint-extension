@@ -7,7 +7,9 @@ Library    OperatingSystem
 ${STUDIOPRO_EXE}      %{STUDIOPRO_EXE}
 ${APP_DIR}            %{APP_DIR}
 ${STARTUP_TIMEOUT}    180
-${MAIN_WINDOW}        /Window[contains(@Name,'Studio Pro')]
+${MAIN_WINDOW_PRIMARY}    /Window[contains(@Name,'Studio Pro')]
+${MAIN_WINDOW_APP}        /Window[contains(@Name,'App.mpr')]
+${MAIN_WINDOW}            ${MAIN_WINDOW_PRIMARY}
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
 ${WEBVIEW_PANE}       /Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane
 ${EXTENSIONS_MENU}    ${MAIN_WINDOW}//MenuItem[@Name='Extensions']
@@ -28,7 +30,8 @@ Start Studio Pro With Extension
     Set Suite Variable    ${MXLINT_PANE_OPENED}    ${False}
     Should Not Be Equal As Integers    ${pid}    0
     Log    Studio Pro launched with PID ${pid}
-    Wait Until Element Exist    ${MAIN_WINDOW}    ${STARTUP_TIMEOUT}
+    Wait Until Keyword Succeeds    ${STARTUP_TIMEOUT}s    5s
+    ...    Resolve Main Window Locator
     ${signin_status}    ${signin_msg}=    Run Keyword And Ignore Error    Skip Sign In If Present
     Log    Sign-in skip result: ${signin_status} - ${signin_msg}    level=WARN
     ${load_status}    ${load_msg}=    Run Keyword And Ignore Error    Wait For Project To Load
@@ -68,7 +71,8 @@ Wait For Project To Load
     Log    Waiting for project to finish loading...
     Wait Until Keyword Succeeds    120s    5s
     ...    Sign In Window Should Be Gone
-    Wait Until Element Exist    ${MAIN_WINDOW}    30
+    Wait Until Keyword Succeeds    30s    5s
+    ...    Resolve Main Window Locator
     Log    Project loaded successfully
 
 Sign In Window Should Be Gone
@@ -111,6 +115,7 @@ Open MxLint Pane Once
         RETURN
     END
     Log Pane Diagnostics
+    Resolve Main Window Locator
     Wait Until Element Exist    ${MAIN_WINDOW}    15
     Focus    ${MAIN_WINDOW}
     Wait Until Element Exist    ${EXTENSIONS_MENU}    15
@@ -174,11 +179,13 @@ Log Cache Directory Snapshot
 
 Log Pane Diagnostics
     [Documentation]    Log key UI element presence for pane troubleshooting.
+    ${primary_exists}=    Element Should Exist    ${MAIN_WINDOW_PRIMARY}    ${False}
+    ${app_exists}=    Element Should Exist    ${MAIN_WINDOW_APP}    ${False}
     ${main_exists}=    Element Should Exist    ${MAIN_WINDOW}    ${False}
     ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
     ${menu_item_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
     ${pane_exists}=    Element Should Exist    ${MXLINT_PANE}    ${False}
-    Log    Pane diagnostics: main_window=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
+    Log    Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
 
 Validate E2E Environment
     [Documentation]    Assert key environment variables and files are present.
@@ -217,3 +224,20 @@ Log Extension Directory Snapshot
     ELSE
         Log    Extension directory missing at ${ext_dir}    level=WARN
     END
+
+Resolve Main Window Locator
+    [Documentation]    Resolve active Studio Pro main window locator based on current window title.
+    ${primary_exists}=    Element Should Exist    ${MAIN_WINDOW_PRIMARY}    ${False}
+    ${app_exists}=    Element Should Exist    ${MAIN_WINDOW_APP}    ${False}
+    IF    ${primary_exists}
+        Set Suite Variable    ${MAIN_WINDOW}    ${MAIN_WINDOW_PRIMARY}
+        Log    Using main window locator: ${MAIN_WINDOW_PRIMARY}    level=WARN
+        RETURN
+    END
+    IF    ${app_exists}
+        Set Suite Variable    ${MAIN_WINDOW}    ${MAIN_WINDOW_APP}
+        Log    Using fallback main window locator: ${MAIN_WINDOW_APP}    level=WARN
+        RETURN
+    END
+    Log Pane Diagnostics
+    Fail    Could not resolve Studio Pro main window locator.
