@@ -1,4 +1,6 @@
 name: Release
+permissions:
+  contents: write
 
 on:
   release:
@@ -25,30 +27,11 @@ jobs:
       run: |
         mkdir MxLintExtension
         cp -r bin/Debug/net8.0/* MxLintExtension
-        zip -r extension.zip MxLintExtension
+        zip -r MxLintExtension-${{ github.event.release.tag_name }}.zip MxLintExtension
 
-    - name: Get release
-      id: get_release
-      uses: actions/github-script@v6
+    - name: Upload release asset
+      uses: softprops/action-gh-release@v2
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          const release = await github.rest.repos.getRelease({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            release_id: context.payload.release.id
-          });
-          core.setOutput('upload_url', release.data.upload_url);
-          core.setOutput('tag_name', release.data.tag_name);
-
-    - name: Upload Release Asset (ZIP)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-      with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
-        asset_path: ./extension.zip
-        asset_name: MxLintExtension-${{ steps.get_release.outputs.tag_name}}.zip
-        asset_content_type: application/zip
+        files: MxLintExtension-${{ github.event.release.tag_name }}.zip
 
 
