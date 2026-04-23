@@ -115,6 +115,48 @@ public class MxLint
         await WriteConfig(config);
     }
 
+    public async Task RemoveNoqaRules(IEnumerable<NoqaDocumentRules> entries)
+    {
+        EnsureCacheDirectory();
+        await EnsureConfigFile();
+        var config = await ReadConfig();
+
+        config.Lint ??= new MxLintConfigLint();
+        config.Lint.Skip ??= new Dictionary<string, List<MxLintConfigSkipRule>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var entry in entries)
+        {
+            var documentPath = NormalizeDocumentPath(entry.Document);
+            if (string.IsNullOrWhiteSpace(documentPath))
+            {
+                continue;
+            }
+
+            if (!config.Lint.Skip.TryGetValue(documentPath, out var skipRules))
+            {
+                continue;
+            }
+
+            var rulesToRemove = entry.Rules
+                .Select(NormalizeRuleNumber)
+                .Where(rule => !string.IsNullOrWhiteSpace(rule))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (rulesToRemove.Count == 0)
+            {
+                continue;
+            }
+
+            skipRules.RemoveAll(item => !string.IsNullOrWhiteSpace(item.Rule) && rulesToRemove.Contains(item.Rule));
+            if (skipRules.Count == 0)
+            {
+                config.Lint.Skip.Remove(documentPath);
+            }
+        }
+
+        await WriteConfig(config);
+    }
+
     private async Task RunProcess(string arguments, string operationName)
     {
         LogInfo($"Starting process for {operationName}. Executable: {_executablePath}; Arguments: {arguments}");

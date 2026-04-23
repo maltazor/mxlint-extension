@@ -71,7 +71,7 @@ FormCall:
                           Name: text1
                           NativeAccessibilitySettings: null
                           NativeTextStyle: Text
-                          RenderMode: H1
+                          RenderMode: H4
                           TabIndex: 0
                   ConditionalVisibilitySettings: null
                   HorizontalAlignment: None

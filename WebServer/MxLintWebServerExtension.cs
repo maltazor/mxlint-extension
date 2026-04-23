@@ -203,10 +203,18 @@ public class MxLintWebServerExtension : WebServerExtension
             }
 
             var totalRules = payload.Entries.Sum(e => e.Rules?.Count ?? 0);
-            _logService.Info($"Applying NOQA entries. Documents={payload.Entries.Count}, Rules={totalRules}");
+            var action = string.IsNullOrWhiteSpace(payload.Action) ? "add" : payload.Action.Trim().ToLowerInvariant();
+            _logService.Info($"Applying NOQA action='{action}'. Documents={payload.Entries.Count}, Rules={totalRules}");
 
             var mxlint = new MxLint(CurrentApp, _logService);
-            await mxlint.AddNoqaRules(payload.Entries);
+            if (action == "remove")
+            {
+                await mxlint.RemoveNoqaRules(payload.Entries);
+            }
+            else
+            {
+                await mxlint.AddNoqaRules(payload.Entries);
+            }
             _logService.Info("NOQA update completed successfully.");
             SendJson(response, new { success = true });
         }
@@ -546,6 +554,7 @@ public class MxLintWebServerExtension : WebServerExtension
 public sealed class NoqaRequest
 {
     public List<NoqaDocumentRules> Entries { get; set; } = new();
+    public string Action { get; set; } = "add";
 }
 
 public sealed class ConfigUpdateRequest

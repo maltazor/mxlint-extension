@@ -75,6 +75,11 @@ import { GroupedView } from '@/components/grouped';
 
 import './App.css';
 
+type NoqaEntryDraft = {
+  document: string;
+  rules: string[];
+};
+
 const App: React.FC = () => {
   // Core state
   const [data, setData] = useState<LintResultsData>({ testsuites: [], rules: [] });
@@ -112,6 +117,10 @@ const App: React.FC = () => {
   const [configContent, setConfigContent] = useState('');
   const [configLoading, setConfigLoading] = useState(false);
   const [configSaving, setConfigSaving] = useState(false);
+  const [showNoqaReasonModal, setShowNoqaReasonModal] = useState(false);
+  const [noqaReasonInput, setNoqaReasonInput] = useState('Skipped from MxLint extension');
+  const [pendingNoqaAddEntries, setPendingNoqaAddEntries] = useState<NoqaEntryDraft[]>([]);
+  const [pendingNoqaRemoveEntries, setPendingNoqaRemoveEntries] = useState<NoqaEntryDraft[]>([]);
   const [closedPanelForId, setClosedPanelForId] = useState<string | null>(null);
 
   const sendDiag = useCallback((event: string, detail: string) => {
@@ -454,13 +463,88 @@ const App: React.FC = () => {
     }
   }, [refreshData, sendDiag, success, toastError]);
 
-  const handleNoqaSelected = useCallback(async () => {
-    if (!window.chrome?.webview) {
-      toastError('NOQA management is only available inside Studio Pro.');
+  const applyNoqaChanges = useCallback(async (
+    addEntriesDraft: NoqaEntryDraft[],
+    removeEntriesDraft: NoqaEntryDraft[],
+    reason: string
+  ) => {
+    const addEntries = addEntriesDraft.map(entry => ({ ...entry, reason }));
+    const removeEntries = removeEntriesDraft.map(entry => ({ ...entry, reason: '' }));
+
+    try {
+      const updateNoqa = async (action: 'add' | 'remove', entries: typeof addEntries): Promise<void> => {
+        if (entries.length === 0) {
+          return;
+        }
+
+        const response = await fetch('./api/noqa', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action, entries }),
+        });
+
+        if (!response.ok) {
+          let serverError = '';
+          try {
+            const payload = await response.json() as { error?: string };
+            serverError = payload.error || '';
+          } catch {
+            // ignore JSON parse failures and fall back to status text
+          }
+          const message = serverError
+            ? `NOQA ${action} failed (${response.status}): ${serverError}`
+            : `NOQA ${action} failed with status ${response.status}`;
+          throw new Error(message);
+        }
+      };
+
+      await updateNoqa('add', addEntries);
+      await updateNoqa('remove', removeEntries);
+
+      const addedRules = addEntries.reduce((sum, entry) => sum + entry.rules.length, 0);
+      const removedRules = removeEntries.reduce((sum, entry) => sum + entry.rules.length, 0);
+      const messages: string[] = [];
+      if (addedRules > 0) {
+        messages.push(`added NOQA for ${addEntries.length} document(s), ${addedRules} rule(s)`);
+      }
+      if (removedRules > 0) {
+        messages.push(`removed NOQA for ${removeEntries.length} document(s), ${removedRules} rule(s)`);
+      }
+      success(messages.length > 0 ? `${messages.join('; ')}.` : 'NOQA updated.');
+      void sendExtensionMessage('runLintNow');
+    } catch (err) {
+      console.error('Failed to update NOQA config:', err);
+      const message = err instanceof Error ? err.message : 'Failed to update NOQA configuration.';
+      toastError(message);
+    }
+  }, [success, toastError]);
+
+  const cancelNoqaReasonModal = useCallback(() => {
+    setShowNoqaReasonModal(false);
+    setPendingNoqaAddEntries([]);
+    setPendingNoqaRemoveEntries([]);
+    setNoqaReasonInput('Skipped from MxLint extension');
+  }, []);
+
+  const confirmNoqaReasonModal = useCallback(() => {
+    const reason = noqaReasonInput.trim();
+    if (!reason) {
+      toastError('Reason is required to skip selected rules.');
       return;
     }
 
-    const entriesMap = new Map<string, Set<string>>();
+    const addEntries = pendingNoqaAddEntries;
+    const removeEntries = pendingNoqaRemoveEntries;
+    setShowNoqaReasonModal(false);
+    setPendingNoqaAddEntries([]);
+    setPendingNoqaRemoveEntries([]);
+    setNoqaReasonInput('Skipped from MxLint extension');
+    void applyNoqaChanges(addEntries, removeEntries, reason);
+  }, [applyNoqaChanges, noqaReasonInput, pendingNoqaAddEntries, pendingNoqaRemoveEntries, toastError]);
+
+  const handleNoqaSelected = useCallback(async () => {
+    const addEntriesMap = new Map<string, Set<string>>();
+    const removeEntriesMap = new Map<string, Set<string>>();
     for (const tc of filteredTestcases) {
       if (!selectedIssues.has(tc.id)) continue;
       const ruleNumber = tc.rule?.ruleNumber?.trim();
@@ -476,64 +560,38 @@ const App: React.FC = () => {
       }
       if (!documentPath) continue;
 
-      if (!entriesMap.has(documentPath)) {
-        entriesMap.set(documentPath, new Set<string>());
+      const targetMap = tc.status === 'skip' ? removeEntriesMap : addEntriesMap;
+      if (!targetMap.has(documentPath)) {
+        targetMap.set(documentPath, new Set<string>());
       }
-      entriesMap.get(documentPath)?.add(ruleNumber);
+      targetMap.get(documentPath)?.add(ruleNumber);
     }
 
-    if (entriesMap.size === 0) {
+    if (addEntriesMap.size === 0 && removeEntriesMap.size === 0) {
       toastError('Select issues with valid document and rule numbers first.');
       return;
     }
 
-    const reasonInput = window.prompt('Reason for skipping selected rule(s):', 'Skipped from MxLint extension');
-    if (reasonInput === null) {
-      return;
-    }
-
-    const reason = reasonInput.trim();
-    if (!reason) {
-      toastError('Reason is required to skip selected rules.');
-      return;
-    }
-
-    const entries = [...entriesMap.entries()].map(([document, rules]) => ({
+    const addEntries = [...addEntriesMap.entries()].map(([document, rules]) => ({
       document,
       rules: [...rules],
-      reason,
+    }));
+    const removeEntries = [...removeEntriesMap.entries()].map(([document, rules]) => ({
+      document,
+      rules: [...rules],
     }));
 
-    try {
-      const response = await fetch('./api/noqa', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entries }),
-      });
-
-      if (!response.ok) {
-        let serverError = '';
-        try {
-          const payload = await response.json() as { error?: string };
-          serverError = payload.error || '';
-        } catch {
-          // ignore JSON parse failures and fall back to status text
-        }
-        const message = serverError
-          ? `NOQA update failed (${response.status}): ${serverError}`
-          : `NOQA update failed with status ${response.status}`;
-        throw new Error(message);
-      }
-
-      const totalRules = entries.reduce((sum, entry) => sum + entry.rules.length, 0);
-      success(`Added NOQA for ${entries.length} document(s), ${totalRules} rule(s).`);
-      postMessage('runLintNow');
-    } catch (err) {
-      console.error('Failed to update NOQA config:', err);
-      const message = err instanceof Error ? err.message : 'Failed to update NOQA configuration.';
-      toastError(message);
+    if (addEntries.length > 0) {
+      setPendingNoqaAddEntries(addEntries);
+      setPendingNoqaRemoveEntries(removeEntries);
+      setNoqaReasonInput('Skipped from MxLint extension');
+      setShowNoqaReasonModal(true);
+      return;
     }
-  }, [filteredTestcases, selectedIssues, success, toastError]);
+
+    // Pure unskip operation does not need a reason.
+    await applyNoqaChanges([], removeEntries, '');
+  }, [filteredTestcases, selectedIssues, toastError, applyNoqaChanges]);
 
   const clearAllFilters = useCallback(() => {
     setSeverityFilters(['HIGH', 'MEDIUM', 'LOW']);
@@ -985,7 +1043,7 @@ const App: React.FC = () => {
           icon={<SkipIcon />}
           onClick={() => void handleNoqaSelected()}
           disabled={selectedCount === 0}
-          title={selectedCount > 0 ? 'Exclude selected issues from linting' : 'Select issues first'}
+          title={selectedCount > 0 ? '(Un)Skip' : 'Select issues first'}
         />
 
         {selectedCount > 0 && <Badge variant="info" size="sm">{selectedCount}</Badge>}
@@ -1286,6 +1344,45 @@ const App: React.FC = () => {
           placeholder={configLoading ? 'Loading mxlint.yaml...' : 'mxlint.yaml content'}
           disabled={configLoading || configSaving}
         />
+      </Dialog>
+
+      <Dialog
+        isOpen={showNoqaReasonModal}
+        onClose={cancelNoqaReasonModal}
+        title="Reason for skip"
+        size="sm"
+        id="noqa-reason-dialog"
+        className="noqa-modal"
+      >
+        <p className="noqa-modal-description">
+          Provide a reason for the selected failing issues that will be added to NOQA.
+        </p>
+        <div className="noqa-modal-summary">
+          <span>{pendingNoqaAddEntries.length} document(s) to skip</span>
+          <span>{pendingNoqaAddEntries.reduce((sum, entry) => sum + entry.rules.length, 0)} rule(s)</span>
+        </div>
+        <textarea
+          className="noqa-reason-input"
+          value={noqaReasonInput}
+          onChange={e => setNoqaReasonInput(e.target.value)}
+          spellCheck={false}
+          placeholder="Enter skip reason"
+          autoFocus
+        />
+        <div className="noqa-modal-actions">
+          <Button
+            variant="secondary"
+            onClick={cancelNoqaReasonModal}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={confirmNoqaReasonModal}
+          >
+            Apply
+          </Button>
+        </div>
       </Dialog>
     </div>
   );

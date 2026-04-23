@@ -3,13 +3,17 @@
   rulesets:
   - https://github.com/mxlint/mxlint-rules/releases/download/v3.3.0/rules-v3.3.0.zip
 lint:
-  xunitReport: 'yolo.xml'
+  xunitReport: yolo.xml
   jsonFile: .mendix-cache/lint-results.json
   ignoreNoqa: false
   noCache: false
   concurrency: 4
   regoTrace: false
-  skip: {}
+  skip:
+    MyFirstModule/Page.Forms$Page:
+    - rule: 004_0004
+      reason: Skipped from MxLint extension
+      date: 2026-04-23
 cache:
   directory: .mendix-cache/mxlint
   enable: true
