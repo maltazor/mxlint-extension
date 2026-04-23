@@ -180,14 +180,9 @@ Open MxLint Pane Once
         Click    ${EXTENSIONS_MENU}
     END
     Sleep    1s
-    ${mxlint_exists}=    Resolve MxLint Trigger Locator
-    IF    not ${mxlint_exists}
-        Run Keyword And Ignore Error    Press Key    s'ALT+E'    ${MAIN_WINDOW}
-        Sleep    1s
-        ${mxlint_exists}=    Resolve MxLint Trigger Locator
-    END
-    Wait Until Element Exist    ${MXLINT_MENU_ITEM}    20
-    Click    ${MXLINT_MENU_ITEM}
+    Run Keyword And Ignore Error    Press Key    s'M'    ${MAIN_WINDOW}
+    Run Keyword And Ignore Error    Press Key    s'DOWN'    ${MAIN_WINDOW}
+    Run Keyword And Ignore Error    Press Key    s'ENTER'    ${MAIN_WINDOW}
     Wait Until Element Exist    ${MXLINT_PANE}    30
 
 Try Open MxLint Pane During Setup
@@ -341,20 +336,6 @@ Resolve Extensions Trigger Locator
     ${tab_exists}=    Element Should Exist    ${EXTENSIONS_TAB_LOCATOR}    ${False}
     IF    ${tab_exists}
         Set Suite Variable    ${EXTENSIONS_MENU}    ${EXTENSIONS_TAB_LOCATOR}
-        RETURN    ${True}
-    END
-    RETURN    ${False}
-
-Resolve MxLint Trigger Locator
-    [Documentation]    Select the best available MxLint trigger locator for current UI shape.
-    ${menu_item_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM_LOCATOR}    ${False}
-    IF    ${menu_item_exists}
-        Set Suite Variable    ${MXLINT_MENU_ITEM}    ${MXLINT_MENU_ITEM_LOCATOR}
-        RETURN    ${True}
-    END
-    ${button_exists}=    Element Should Exist    ${MXLINT_BUTTON_LOCATOR}    ${False}
-    IF    ${button_exists}
-        Set Suite Variable    ${MXLINT_MENU_ITEM}    ${MXLINT_BUTTON_LOCATOR}
         RETURN    ${True}
     END
     RETURN    ${False}
