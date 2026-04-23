@@ -51,10 +51,21 @@ Skip Sign In If Present
     Sleep    10s
     FOR    ${attempt}    IN RANGE    1    6
         Log    Escape attempt ${attempt}/5
-        Focus    ${MAIN_WINDOW}
-        Run Keyword And Ignore Error    Focus    ${WEBVIEW_PANE}
+        Run Keyword And Ignore Error    Resolve Main Window Locator
+        ${main_exists}=    Element Should Exist    ${MAIN_WINDOW}    ${False}
+        Log    Escape attempt ${attempt}: active main locator=${MAIN_WINDOW}, exists=${main_exists}    level=WARN
+        IF    not ${main_exists}
+            Log Pane Diagnostics
+            Log Studio Pro Window Snapshot
+            Log Studio Pro Process Snapshot
+        END
+        ${main_focus_status}    ${main_focus_msg}=    Run Keyword And Ignore Error    Focus    ${MAIN_WINDOW}
+        Log    Escape attempt ${attempt}: main focus=${main_focus_status} - ${main_focus_msg}    level=WARN
+        ${webview_focus_status}    ${webview_focus_msg}=    Run Keyword And Ignore Error    Focus    ${WEBVIEW_PANE}
+        Log    Escape attempt ${attempt}: webview focus=${webview_focus_status} - ${webview_focus_msg}    level=WARN
         Sleep    1s
-        Press Key    s'ESCAPE'    ${MAIN_WINDOW}
+        ${escape_status}    ${escape_msg}=    Run Keyword And Ignore Error    Press Key    s'ESCAPE'    ${MAIN_WINDOW}
+        Log    Escape attempt ${attempt}: press escape=${escape_status} - ${escape_msg}    level=WARN
         Sleep    5s
         ${still_sign_in}=    Element Should Exist    ${SIGN_IN_WINDOW}    ${False}
         IF    not ${still_sign_in}
@@ -214,6 +225,17 @@ Log Studio Pro Process Snapshot
     ${result}=    Run Process    tasklist    /FI    IMAGENAME eq studiopro.exe
     Log    tasklist rc=${result.rc}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}    level=WARN
 
+Log Studio Pro Window Snapshot
+    [Documentation]    Log Studio Pro main window titles and handles from process API.
+    ${tasklist_verbose}=    Run Process    tasklist    /v    /FI    IMAGENAME eq studiopro.exe
+    Log    tasklist /v rc=${tasklist_verbose.rc}\nstdout:\n${tasklist_verbose.stdout}\nstderr:\n${tasklist_verbose.stderr}    level=WARN
+    ${ps}=    Run Process
+    ...    powershell
+    ...    -NoProfile
+    ...    -Command
+    ...    Get-Process -Name studiopro -ErrorAction SilentlyContinue | Select-Object Id,MainWindowTitle,MainWindowHandle,Responding | Format-List | Out-String -Width 4096
+    Log    powershell window snapshot rc=${ps.rc}\nstdout:\n${ps.stdout}\nstderr:\n${ps.stderr}    level=WARN
+
 Log Extension Directory Snapshot
     [Documentation]    Log deployed extension directory contents.
     ${ext_dir}=    Join Path    ${APP_DIR}    extensions    MxLintExtension
@@ -239,5 +261,6 @@ Resolve Main Window Locator
         Log    Using fallback main window locator: ${MAIN_WINDOW_APP}    level=WARN
         RETURN
     END
+    Log Studio Pro Window Snapshot
     Log Pane Diagnostics
     Fail    Could not resolve Studio Pro main window locator.
