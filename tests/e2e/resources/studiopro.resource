@@ -34,6 +34,7 @@ Start Studio Pro With Extension
     Log    Studio Pro launched with PID ${pid}
     Wait Until Keyword Succeeds    ${STARTUP_TIMEOUT}s    5s
     ...    Resolve Main Window Locator
+    Set Main Window Dependent Locators
     ${signin_status}    ${signin_msg}=    Run Keyword And Ignore Error    Skip Sign In If Present
     Log    Sign-in skip result: ${signin_status} - ${signin_msg}    level=WARN
     ${load_status}    ${load_msg}=    Run Keyword And Ignore Error    Wait For Project To Load
@@ -276,6 +277,20 @@ Log Extension Directory Snapshot
         Log    Extension directory missing at ${ext_dir}    level=WARN
     END
 
+Set Main Window Dependent Locators
+    [Documentation]    Rebuild locators that depend on the active main window.
+    ${menu_bar}=    Set Variable    ${MAIN_WINDOW}//MenuBar
+    ${extensions_menu}=    Set Variable    ${menu_bar}//MenuItem[contains(@Name,'Extension')]
+    ${mxlint_menu_item}=    Set Variable    ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
+    ${mxlint_pane}=    Set Variable    ${MAIN_WINDOW}//*[@Name='MxLint']
+    ${webview_pane}=    Set Variable    ${MAIN_WINDOW}/Pane/Pane
+    Set Suite Variable    ${MENU_BAR}    ${menu_bar}
+    Set Suite Variable    ${EXTENSIONS_MENU}    ${extensions_menu}
+    Set Suite Variable    ${MXLINT_MENU_ITEM}    ${mxlint_menu_item}
+    Set Suite Variable    ${MXLINT_PANE}    ${mxlint_pane}
+    Set Suite Variable    ${WEBVIEW_PANE}    ${webview_pane}
+    Log    Updated window-dependent locators for ${MAIN_WINDOW}    level=WARN
+
 Resolve Main Window Locator
     [Documentation]    Resolve active Studio Pro main window locator based on current window title.
     ${primary_exists}=    Element Should Exist    ${MAIN_WINDOW_PRIMARY}    ${False}
@@ -283,16 +298,19 @@ Resolve Main Window Locator
     ${app_exists}=    Element Should Exist    ${MAIN_WINDOW_APP}    ${False}
     IF    ${primary_exists}
         Set Suite Variable    ${MAIN_WINDOW}    ${MAIN_WINDOW_PRIMARY}
+        Set Main Window Dependent Locators
         Log    Using main window locator: ${MAIN_WINDOW_PRIMARY}    level=WARN
         RETURN
     END
     IF    ${app_mpr_exists}
         Set Suite Variable    ${MAIN_WINDOW}    ${MAIN_WINDOW_APP_MPR}
+        Set Main Window Dependent Locators
         Log    Using fallback main window locator: ${MAIN_WINDOW_APP_MPR}    level=WARN
         RETURN
     END
     IF    ${app_exists}
         Set Suite Variable    ${MAIN_WINDOW}    ${MAIN_WINDOW_APP}
+        Set Main Window Dependent Locators
         Log    Using fallback main window locator: ${MAIN_WINDOW_APP}    level=WARN
         RETURN
     END
