@@ -24,7 +24,7 @@ import type { FilterPreset } from '@/constants';
 import { useVirtualList } from '@/hooks';
 
 // Utilities
-import { postMessage, djb2Hash, processTestCase, isOpenableDocument } from '@/utils';
+import { postMessage, sendExtensionMessage, djb2Hash, processTestCase, isOpenableDocument } from '@/utils';
 
 // Context
 import { useToast } from '@/context';
@@ -113,6 +113,13 @@ const App: React.FC = () => {
   const [configLoading, setConfigLoading] = useState(false);
   const [configSaving, setConfigSaving] = useState(false);
   const [closedPanelForId, setClosedPanelForId] = useState<string | null>(null);
+
+  const sendDiag = useCallback((event: string, detail: string) => {
+    const url = `./api/diag?source=app&event=${encodeURIComponent(event)}&detail=${encodeURIComponent(detail)}`;
+    void fetch(url).catch(() => {
+      // Ignore diagnostics failures to avoid impacting user actions.
+    });
+  }, []);
 
   const dataHashRef = useRef(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -269,6 +276,8 @@ const App: React.FC = () => {
 
   // WebView message listener
   useEffect(() => {
+    sendDiag('appMounted', `href=${window.location.href};hasBridge=${!!window.chrome?.webview}`);
+
     const handleMessage = async (event: MessageEvent<WebViewMessage>) => {
       const { message } = event.data;
       if (message === 'refreshData') await refreshData();
@@ -285,7 +294,7 @@ const App: React.FC = () => {
         window.chrome.webview.removeEventListener('message', handleMessage);
       }
     };
-  }, [refreshData]);
+  }, [refreshData, sendDiag]);
 
   // Auto-refresh - use setTimeout to avoid synchronous setState in effect
   useEffect(() => {
@@ -417,16 +426,24 @@ const App: React.FC = () => {
   }, [sortColumn]);
 
   const handleManualRefresh = useCallback(async () => {
-    if (window.chrome?.webview) {
-      postMessage('runLintNow');
-      success('Manual lint run started.');
-      return;
-    }
+    sendDiag('manualRefreshClicked', `href=${window.location.href};hasBridge=${!!window.chrome?.webview}`);
+    try {
+      const payload = await sendExtensionMessage('runLintNow');
+      if (!payload.success) {
+        throw new Error(payload.error || 'Run lint failed.');
+      }
 
-    const ok = await refreshData();
-    if (ok) success('Lint results refreshed.');
-    else toastError('Failed to refresh lint results.');
-  }, [refreshData, success, toastError]);
+      if (window.chrome?.webview) {
+        success('Manual lint run started.');
+      } else {
+        await refreshData();
+        success('Manual lint run completed.');
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to run lint.';
+      toastError(message);
+    }
+  }, [refreshData, sendDiag, success, toastError]);
 
   const handleNoqaSelected = useCallback(async () => {
     if (!window.chrome?.webview) {

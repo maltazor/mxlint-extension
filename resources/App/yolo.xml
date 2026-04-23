@@ -1,0 +1,101 @@
+<testsuites>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/001_project_settings/001_0001_anonymous_disabled.rego" tests="1" failures="0" skipped="0" time="0.00250575">
+    <testcase name="Security$ProjectSecurity.yaml" time="0.00250575"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/001_project_settings/001_0002_demo_users_disabled.rego" tests="1" failures="0" skipped="0" time="0.002708416">
+    <testcase name="Security$ProjectSecurity.yaml" time="0.002708416"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/001_project_settings/001_0003_security_checks.rego" tests="1" failures="0" skipped="0" time="0.00253925">
+    <testcase name="Security$ProjectSecurity.yaml" time="0.00253925"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/001_project_settings/001_0004_strong_password.rego" tests="1" failures="0" skipped="0" time="0.0025455">
+    <testcase name="Security$ProjectSecurity.yaml" time="0.0025455"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/001_project_settings/001_0005_mxadmin_userid.rego" tests="1" failures="1" skipped="0" time="0.001807292">
+    <testcase name="Security$ProjectSecurity.yaml" time="0.001807292">
+      <failure message="[HIGH, Security, 001_0005] Mendix Admin userid not allowed to be MxAdmin" type="AssertionError"></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0001_number_of_persistent_entities.rego" tests="2" failures="0" skipped="0" time="0.00333475">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.001374875"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.001959875"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0002_number_of_attributes.rego" tests="2" failures="0" skipped="0" time="0.003022916">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.00128325"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.001739666"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0003_inherit_from_administration_account.rego" tests="2" failures="0" skipped="0" time="0.003055334">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.001275"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.001780334"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0004_inherit_from_non_system.rego" tests="2" failures="0" skipped="0" time="0.001970916">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.001254708"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.000716208"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0005_avoid_system_entity_association.rego" tests="2" failures="0" skipped="0" time="0.0017950000000000002">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.000642209"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.001152791"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0006_avoid_too_many_virtual_attributes.rego" tests="2" failures="0" skipped="0" time="0.002062584">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.000957625"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.001104959"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0007_avoid_using_validation_rules.rego" tests="2" failures="0" skipped="0" time="0.0024105430000000002">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.001632834"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.000777709"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0008_avoid_read_write_default_access_rule.rego" tests="2" failures="0" skipped="0" time="0.003341292">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.001427917"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.001913375"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/002_domain_model/002_0009_no_default_value.rego" tests="2" failures="0" skipped="0" time="0.0026844169999999997">
+    <testcase name="MendixCLIExtension/DomainModels$DomainModel.yaml" time="0.001485167"></testcase>
+    <testcase name="MyFirstModule/DomainModels$DomainModel.yaml" time="0.00119925"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/003_modules/003_0001_number_of_modules.rego" tests="1" failures="0" skipped="0" time="0.000869833">
+    <testcase name="Metadata.yaml" time="0.000869833"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0001_inline_style_property_used.rego" tests="1" failures="0" skipped="0" time="0.002463">
+    <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.002463"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0002_alt_text_images.rego" tests="1" failures="0" skipped="0" time="0.001778375">
+    <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.001778375"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0003_one_h1.js" tests="1" failures="0" skipped="0" time="0.000884709">
+    <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.000884709"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0004_headings.js" tests="1" failures="1" skipped="0" time="0.001161334">
+    <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.001161334">
+      <failure message="[HIGH, Accessibility, 004_0004] found H3 in the page. Expected H1 as the first tag." type="AssertionError"></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/005_microflows/005_0001_empty_string_check_not_complete.rego" tests="3" failures="0" skipped="0" time="0.005341626">
+    <testcase name="MyFirstModule/MyFirstLogic.Microflows$Microflow.yaml" time="0.001895459"></testcase>
+    <testcase name="MyFirstModule/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.002065292"></testcase>
+    <testcase name="MyFirstModule/test/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.001380875"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/005_microflows/005_0002_commit_actions_with_a_loop.rego" tests="3" failures="1" skipped="0" time="0.003890667">
+    <testcase name="MyFirstModule/MyFirstLogic.Microflows$Microflow.yaml" time="0.001573375"></testcase>
+    <testcase name="MyFirstModule/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.00142475">
+      <failure message="[MEDIUM, Microflows, 005_0002] Commit actions inside MyFirstLogic_2 loop" type="AssertionError"></failure>
+    </testcase>
+    <testcase name="MyFirstModule/test/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.000892542"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/005_microflows/005_0003_number_of_elements_in_microflow.rego" tests="3" failures="0" skipped="0" time="0.0030534579999999998">
+    <testcase name="MyFirstModule/MyFirstLogic.Microflows$Microflow.yaml" time="0.001075417"></testcase>
+    <testcase name="MyFirstModule/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.001287583"></testcase>
+    <testcase name="MyFirstModule/test/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.000690458"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/005_microflows/005_0004_complex_microflows_without_annotations.rego" tests="3" failures="0" skipped="0" time="0.0040510419999999995">
+    <testcase name="MyFirstModule/MyFirstLogic.Microflows$Microflow.yaml" time="0.000838167"></testcase>
+    <testcase name="MyFirstModule/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.001507708"></testcase>
+    <testcase name="MyFirstModule/test/MyFirstLogic_2.Microflows$Microflow.yaml" time="0.001705167"></testcase>
+  </testsuite>
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/006_security/006_0001_exposed_constants.rego" tests="5" failures="0" skipped="0" time="0.00425679">
+    <testcase name="MendixCLIExtension/Constant.Constants$Constant.yaml" time="0.001152166"></testcase>
+    <testcase name="MendixCLIExtension/Constant22.Constants$Constant.yaml" time="0.00068225"></testcase>
+    <testcase name="MendixCLIExtension/Constant4.Constants$Constant.yaml" time="0.000818583"></testcase>
+    <testcase name="MendixCLIExtension/Constant7.Constants$Constant.yaml" time="0.000760875"></testcase>
+    <testcase name="MendixCLIExtension/Constant9.Constants$Constant.yaml" time="0.000842916"></testcase>
+  </testsuite>
+</testsuites>

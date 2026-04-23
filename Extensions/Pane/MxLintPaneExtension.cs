@@ -24,7 +24,9 @@ public class MxLintPaneExtension : DockablePaneExtension
 
     public override DockablePaneViewModelBase Open()
     {
-        var baseUri = new Uri(Path.Combine(WebServerBaseUrl.AbsoluteUri, "wwwroot"));
+        // Use URI composition instead of filesystem path composition.
+        // This keeps the webview base URL stable across Windows/macOS.
+        var baseUri = new Uri(WebServerBaseUrl, "wwwroot/");
         return new MxLintPaneExtensionWebViewModel(baseUri, () => CurrentApp, _logService, _dockingWindowService)
         {
             Title = "MxLint"

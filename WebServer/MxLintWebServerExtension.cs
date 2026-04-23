@@ -4,8 +4,11 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using com.cinaq.MxLintExtension.Core;
+using Mendix.StudioPro.ExtensionsAPI.Model;
+using Mendix.StudioPro.ExtensionsAPI.Model.Projects;
 using Mendix.StudioPro.ExtensionsAPI.Services;
 using Mendix.StudioPro.ExtensionsAPI.UI.Events;
+using Mendix.StudioPro.ExtensionsAPI.UI.Services;
 using Mendix.StudioPro.ExtensionsAPI.UI.WebServer;
 
 namespace com.cinaq.MxLintExtension.WebServer;
@@ -16,6 +19,11 @@ public class MxLintWebServerExtension : WebServerExtension
     private readonly IExtensionFileService _extensionFileService;
     private readonly ILogService _logService;
     private readonly IConfigurationService _configurationService;
+    private readonly IDockingWindowService _dockingWindowService;
+    private readonly SemaphoreSlim _runLintLock = new(1, 1);
+    private readonly SemaphoreSlim _refreshLintLock = new(1, 1);
+    private DateTime _lastRefreshUpdateTime = DateTime.Now.AddYears(-100);
+    private bool _autoRefreshEnabled = true;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -25,11 +33,13 @@ public class MxLintWebServerExtension : WebServerExtension
     public MxLintWebServerExtension(
         IExtensionFileService extensionFileService,
         ILogService logService,
-        IConfigurationService configurationService)
+        IConfigurationService configurationService,
+        IDockingWindowService dockingWindowService)
     {
         _extensionFileService = extensionFileService;
         _logService = logService;
         _configurationService = configurationService;
+        _dockingWindowService = dockingWindowService;
     }
 
     public override void InitializeWebServer(IWebServer webServer)
@@ -41,15 +51,31 @@ public class MxLintWebServerExtension : WebServerExtension
         foreach (var file in files)
         {
             var route = Path.GetRelativePath(wwwrootPath, file).Replace('\\', '/');
+            var prefixedRoute = $"wwwroot/{route}";
+
+            // Register both route styles for compatibility:
+            // - route            (legacy consumers)
+            // - wwwroot/route    (recommended macOS-friendly base URI)
             webServer.AddRoute(route, (request, response, ct) => ServeFile(file, response, ct));
-            _logService.Info($"Registered web route '{route}' -> '{file}'");
+            webServer.AddRoute(prefixedRoute, (request, response, ct) => ServeFile(file, response, ct));
+            _logService.Info($"Registered web routes '{route}' and '{prefixedRoute}' -> '{file}'");
         }
 
         webServer.AddRoute("api", ServeApi);
+        webServer.AddRoute("wwwroot/api", ServeApi);
         webServer.AddRoute("api/theme", ServeTheme);
+        webServer.AddRoute("wwwroot/api/theme", ServeTheme);
         webServer.AddRoute("api/noqa", ServeNoqa);
+        webServer.AddRoute("wwwroot/api/noqa", ServeNoqa);
         webServer.AddRoute("api/config", ServeConfig);
-        _logService.Info("Registered API routes: api, api/theme, api/noqa, api/config");
+        webServer.AddRoute("wwwroot/api/config", ServeConfig);
+        webServer.AddRoute("api/runlint", ServeRunLint);
+        webServer.AddRoute("wwwroot/api/runlint", ServeRunLint);
+        webServer.AddRoute("api/message", ServeMessage);
+        webServer.AddRoute("wwwroot/api/message", ServeMessage);
+        webServer.AddRoute("api/diag", ServeDiag);
+        webServer.AddRoute("wwwroot/api/diag", ServeDiag);
+        _logService.Info("Registered API routes: api/* and wwwroot/api/*");
 
         // Auto-run an initial lint when the app finishes loading so results are ready
         // even if the MxLint pane has not been opened yet (e.g. in headless CI sessions).
@@ -100,6 +126,9 @@ public class MxLintWebServerExtension : WebServerExtension
 
     private async Task ServeApi(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
     {
+        _logService.Info($"ServeApi hit: {request.Url}");
+        WriteDebugToMxLintLog(CurrentApp, $"ServeApi hit: {request.Url}");
+
         if (CurrentApp == null)
         {
             response.SendNoBodyAndClose(404);
@@ -115,6 +144,9 @@ public class MxLintWebServerExtension : WebServerExtension
 
     private Task ServeTheme(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
     {
+        _logService.Info($"ServeTheme hit: {request.Url}");
+        WriteDebugToMxLintLog(CurrentApp, $"ServeTheme hit: {request.Url}");
+
         if (CurrentApp == null)
         {
             response.SendNoBodyAndClose(404);
@@ -141,6 +173,9 @@ public class MxLintWebServerExtension : WebServerExtension
 
     private async Task ServeNoqa(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
     {
+        _logService.Info($"ServeNoqa hit: {request.Url}");
+        WriteDebugToMxLintLog(CurrentApp, $"ServeNoqa hit: {request.Url}");
+
         if (CurrentApp == null)
         {
             response.SendNoBodyAndClose(404);
@@ -184,6 +219,9 @@ public class MxLintWebServerExtension : WebServerExtension
 
     private async Task ServeConfig(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
     {
+        _logService.Info($"ServeConfig hit: {request.HttpMethod} {request.Url}");
+        WriteDebugToMxLintLog(CurrentApp, $"ServeConfig hit: {request.HttpMethod} {request.Url}");
+
         if (CurrentApp == null)
         {
             response.SendNoBodyAndClose(404);
@@ -239,11 +277,269 @@ public class MxLintWebServerExtension : WebServerExtension
         response.SendNoBodyAndClose(405);
     }
 
+    private async Task ServeRunLint(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
+    {
+        _logService.Info($"ServeRunLint hit: {request.HttpMethod} {request.Url}");
+        WriteDebugToMxLintLog(CurrentApp, $"ServeRunLint hit: {request.HttpMethod} {request.Url}");
+
+        if (CurrentApp == null)
+        {
+            response.SendNoBodyAndClose(404);
+            return;
+        }
+
+        if (!string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase))
+        {
+            response.SendNoBodyAndClose(405);
+            return;
+        }
+
+        await _runLintLock.WaitAsync(ct);
+        try
+        {
+            var mxlint = new MxLint(CurrentApp, _logService);
+            await mxlint.Lint();
+            SendJson(response, new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logService.Error($"ServeRunLint failed: {ex}");
+            WriteDebugToMxLintLog(CurrentApp, $"ServeRunLint failed: {ex.Message}");
+            SendJson(response, new { success = false, error = ex.Message }, 500);
+        }
+        finally
+        {
+            _runLintLock.Release();
+        }
+    }
+
+    private async Task ServeMessage(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
+    {
+        _logService.Info($"ServeMessage hit: {request.HttpMethod} {request.Url}");
+        WriteDebugToMxLintLog(CurrentApp, $"ServeMessage hit: {request.HttpMethod} {request.Url}");
+
+        if (CurrentApp == null)
+        {
+            response.SendNoBodyAndClose(404);
+            return;
+        }
+
+        if (!string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase))
+        {
+            response.SendNoBodyAndClose(405);
+            return;
+        }
+
+        FrontendMessageRequest? payload;
+        try
+        {
+            using var reader = new StreamReader(request.InputStream, request.ContentEncoding ?? Encoding.UTF8);
+            var body = await reader.ReadToEndAsync(ct);
+            payload = JsonSerializer.Deserialize<FrontendMessageRequest>(body, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logService.Error($"ServeMessage payload parse failed: {ex.Message}");
+            SendJson(response, new { success = false, error = "Invalid message payload." }, 400);
+            return;
+        }
+
+        if (payload == null || string.IsNullOrWhiteSpace(payload.Message))
+        {
+            SendJson(response, new { success = false, error = "Message is required." }, 400);
+            return;
+        }
+
+        var message = payload.Message;
+        var data = payload.Data ?? new JsonObject();
+        WriteDebugToMxLintLog(CurrentApp, $"ServeMessage dispatch: {message}");
+
+        switch (message)
+        {
+            case "MessageListenerRegistered":
+                SendJson(response, new { success = true });
+                return;
+
+            case "setAutoRefresh":
+                _autoRefreshEnabled = ParseBoolean(data);
+                _logService.Info($"Auto refresh set to {_autoRefreshEnabled} via HTTP message");
+                SendJson(response, new { success = true, autoRefreshEnabled = _autoRefreshEnabled });
+                return;
+
+            case "refreshData":
+            {
+                if (!_autoRefreshEnabled)
+                {
+                    SendJson(response, new { success = true, ran = false, skipped = "autoRefreshDisabled" });
+                    return;
+                }
+
+                var ran = await RunLintIfNeeded(CurrentApp, force: false, ct);
+                SendJson(response, new { success = true, ran });
+                return;
+            }
+
+            case "runLintNow":
+            {
+                await RunLintIfNeeded(CurrentApp, force: true, ct);
+                SendJson(response, new { success = true, ran = true });
+                return;
+            }
+
+            case "openDocument":
+            {
+                var opened = OpenDocument(CurrentApp, data);
+                SendJson(response, new { success = opened, opened });
+                return;
+            }
+
+            case "toggleDebug":
+                SendJson(response, new { success = true, ignored = true });
+                return;
+
+            default:
+                SendJson(response, new { success = false, error = $"Unknown message: {message}" }, 400);
+                return;
+        }
+    }
+
+    private async Task<bool> RunLintIfNeeded(IModel currentApp, bool force, CancellationToken ct)
+    {
+        await _refreshLintLock.WaitAsync(ct);
+        try
+        {
+            var mprFile = GetMprFile(currentApp.Root.DirectoryPath);
+            if (mprFile == null)
+            {
+                return false;
+            }
+
+            var lastWrite = File.GetLastWriteTime(mprFile);
+            if (!force && lastWrite <= _lastRefreshUpdateTime)
+            {
+                _logService.Debug("HTTP refreshData: no changes detected.");
+                return false;
+            }
+
+            _lastRefreshUpdateTime = lastWrite;
+            var mxlint = new MxLint(currentApp, _logService);
+            await mxlint.Lint();
+            return true;
+        }
+        finally
+        {
+            _refreshLintLock.Release();
+        }
+    }
+
+    private bool OpenDocument(IModel currentApp, JsonObject data)
+    {
+        var doc = GetUnit(currentApp, data);
+        if (doc == null)
+        {
+            _logService.Error($"Document not found via HTTP message: {data}");
+            return false;
+        }
+
+        _dockingWindowService.TryOpenEditor(doc, null);
+        return true;
+    }
+
+    private IAbstractUnit? GetUnit(IModel currentApp, JsonObject data)
+    {
+        var documentName = data["document"]?.ToString();
+        if (string.IsNullOrWhiteSpace(documentName))
+        {
+            return null;
+        }
+
+        if (documentName == "Security$ProjectSecurity")
+        {
+            return null;
+        }
+
+        var moduleName = data["module"]?.ToString();
+        if (string.IsNullOrWhiteSpace(moduleName))
+        {
+            return null;
+        }
+
+        var module = currentApp.Root.GetModules().FirstOrDefault(m => m.Name == moduleName);
+        if (module == null)
+        {
+            return null;
+        }
+
+        if (documentName == "DomainModels$DomainModel")
+        {
+            return module.DomainModel;
+        }
+
+        IFolder? folder = null;
+        while (documentName.Contains('/'))
+        {
+            var tokens = documentName.Split('/');
+            var folderName = tokens[0];
+            folder = folder == null
+                ? module.GetFolders().FirstOrDefault(f => f.Name == folderName)
+                : folder.GetFolders().FirstOrDefault(f => f.Name == folderName);
+            documentName = documentName.Substring(folderName.Length + 1);
+        }
+
+        return folder == null
+            ? module.GetDocuments().FirstOrDefault(d => d.Name == documentName)
+            : folder.GetDocuments().FirstOrDefault(d => d.Name == documentName);
+    }
+
+    private string? GetMprFile(string directoryPath)
+    {
+        return Directory.GetFiles(directoryPath, "*.mpr", SearchOption.TopDirectoryOnly).FirstOrDefault();
+    }
+
+    private static bool ParseBoolean(JsonObject data)
+    {
+        var value = data["enabled"]?.ToString();
+        return bool.TryParse(value, out var parsed) && parsed;
+    }
+
     private static void SendJson(HttpListenerResponse response, object payload, int statusCode = 200)
     {
         var json = JsonSerializer.Serialize(payload);
         var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(json));
         response.SendJsonAndClose(jsonStream, statusCode);
+    }
+
+    private Task ServeDiag(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
+    {
+        var evt = request.QueryString["event"] ?? "unknown";
+        var detail = request.QueryString["detail"] ?? string.Empty;
+        var source = request.QueryString["source"] ?? "web";
+
+        _logService.Info($"Web diag [{source}] event='{evt}' detail='{detail}'");
+        WriteDebugToMxLintLog(CurrentApp, $"Web diag [{source}] event='{evt}' detail='{detail}'");
+        SendJson(response, new { success = true });
+        return Task.CompletedTask;
+    }
+
+    private static void WriteDebugToMxLintLog(Mendix.StudioPro.ExtensionsAPI.Model.IModel? app, string message)
+    {
+        if (app == null)
+        {
+            return;
+        }
+
+        try
+        {
+            var cachePath = Path.Combine(app.Root.DirectoryPath, ".mendix-cache");
+            Directory.CreateDirectory(cachePath);
+            var logPath = Path.Combine(cachePath, "mxlint.logs");
+            var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            File.AppendAllText(logPath, $"[{timestamp}] [DEBUG] {message}{Environment.NewLine}");
+        }
+        catch
+        {
+            // Never fail request processing because of diagnostics logging.
+        }
     }
 }
 
@@ -255,4 +551,10 @@ public sealed class NoqaRequest
 public sealed class ConfigUpdateRequest
 {
     public string Content { get; set; } = string.Empty;
+}
+
+public sealed class FrontendMessageRequest
+{
+    public string Message { get; set; } = string.Empty;
+    public JsonObject? Data { get; set; }
 }

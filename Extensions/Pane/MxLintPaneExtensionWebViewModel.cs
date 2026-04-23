@@ -37,15 +37,20 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
     {
         _webView = webView;
         webView.Address = new Uri(_baseUri, "index.html");
-        _logService.Info($"InitWebView: {_baseUri}");
+        _logService.Info($"InitWebView base URI: {_baseUri}");
+        _logService.Info($"InitWebView address: {webView.Address}");
         webView.MessageReceived += HandleWebViewMessage;
     }
 
     private async void HandleWebViewMessage(object? sender, MessageReceivedEventArgs args)
     {
+        _logService.Info($"WebView message received: {args.Message}");
+
         var currentApp = _getCurrentApp();
+        WriteDebugToMxLintLog(currentApp, $"WebView message received: {args.Message}");
         if (currentApp == null)
         {
+            _logService.Info($"Ignoring message '{args.Message}' because CurrentApp is null.");
             return;
         }
 
@@ -61,7 +66,6 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
         {
             _webView?.ShowDevTools();
         }
-        _webView?.ShowDevTools();
 
         if (args.Message == "setAutoRefresh")
         {
@@ -193,5 +197,26 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
     {
         var value = data["enabled"]?.ToString();
         return bool.TryParse(value, out var parsed) && parsed;
+    }
+
+    private static void WriteDebugToMxLintLog(IModel? app, string message)
+    {
+        if (app == null)
+        {
+            return;
+        }
+
+        try
+        {
+            var cachePath = Path.Combine(app.Root.DirectoryPath, ".mendix-cache");
+            Directory.CreateDirectory(cachePath);
+            var logPath = Path.Combine(cachePath, "mxlint.logs");
+            var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            File.AppendAllText(logPath, $"[{timestamp}] [DEBUG] {message}{Environment.NewLine}");
+        }
+        catch
+        {
+            // Never fail message handling because of diagnostics logging.
+        }
     }
 }

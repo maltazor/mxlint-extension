@@ -3,7 +3,7 @@
   rulesets:
   - https://github.com/mxlint/mxlint-rules/releases/download/v3.3.0/rules-v3.3.0.zip
 lint:
-  xunitReport: ''
+  xunitReport: 'yolo.xml'
   jsonFile: .mendix-cache/lint-results.json
   ignoreNoqa: false
   noCache: false
