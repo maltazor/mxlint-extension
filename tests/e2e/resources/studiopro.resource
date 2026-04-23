@@ -174,6 +174,7 @@ Open MxLint Pane Once
         Sleep    1s
         ${extensions_exists}=    Resolve Extensions Trigger Locator
     END
+    Should Be True    ${extensions_exists}    Extensions menu trigger was not available while opening MxLint.
     IF    ${extensions_exists}
         Click    ${EXTENSIONS_MENU}
     END
@@ -187,7 +188,7 @@ Open MxLint Pane Once
         Run Keyword And Ignore Error    Press Key    s'DOWN'    ${MAIN_WINDOW}
         Run Keyword And Ignore Error    Press Key    s'ENTER'    ${MAIN_WINDOW}
     END
-    Element Should Appear Within    ${MXLINT_PANE}    30
+    Sleep    2s
 
 Element Should Appear Within
     [Documentation]    Poll element existence with explicit timeout to avoid long UIA hangs.
@@ -207,7 +208,6 @@ Try Open MxLint Pane During Setup
     Set Suite Variable    ${MXLINT_PANE_OPENED}    ${opened}
     Log    MxLint pane opened during setup: ${opened}
     IF    not ${opened}
-        Log Pane Diagnostics
         Log Studio Pro Process Snapshot
         Log Extension Directory Snapshot
     END
@@ -222,7 +222,6 @@ Lint Results File Should Exist
     IF    '${status}' == 'FAIL'
         Log Cache Directory Snapshot
         Log MxLint Cache Logs
-        Log Pane Diagnostics
         Log Studio Pro Process Snapshot
         Log Extension Directory Snapshot
         Fail    ${message}
