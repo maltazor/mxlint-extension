@@ -157,6 +157,38 @@ public class MxLint
         await WriteConfig(config);
     }
 
+    public async Task<List<string>> GetBookmarkedIds()
+    {
+        EnsureCacheDirectory();
+        await EnsureConfigFile();
+        var config = await ReadConfig();
+        config.Ui ??= new MxLintConfigUi();
+
+        return config.Ui.Bookmarks
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    public async Task SaveBookmarkedIds(IEnumerable<string> bookmarks)
+    {
+        EnsureCacheDirectory();
+        await EnsureConfigFile();
+        var config = await ReadConfig();
+        config.Ui ??= new MxLintConfigUi();
+
+        config.Ui.Bookmarks = bookmarks
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        await WriteConfig(config);
+    }
+
     private async Task RunProcess(string arguments, string operationName)
     {
         LogInfo($"Starting process for {operationName}. Executable: {_executablePath}; Arguments: {arguments}");
@@ -477,6 +509,7 @@ public sealed class MxLintConfig
     public MxLintConfigExport Export { get; set; } = new();
     public MxLintConfigServe Serve { get; set; } = new();
     public MxLintConfigCli Cli { get; set; } = new();
+    public MxLintConfigUi Ui { get; set; } = new();
     public string Modelsource { get; set; } = "modelsource";
     public string ProjectDirectory { get; set; } = ".";
 }
@@ -520,6 +553,11 @@ public sealed class MxLintConfigServe
 public sealed class MxLintConfigCli
 {
     public string Version { get; set; } = MxLint.DefaultCliVersion;
+}
+
+public sealed class MxLintConfigUi
+{
+    public List<string> Bookmarks { get; set; } = new();
 }
 
 public sealed class MxLintConfigSkipRule

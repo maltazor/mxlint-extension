@@ -33,10 +33,45 @@ html, body {
   align-items: center;
   background-color: var(--ui-bg-tertiary);
   border-bottom: 1px solid var(--ui-border-primary);
-  padding: 4px 8px;
-  gap: 4px;
+  padding: 4px 6px;
+  gap: 6px;
   flex-shrink: 0;
   flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  background-color: var(--ui-bg-primary);
+  border: 1px solid var(--ui-border-primary);
+  border-radius: 6px;
+  min-height: 34px;
+}
+
+.toolbar-group--status {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.toolbar-group--search {
+  flex: 1;
+  min-width: 260px;
+  max-width: 430px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.toolbar-group--selection {
+  background-color: rgba(14, 99, 156, 0.08);
+  border-color: var(--ui-border-focus);
+}
+
+.toolbar-group--secondary {
+  margin-left: auto;
 }
 
 .toolbar-item {
@@ -81,9 +116,7 @@ html, body {
 .toolbar-search {
   display: flex;
   align-items: center;
-  flex: 1;
-  max-width: 360px;
-  min-width: 220px;
+  width: 100%;
 }
 
 .toolbar-search .ui-input-wrapper {

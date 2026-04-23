@@ -22,5 +22,7 @@ serve:
   debounce: 500
 cli:
   version: v3.14.2
+ui:
+  bookmarks: []
 modelsource: modelsource
 projectDirectory: .

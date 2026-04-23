@@ -44,49 +44,64 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
 
     private async void HandleWebViewMessage(object? sender, MessageReceivedEventArgs args)
     {
-        _logService.Info($"WebView message received: {args.Message}");
-
-        var currentApp = _getCurrentApp();
-        WriteDebugToMxLintLog(currentApp, $"WebView message received: {args.Message}");
-        if (currentApp == null)
+        try
         {
-            _logService.Info($"Ignoring message '{args.Message}' because CurrentApp is null.");
-            return;
-        }
+            _logService.Info($"WebView message received: {args.Message}");
 
-        if (args.Message == "refreshData")
-        {
-            if (_autoRefreshEnabled)
+            var currentApp = _getCurrentApp();
+            WriteDebugToMxLintLog(currentApp, $"WebView message received: {args.Message}");
+            if (currentApp == null)
             {
-                await RunLint(currentApp, force: false);
+                _logService.Info($"Ignoring message '{args.Message}' because CurrentApp is null.");
+                return;
+            }
+
+            if (args.Message == "refreshData")
+            {
+                if (_autoRefreshEnabled)
+                {
+                    await RunLint(currentApp, force: false);
+                }
+            }
+
+            if (args.Message == "toggleDebug")
+            {
+                _webView?.ShowDevTools();
+            }
+
+            if (args.Message == "setAutoRefresh")
+            {
+                _autoRefreshEnabled = ParseBoolean(args.Data);
+                _logService.Info($"Auto refresh set to {_autoRefreshEnabled}");
+            }
+
+            if (args.Message == "runLintNow")
+            {
+                await RunLint(currentApp, force: true);
+            }
+
+            if (args.Message == "openDocument")
+            {
+                _webView?.PostMessage("documentOpened");
+                await OpenDocument(currentApp, args.Data);
             }
         }
-
-        if (args.Message == "toggleDebug")
+        catch (Exception ex)
         {
-            _webView?.ShowDevTools();
-        }
-
-        if (args.Message == "setAutoRefresh")
-        {
-            _autoRefreshEnabled = ParseBoolean(args.Data);
-            _logService.Info($"Auto refresh set to {_autoRefreshEnabled}");
-        }
-
-        if (args.Message == "runLintNow")
-        {
-            await RunLint(currentApp, force: true);
-        }
-
-        if (args.Message == "openDocument")
-        {
-            _webView?.PostMessage("documentOpened");
-            await OpenDocument(currentApp, args.Data);
+            _logService.Error($"Unhandled webview message processing error for '{args.Message}': {ex}");
+            WriteDebugToMxLintLog(_getCurrentApp(), $"Webview message processing error for '{args.Message}': {ex.Message}");
         }
     }
 
     private Task<bool> OpenDocument(IModel currentApp, JsonObject data)
     {
+        if (OperatingSystem.IsMacOS())
+        {
+            _logService.Info($"Skipping openDocument on macOS: {data}");
+            WriteDebugToMxLintLog(currentApp, $"Skipping openDocument on macOS: {data}");
+            return Task.FromResult(false);
+        }
+
         var doc = GetUnit(currentApp, data);
         if (doc == null)
         {
@@ -94,8 +109,17 @@ public class MxLintPaneExtensionWebViewModel : WebViewDockablePaneViewModel
             return Task.FromResult(false);
         }
 
-        _dockingWindowService.TryOpenEditor(doc, null);
-        return Task.FromResult(true);
+        try
+        {
+            _dockingWindowService.TryOpenEditor(doc, null);
+            return Task.FromResult(true);
+        }
+        catch (Exception ex)
+        {
+            _logService.Error($"Failed to open document '{data}': {ex}");
+            WriteDebugToMxLintLog(currentApp, $"Failed to open document '{data}': {ex.Message}");
+            return Task.FromResult(false);
+        }
     }
 
     private IAbstractUnit? GetUnit(IModel currentApp, JsonObject data)

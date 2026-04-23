@@ -69,6 +69,8 @@ public class MxLintWebServerExtension : WebServerExtension
         webServer.AddRoute("wwwroot/api/noqa", ServeNoqa);
         webServer.AddRoute("api/config", ServeConfig);
         webServer.AddRoute("wwwroot/api/config", ServeConfig);
+        webServer.AddRoute("api/bookmarks", ServeBookmarks);
+        webServer.AddRoute("wwwroot/api/bookmarks", ServeBookmarks);
         webServer.AddRoute("api/runlint", ServeRunLint);
         webServer.AddRoute("wwwroot/api/runlint", ServeRunLint);
         webServer.AddRoute("api/message", ServeMessage);
@@ -321,6 +323,54 @@ public class MxLintWebServerExtension : WebServerExtension
         }
     }
 
+    private async Task ServeBookmarks(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
+    {
+        _logService.Info($"ServeBookmarks hit: {request.HttpMethod} {request.Url}");
+        WriteDebugToMxLintLog(CurrentApp, $"ServeBookmarks hit: {request.HttpMethod} {request.Url}");
+
+        if (CurrentApp == null)
+        {
+            response.SendNoBodyAndClose(404);
+            return;
+        }
+
+        var mxlint = new MxLint(CurrentApp, _logService);
+
+        if (string.Equals(request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
+        {
+            var bookmarks = await mxlint.GetBookmarkedIds();
+            SendJson(response, new { success = true, bookmarks });
+            return;
+        }
+
+        if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                using var reader = new StreamReader(request.InputStream, request.ContentEncoding ?? Encoding.UTF8);
+                var body = await reader.ReadToEndAsync(ct);
+                var payload = JsonSerializer.Deserialize<BookmarksUpdateRequest>(body, JsonOptions);
+                if (payload == null)
+                {
+                    SendJson(response, new { success = false, error = "Invalid bookmarks payload." }, 400);
+                    return;
+                }
+
+                await mxlint.SaveBookmarkedIds(payload.Bookmarks);
+                SendJson(response, new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logService.Error($"Failed to update bookmarks: {ex.Message}");
+                SendJson(response, new { success = false, error = ex.Message }, 500);
+            }
+
+            return;
+        }
+
+        response.SendNoBodyAndClose(405);
+    }
+
     private async Task ServeMessage(HttpListenerRequest request, HttpListenerResponse response, CancellationToken ct)
     {
         _logService.Info($"ServeMessage hit: {request.HttpMethod} {request.Url}");
@@ -442,6 +492,13 @@ public class MxLintWebServerExtension : WebServerExtension
 
     private bool OpenDocument(IModel currentApp, JsonObject data)
     {
+        if (OperatingSystem.IsMacOS())
+        {
+            _logService.Info($"Skipping openDocument via HTTP message on macOS: {data}");
+            WriteDebugToMxLintLog(currentApp, $"Skipping openDocument via HTTP message on macOS: {data}");
+            return false;
+        }
+
         var doc = GetUnit(currentApp, data);
         if (doc == null)
         {
@@ -449,8 +506,17 @@ public class MxLintWebServerExtension : WebServerExtension
             return false;
         }
 
-        _dockingWindowService.TryOpenEditor(doc, null);
-        return true;
+        try
+        {
+            _dockingWindowService.TryOpenEditor(doc, null);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logService.Error($"Failed to open document '{data}' via HTTP message: {ex}");
+            WriteDebugToMxLintLog(currentApp, $"Failed to open document '{data}' via HTTP message: {ex.Message}");
+            return false;
+        }
     }
 
     private IAbstractUnit? GetUnit(IModel currentApp, JsonObject data)
@@ -560,6 +626,11 @@ public sealed class NoqaRequest
 public sealed class ConfigUpdateRequest
 {
     public string Content { get; set; } = string.Empty;
+}
+
+public sealed class BookmarksUpdateRequest
+{
+    public List<string> Bookmarks { get; set; } = new();
 }
 
 public sealed class FrontendMessageRequest

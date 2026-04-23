@@ -89,6 +89,21 @@ type NoqaEntryDraft = {
   rules: string[];
 };
 
+const normalizeBookmarkKey = (value: string): string => {
+  let normalized = value.trim().replace(/\\/g, '/');
+  const separatorIndex = normalized.indexOf('::');
+  if (separatorIndex !== -1) {
+    normalized = normalized.substring(separatorIndex + 2);
+  }
+
+  const modelsourceIndex = normalized.toLowerCase().indexOf('modelsource/');
+  if (modelsourceIndex !== -1) {
+    normalized = normalized.substring(modelsourceIndex + 'modelsource/'.length);
+  }
+
+  return normalized;
+};
+
 const App: React.FC = () => {
   // Core state
   const [data, setData] = useState<LintResultsData>({ testsuites: [], rules: [] });
@@ -110,6 +125,7 @@ const App: React.FC = () => {
   const [groupBy, setGroupBy] = useState<GroupBy>('none');
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => new Set());
+  const [bookmarksReady, setBookmarksReady] = useState(false);
 
   // UI state
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
@@ -138,6 +154,8 @@ const App: React.FC = () => {
       // Ignore diagnostics failures to avoid impacting user actions.
     });
   }, []);
+
+  const getBookmarkKey = useCallback((testcase: ProcessedTestCaseWithId) => normalizeBookmarkKey(testcase.name), []);
 
   const dataHashRef = useRef(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -199,7 +217,7 @@ const App: React.FC = () => {
       if (moduleSet && !moduleSet.has(tc.module)) continue;
       if (categorySet && (!tc.rule?.category || !categorySet.has(tc.rule.category))) continue;
       if (docTypeSet && !docTypeSet.has(tc.doctype)) continue;
-      if (showBookmarkedOnly && !bookmarkedIds.has(tc.id)) continue;
+      if (showBookmarkedOnly && !bookmarkedIds.has(getBookmarkKey(tc))) continue;
 
       if (searchLower) {
         const searchable = `${tc.docname} ${tc.module} ${tc.doctype} ${tc.rule?.ruleName || ''} ${tc.rule?.category || ''} ${tc.rule?.title || ''}`.toLowerCase();
@@ -213,7 +231,7 @@ const App: React.FC = () => {
 
     return { pass, skip, fail, total: pass + skip + fail, rules: data.rules.length };
   }, [allTestcases, severityFilters, selectedModules, selectedCategories, selectedDocTypes,
-    searchQuery, showBookmarkedOnly, bookmarkedIds, data.rules.length]);
+    searchQuery, showBookmarkedOnly, bookmarkedIds, data.rules.length, getBookmarkKey]);
 
   // Filter and sort for display
   const filteredTestcases = useMemo((): ProcessedTestCaseWithId[] => {
@@ -232,7 +250,7 @@ const App: React.FC = () => {
       if (moduleSet && !moduleSet.has(tc.module)) continue;
       if (categorySet && (!tc.rule?.category || !categorySet.has(tc.rule.category))) continue;
       if (docTypeSet && !docTypeSet.has(tc.doctype)) continue;
-      if (showBookmarkedOnly && !bookmarkedIds.has(tc.id)) continue;
+      if (showBookmarkedOnly && !bookmarkedIds.has(getBookmarkKey(tc))) continue;
 
       if (searchLower) {
         const searchable = `${tc.docname} ${tc.module} ${tc.doctype} ${tc.rule?.ruleName || ''} ${tc.rule?.category || ''} ${tc.rule?.title || ''} ${tc.failure?.message || ''}`.toLowerCase();
@@ -258,7 +276,7 @@ const App: React.FC = () => {
 
     return filtered;
   }, [allTestcases, severityFilters, statusFilters, selectedModules, selectedCategories,
-    selectedDocTypes, searchQuery, showBookmarkedOnly, bookmarkedIds, sortColumn, sortDirection]);
+    selectedDocTypes, searchQuery, showBookmarkedOnly, bookmarkedIds, sortColumn, sortDirection, getBookmarkKey]);
 
   // Virtual list
   const { visibleItems, totalHeight, offsetY } = useVirtualList(
@@ -352,6 +370,48 @@ const App: React.FC = () => {
     void sendExtensionMessage('setAutoRefresh', { enabled: autoRefreshEnabled });
   }, [autoRefreshEnabled]);
 
+  useEffect(() => {
+    const loadBookmarks = async () => {
+      try {
+        const response = await fetch('./api/bookmarks');
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = await response.json() as { success?: boolean; bookmarks?: string[] };
+        if (payload.success && Array.isArray(payload.bookmarks)) {
+          setBookmarkedIds(new Set(payload.bookmarks.map(normalizeBookmarkKey)));
+        }
+      } catch {
+        // Keep empty bookmarks set if loading fails.
+      } finally {
+        setBookmarksReady(true);
+      }
+    };
+
+    void loadBookmarks();
+  }, []);
+
+  useEffect(() => {
+    if (!bookmarksReady) {
+      return;
+    }
+
+    const saveBookmarks = async () => {
+      try {
+        await fetch('./api/bookmarks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bookmarks: [...bookmarkedIds] }),
+        });
+      } catch {
+        // Avoid surfacing transient write errors in the main UI flow.
+      }
+    };
+
+    void saveBookmarks();
+  }, [bookmarkedIds, bookmarksReady]);
+
   // Scroll selected row into view
   useEffect(() => {
     if (selectedRowIndex >= 0 && tableContainerRef.current) {
@@ -421,7 +481,8 @@ const App: React.FC = () => {
   const toggleBookmark = useCallback((id: string) => {
     setBookmarkedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      const key = normalizeBookmarkKey(id);
+      if (next.has(key)) next.delete(key); else next.add(key);
       return next;
     });
   }, []);
@@ -899,7 +960,7 @@ const App: React.FC = () => {
         case 'r': case 'R': void handleManualRefresh(); break;
         case 'b': case 'B':
           if (selectedRowIndex >= 0 && filteredTestcases[selectedRowIndex]) {
-            toggleBookmark(filteredTestcases[selectedRowIndex].id);
+            toggleBookmark(getBookmarkKey(filteredTestcases[selectedRowIndex]));
           }
           break;
         case 'e': case 'E': handleExport(); break;
@@ -954,130 +1015,138 @@ const App: React.FC = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [selectedRowIndex, filteredTestcases, toggleBookmark, toggleIssueSelection,
     handleOpenDocument, handleExport, handleManualRefresh, selectAllVisible, clearSelection,
-    selectedCount, openIssueModal, clearSearch, setStatusOnly]);
+    selectedCount, openIssueModal, clearSearch, setStatusOnly, getBookmarkKey]);
 
   return (
     <div className="lint-pane">
       {/* Toolbar */}
       <div className="lint-pane-toolbar">
-        <StatusFilterButton
-          active={statusFilters.includes('fail') && statusFilters.length === 1}
-          onClick={() => setStatusOnly('fail')}
-          title="Show only failing test cases"
-          icon={<ErrorIcon />}
-          iconClassName="error"
-          count={stats.fail}
-          label="Errors"
-        />
+        <div className="toolbar-group toolbar-group--status">
+          <StatusFilterButton
+            active={statusFilters.includes('fail') && statusFilters.length === 1}
+            onClick={() => setStatusOnly('fail')}
+            title="Show only failing test cases"
+            icon={<ErrorIcon />}
+            iconClassName="error"
+            count={stats.fail}
+            label="Errors"
+          />
 
-        <StatusFilterButton
-          active={statusFilters.includes('skip') && statusFilters.length === 1}
-          onClick={() => setStatusOnly('skip')}
-          title="Show only skipped test cases"
-          icon={<SkipIcon />}
-          iconClassName="skip"
-          count={stats.skip}
-          label="Skipped"
-        />
+          <StatusFilterButton
+            active={statusFilters.includes('skip') && statusFilters.length === 1}
+            onClick={() => setStatusOnly('skip')}
+            title="Show only skipped test cases"
+            icon={<SkipIcon />}
+            iconClassName="skip"
+            count={stats.skip}
+            label="Skipped"
+          />
 
-        <StatusFilterButton
-          active={statusFilters.includes('pass') && statusFilters.length === 1}
-          onClick={() => setStatusOnly('pass')}
-          title="Show only passing test cases"
-          icon={<CheckIcon />}
-          iconClassName="pass"
-          count={stats.pass}
-          label="Passed"
-        />
-
-        <div className="toolbar-separator" />
-
-        <div className="toolbar-search">
-          <Input
-            ref={searchInputRef}
-            value={searchQuery}
-            onChange={e => handleSearchChange(e.target.value)}
-            placeholder="Search documents, rules, modules..."
-            leftIcon={<SearchIcon />}
-            clearable
-            onClear={clearSearch}
-            size="md"
+          <StatusFilterButton
+            active={statusFilters.includes('pass') && statusFilters.length === 1}
+            onClick={() => setStatusOnly('pass')}
+            title="Show only passing test cases"
+            icon={<CheckIcon />}
+            iconClassName="pass"
+            count={stats.pass}
+            label="Passed"
           />
         </div>
 
-        <div className="toolbar-separator" />
+        <div className="toolbar-group toolbar-group--search">
+          <div className="toolbar-search">
+            <Input
+              ref={searchInputRef}
+              value={searchQuery}
+              onChange={e => handleSearchChange(e.target.value)}
+              placeholder="Search documents, rules, modules..."
+              leftIcon={<SearchIcon />}
+              clearable
+              onClear={clearSearch}
+              size="sm"
+            />
+          </div>
+        </div>
 
-        <Button variant="ghost" icon={<RefreshIcon />} onClick={() => void handleManualRefresh()} title="Run lint now (R)">
-          Run
-        </Button>
+        <div className="toolbar-group">
+          <Button size="sm" variant="ghost" icon={<RefreshIcon />} onClick={() => void handleManualRefresh()} title="Run lint now (R)">
+            Run
+          </Button>
 
-        <Button
-          variant="ghost"
-          onClick={() => setAutoRefreshEnabled(prev => !prev)}
-          title="Toggle automatic lint refresh"
-          className={autoRefreshEnabled ? 'active' : ''}
-        >
-          Auto: {autoRefreshEnabled ? 'On' : 'Off'}
-        </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setAutoRefreshEnabled(prev => !prev)}
+            title="Toggle automatic lint refresh"
+            className={autoRefreshEnabled ? 'active' : ''}
+          >
+            Auto {autoRefreshEnabled ? 'On' : 'Off'}
+          </Button>
 
-        <Button
-          variant="ghost"
-          icon={<FilterIcon />}
-          onClick={() => setShowFilterPanel(v => !v)}
-          title="Toggle advanced filters"
-          className={showFilterPanel ? 'active' : ''}
-        >
-          Filters
-          {hasActiveFilters && <Badge variant="error" dot className="filter-badge-dot" />}
-        </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<FilterIcon />}
+            onClick={() => setShowFilterPanel(v => !v)}
+            title="Toggle advanced filters"
+            className={showFilterPanel ? 'active' : ''}
+          >
+            Filters
+            {hasActiveFilters && <Badge variant="error" dot className="filter-badge-dot" />}
+          </Button>
 
-        <Button variant="ghost" icon={<ExportIcon />} onClick={handleExport} title="Export current results to CSV (E)">
-          CSV
-        </Button>
-
-        <Button
-          variant="ghost"
-          icon={<IssueIcon />}
-          onClick={openIssueModal}
-          disabled={selectedCount === 0}
-          title={selectedCount > 0 ? `Create issue for ${selectedCount} selected items` : 'Select issues to create ticket'}
-          className={selectedCount > 0 ? 'has-selection' : ''}
-        />
-
-        <Button
-          variant="ghost"
-          icon={<SkipIcon />}
-          onClick={() => void handleNoqaSelected()}
-          disabled={selectedCount === 0}
-          title={selectedCount > 0 ? '(Un)Skip' : 'Select issues first'}
-        />
-
-        {selectedCount > 0 && <Badge variant="info" size="sm">{selectedCount}</Badge>}
-
+          <Button size="sm" variant="ghost" icon={<ExportIcon />} onClick={handleExport} title="Export current results to CSV (E)">
+            CSV
+          </Button>
+        </div>
 
         {selectedCount > 0 && (
-          <Button variant="ghost" icon={<ClearIcon />} onClick={clearSelection} title="Clear selection" />
+          <div className="toolbar-group toolbar-group--selection">
+            <Badge variant="info" size="sm">{selectedCount} selected</Badge>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={<IssueIcon />}
+              onClick={openIssueModal}
+              title={`Create issue for ${selectedCount} selected items`}
+              className="has-selection"
+            >
+              Issue
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={<SkipIcon />}
+              onClick={() => void handleNoqaSelected()}
+              title="Toggle skip for selected issues"
+            >
+              (Un)Skip
+            </Button>
+            <Button size="sm" variant="ghost" icon={<ClearIcon />} onClick={clearSelection} title="Clear selection" />
+          </div>
         )}
 
-        <div className="toolbar-separator" />
-
-        <Button
-          variant="ghost"
-          icon={<BookmarkIcon filled={showBookmarkedOnly} />}
-          onClick={toggleBookmarkedOnly}
-          title="Show bookmarked items only"
-          className={showBookmarkedOnly ? 'active' : ''}
-        />
-
-        <Badge variant="info" size="sm">{bookmarkedIds.size}</Badge>
-
-        <Button
-          variant="ghost"
-          onClick={openConfigModal}
-          icon={<SettingsIcon />}
-          title="Edit mxlint.yaml configuration"
-        />
-        <Button variant="ghost" icon={<KeyboardIcon />} onClick={() => setShowKeyboardShortcuts(true)} title="Show keyboard shortcuts (?)" />
+        <div className="toolbar-group toolbar-group--secondary">
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<BookmarkIcon filled={showBookmarkedOnly} />}
+            onClick={toggleBookmarkedOnly}
+            title="Show bookmarked items only"
+            className={showBookmarkedOnly ? 'active' : ''}
+          >
+            Bookmarks
+          </Button>
+          <Badge variant="info" size="sm">{bookmarkedIds.size}</Badge>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={openConfigModal}
+            icon={<SettingsIcon />}
+            title="Edit mxlint.yaml configuration"
+          />
+          <Button size="sm" variant="ghost" icon={<KeyboardIcon />} onClick={() => setShowKeyboardShortcuts(true)} title="Show keyboard shortcuts (?)" />
+        </div>
       </div>
 
       {/* Summary Section */}
@@ -1238,7 +1307,7 @@ const App: React.FC = () => {
                 )}
                 {visibleItems.map(({ item, index }) => (
                   <VirtualRow key={item.id} testcase={item} index={index}
-                    isBookmarked={bookmarkedIds.has(item.id)}
+                    isBookmarked={bookmarkedIds.has(getBookmarkKey(item))}
                     isSelected={selectedRowIndex === index}
                     isChecked={selectedIssues.has(item.id)}
                     onOpenDocument={handleOpenDocument}
