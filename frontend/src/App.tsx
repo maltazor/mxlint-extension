@@ -24,7 +24,16 @@ import type { FilterPreset } from '@/constants';
 import { useVirtualList } from '@/hooks';
 
 // Utilities
-import { postMessage, sendExtensionMessage, djb2Hash, processTestCase, isOpenableDocument } from '@/utils';
+import {
+  postMessage,
+  sendExtensionMessage,
+  isWebviewBridgeAvailable,
+  addWebviewMessageListener,
+  removeWebviewMessageListener,
+  djb2Hash,
+  processTestCase,
+  isOpenableDocument,
+} from '@/utils';
 
 // Context
 import { useToast } from '@/context';
@@ -299,7 +308,7 @@ const App: React.FC = () => {
 
   // WebView message listener
   useEffect(() => {
-    sendDiag('appMounted', `href=${window.location.href};hasBridge=${!!window.chrome?.webview}`);
+    sendDiag('appMounted', `href=${window.location.href};hasBridge=${isWebviewBridgeAvailable()}`);
 
     const handleMessage = async (event: MessageEvent<WebViewMessage>) => {
       const { message } = event.data;
@@ -308,14 +317,11 @@ const App: React.FC = () => {
       else if (message === 'end') setIsLoading(false);
     };
 
-    if (window.chrome?.webview) {
-      window.chrome.webview.addEventListener('message', handleMessage);
+    if (addWebviewMessageListener(handleMessage)) {
       postMessage('MessageListenerRegistered');
     }
     return () => {
-      if (window.chrome?.webview) {
-        window.chrome.webview.removeEventListener('message', handleMessage);
-      }
+      removeWebviewMessageListener(handleMessage);
     };
   }, [refreshData, sendDiag]);
 
@@ -329,7 +335,7 @@ const App: React.FC = () => {
         const result = await sendExtensionMessage('refreshData');
         // In no-bridge environments (macOS), the backend cannot push refreshData events.
         // Pull updated results after a successful refresh trigger.
-        if (!window.chrome?.webview && result.success) {
+        if (result.transport === 'http' && result.success) {
           await refreshData();
         }
       })();
@@ -444,14 +450,14 @@ const App: React.FC = () => {
   }, [sortColumn]);
 
   const handleManualRefresh = useCallback(async () => {
-    sendDiag('manualRefreshClicked', `href=${window.location.href};hasBridge=${!!window.chrome?.webview}`);
+    sendDiag('manualRefreshClicked', `href=${window.location.href};hasBridge=${isWebviewBridgeAvailable()}`);
     try {
       const payload = await sendExtensionMessage('runLintNow');
       if (!payload.success) {
         throw new Error(payload.error || 'Run lint failed.');
       }
 
-      if (window.chrome?.webview) {
+      if (payload.transport === 'bridge') {
         success('Manual lint run started.');
       } else {
         await refreshData();

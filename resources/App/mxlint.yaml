@@ -9,11 +9,7 @@ lint:
   noCache: false
   concurrency: 4
   regoTrace: false
-  skip:
-    MyFirstModule/Page.Forms$Page:
-    - rule: 004_0004
-      reason: Skipped from MxLint extension
-      date: 2026-04-23
+  skip: {}
 cache:
   directory: .mendix-cache/mxlint
   enable: true

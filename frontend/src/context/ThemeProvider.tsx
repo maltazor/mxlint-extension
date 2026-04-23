@@ -25,14 +25,12 @@ export const ThemeProvider = ({
 
   // Fetch theme from Studio Pro API on mount
   useEffect(() => {
-    // Only fetch when running in WebView (Studio Pro)
-    if (!window.chrome?.webview) {
-      return;
-    }
-
     const fetchTheme = async () => {
       try {
         const response = await fetch('./api/theme');
+        if (!response.ok) {
+          return;
+        }
         const data = await response.json();
 
         if (data.theme === 'dark' || data.theme === 'light') {
