@@ -55,17 +55,23 @@
   <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/003_modules/003_0001_number_of_modules.rego" tests="1" failures="0" skipped="0" time="0.000869833">
     <testcase name="Metadata.yaml" time="0.000869833"></testcase>
   </testsuite>
-  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0001_inline_style_property_used.rego" tests="1" failures="0" skipped="0" time="0.002463">
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0001_inline_style_property_used.rego" tests="2" failures="0" skipped="0" time="0.0889075">
     <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.002463"></testcase>
+    <testcase name="MyFirstModule/Page.Forms$Page.yaml" time="0.0864445"></testcase>
   </testsuite>
-  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0002_alt_text_images.rego" tests="1" failures="0" skipped="0" time="0.001778375">
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0002_alt_text_images.rego" tests="2" failures="0" skipped="0" time="0.0815">
     <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.001778375"></testcase>
+    <testcase name="MyFirstModule/Page.Forms$Page.yaml" time="0.079721625"></testcase>
   </testsuite>
-  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0003_one_h1.js" tests="1" failures="0" skipped="0" time="0.000884709">
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0003_one_h1.js" tests="2" failures="0" skipped="0" time="0.078920292">
     <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.000884709"></testcase>
+    <testcase name="MyFirstModule/Page.Forms$Page.yaml" time="0.078035583"></testcase>
   </testsuite>
-  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0004_headings.js" tests="1" failures="1" skipped="0" time="0.001161334">
+  <testsuite name="/Users/xcheng/private/git/mxlint/mxlint-extension/resources/App/.mendix-cache/rules/004_pages/004_0004_headings.js" tests="2" failures="2" skipped="0" time="0.008730417">
     <testcase name="MyFirstModule/Home_Web.Forms$Page.yaml" time="0.001161334">
+      <failure message="[HIGH, Accessibility, 004_0004] found H3 in the page. Expected H1 as the first tag." type="AssertionError"></failure>
+    </testcase>
+    <testcase name="MyFirstModule/Page.Forms$Page.yaml" time="0.007569083">
       <failure message="[HIGH, Accessibility, 004_0004] found H3 in the page. Expected H1 as the first tag." type="AssertionError"></failure>
     </testcase>
   </testsuite>

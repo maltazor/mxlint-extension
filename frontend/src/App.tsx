@@ -258,16 +258,30 @@ const App: React.FC = () => {
 
   // Data fetching
   const refreshData = useCallback(async () => {
+    const endpoints = ['./api', './lint-results.json', '/lint-results.json'];
+
     try {
-      const endpoint = window.chrome?.webview ? './api' : '/lint-results.json';
-      const response = await fetch(endpoint);
-      const text = await response.text();
-      const newHash = djb2Hash(text);
-      if (newHash !== dataHashRef.current) {
-        dataHashRef.current = newHash;
-        setData(JSON.parse(text));
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint);
+          if (!response.ok) {
+            continue;
+          }
+
+          const text = await response.text();
+          const newHash = djb2Hash(text);
+          if (newHash !== dataHashRef.current) {
+            dataHashRef.current = newHash;
+            setData(JSON.parse(text));
+          }
+          return true;
+        } catch {
+          // Try next endpoint.
+        }
       }
-      return true;
+
+      console.error('Failed to fetch lint results from all known endpoints.');
+      return false;
     } catch (error) {
       console.error('Failed to fetch data:', error);
       return false;

@@ -49,6 +49,9 @@ content:
         - name: MyFirstLogic_2.Microflows$Microflow.yaml
           type: file
           path: MyFirstModule/MyFirstLogic_2.Microflows$Microflow.yaml
+        - name: Page.Forms$Page.yaml
+          type: file
+          path: MyFirstModule/Page.Forms$Page.yaml
         - name: Projects$ModuleSettings.yaml
           type: file
           path: MyFirstModule/Projects$ModuleSettings.yaml
