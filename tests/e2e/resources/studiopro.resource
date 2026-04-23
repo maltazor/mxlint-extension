@@ -8,13 +8,14 @@ ${STUDIOPRO_EXE}      %{STUDIOPRO_EXE}
 ${APP_DIR}            %{APP_DIR}
 ${STARTUP_TIMEOUT}    180
 ${MAIN_WINDOW_PRIMARY}    /Window[contains(@Name,'Studio Pro')]
-${MAIN_WINDOW_APP}        /Window[contains(@Name,'App.mpr')]
+${MAIN_WINDOW_APP_MPR}    /Window[contains(@Name,'App.mpr')]
+${MAIN_WINDOW_APP}        /Window[@Name='App']
 ${MAIN_WINDOW}            ${MAIN_WINDOW_PRIMARY}
 ${SIGN_IN_WINDOW}     /Window[contains(@Name,'Sign In')]
-${WEBVIEW_PANE}       /Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane
+${WEBVIEW_PANE}       ${MAIN_WINDOW}/Pane/Pane
 ${EXTENSIONS_MENU}    ${MAIN_WINDOW}//MenuItem[@Name='Extensions']
 ${MXLINT_MENU_ITEM}   ${MAIN_WINDOW}//MenuItem[contains(@Name,'MxLint')]
-${MXLINT_PANE}        /Window[contains(@Name,'Mendix Studio Pro')]//*[@Name='MxLint']
+${MXLINT_PANE}        ${MAIN_WINDOW}//*[@Name='MxLint']
 
 *** Keywords ***
 Start Studio Pro With Extension
@@ -191,12 +192,13 @@ Log Cache Directory Snapshot
 Log Pane Diagnostics
     [Documentation]    Log key UI element presence for pane troubleshooting.
     ${primary_exists}=    Element Should Exist    ${MAIN_WINDOW_PRIMARY}    ${False}
+    ${app_mpr_exists}=    Element Should Exist    ${MAIN_WINDOW_APP_MPR}    ${False}
     ${app_exists}=    Element Should Exist    ${MAIN_WINDOW_APP}    ${False}
     ${main_exists}=    Element Should Exist    ${MAIN_WINDOW}    ${False}
     ${extensions_exists}=    Element Should Exist    ${EXTENSIONS_MENU}    ${False}
     ${menu_item_exists}=    Element Should Exist    ${MXLINT_MENU_ITEM}    ${False}
     ${pane_exists}=    Element Should Exist    ${MXLINT_PANE}    ${False}
-    Log    Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
+    Log    Pane diagnostics: primary_window=${primary_exists}, app_mpr_window=${app_mpr_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}    level=WARN
 
 Validate E2E Environment
     [Documentation]    Assert key environment variables and files are present.
@@ -250,10 +252,16 @@ Log Extension Directory Snapshot
 Resolve Main Window Locator
     [Documentation]    Resolve active Studio Pro main window locator based on current window title.
     ${primary_exists}=    Element Should Exist    ${MAIN_WINDOW_PRIMARY}    ${False}
+    ${app_mpr_exists}=    Element Should Exist    ${MAIN_WINDOW_APP_MPR}    ${False}
     ${app_exists}=    Element Should Exist    ${MAIN_WINDOW_APP}    ${False}
     IF    ${primary_exists}
         Set Suite Variable    ${MAIN_WINDOW}    ${MAIN_WINDOW_PRIMARY}
         Log    Using main window locator: ${MAIN_WINDOW_PRIMARY}    level=WARN
+        RETURN
+    END
+    IF    ${app_mpr_exists}
+        Set Suite Variable    ${MAIN_WINDOW}    ${MAIN_WINDOW_APP_MPR}
+        Log    Using fallback main window locator: ${MAIN_WINDOW_APP_MPR}    level=WARN
         RETURN
     END
     IF    ${app_exists}
