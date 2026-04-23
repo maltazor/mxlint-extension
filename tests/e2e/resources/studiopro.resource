@@ -127,7 +127,23 @@ Lint Results File Should Exist
     [Documentation]    Verify lint-results.json is generated in Mendix cache.
     ${results_path}=    Join Path    ${APP_DIR}    .mendix-cache    lint-results.json
     Sleep    15s
-    Wait Until Keyword Succeeds    180s    5s
+    ${status}    ${message}=    Run Keyword And Ignore Error
+    ...    Wait Until Keyword Succeeds    180s    5s
     ...    File Should Exist    ${results_path}
+    IF    '${status}' == 'FAIL'
+        Log MxLint Cache Logs
+        Fail    ${message}
+    END
     ${content}=    Get File    ${results_path}
     Should Contain    ${content}    testsuites
+
+Log MxLint Cache Logs
+    [Documentation]    Log mxlint.logs from Mendix cache to aid troubleshooting.
+    ${log_path}=    Join Path    ${APP_DIR}    .mendix-cache    mxlint.logs
+    ${exists}=    Run Keyword And Return Status    File Should Exist    ${log_path}
+    IF    ${exists}
+        ${logs}=    Get File    ${log_path}
+        Log    ===== BEGIN mxlint.logs =====\n${logs}\n===== END mxlint.logs =====    level=WARN
+    ELSE
+        Log    mxlint.logs not found at ${log_path}    level=WARN
+    END
