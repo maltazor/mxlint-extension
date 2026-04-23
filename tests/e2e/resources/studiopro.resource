@@ -178,9 +178,15 @@ Open MxLint Pane Once
         Click    ${EXTENSIONS_MENU}
     END
     Sleep    1s
-    Run Keyword And Ignore Error    Press Key    s'M'    ${MAIN_WINDOW}
-    Run Keyword And Ignore Error    Press Key    s'DOWN'    ${MAIN_WINDOW}
-    Run Keyword And Ignore Error    Press Key    s'ENTER'    ${MAIN_WINDOW}
+    ${mxlint_child_menu}=    Set Variable    ${EXTENSIONS_MENU}/MenuItem[contains(@Name,'MxLint')]
+    ${mxlint_child_exists}=    Element Should Exist    ${mxlint_child_menu}    ${False}
+    IF    ${mxlint_child_exists}
+        Click    ${mxlint_child_menu}
+    ELSE
+        Run Keyword And Ignore Error    Press Key    s'M'    ${MAIN_WINDOW}
+        Run Keyword And Ignore Error    Press Key    s'DOWN'    ${MAIN_WINDOW}
+        Run Keyword And Ignore Error    Press Key    s'ENTER'    ${MAIN_WINDOW}
+    END
     Element Should Appear Within    ${MXLINT_PANE}    30
 
 Element Should Appear Within
