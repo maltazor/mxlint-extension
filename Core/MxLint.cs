@@ -335,7 +335,11 @@ public class MxLint
         {
             Rules = new MxLintConfigRules
             {
-                Path = ".mendix-cache/rules"
+                Path = ".mendix-cache/rules",
+                Rulesets = new List<string>
+                {
+                    "https://github.com/mxlint/mxlint-rules/releases/download/v3.3.0/rules-v3.3.0.zip"
+                }
             },
             Lint = new MxLintConfigLint
             {

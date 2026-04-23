@@ -23,7 +23,8 @@ public class ConfigTests : IDisposable
         Assert.Equal(".mendix-cache/lint-results.json", config.Lint.JsonFile);
         Assert.Equal("modelsource", config.Modelsource);
         Assert.Equal(MxLint.DefaultCliVersion, config.Cli.Version);
-        Assert.Empty(config.Rules.Rulesets);
+        Assert.NotEmpty(config.Rules.Rulesets);
+        Assert.Contains(config.Rules.Rulesets, value => value.Contains("mxlint-rules"));
     }
 
     [Fact]

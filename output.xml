@@ -1,0 +1,2693 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.12.10 on win32)" generated="2026-04-23T09:57:45.523198" rpa="false" schemaversion="5">
+<suite id="s1" name="E2E" source="D:\a\mxlint-extension\mxlint-extension\tests\e2e">
+<suite id="s1-s1" name="Extension Loading" source="D:\a\mxlint-extension\mxlint-extension\tests\e2e\extension_loading.robot">
+<kw name="Start Studio Pro With Extension" owner="studiopro" type="SETUP">
+<kw name="Validate E2E Environment" owner="studiopro">
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.102921" level="INFO">Length is 54.</msg>
+<arg>${STUDIOPRO_EXE}</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.100912" elapsed="0.002009"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.102921" level="INFO">Length is 52.</msg>
+<arg>${APP_DIR}</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.102921" elapsed="0.000000"/>
+</kw>
+<kw name="Directory Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.102921" level="INFO" html="true">Directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App&lt;/a&gt;' exists.</msg>
+<arg>${APP_DIR}</arg>
+<doc>Fails unless the given path points to an existing directory.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.102921" elapsed="0.000000"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.102921" level="INFO" html="true">File '&lt;a href="file://D:\a\_temp\Mendix\10.24.16.96987\modeler\studiopro.exe"&gt;D:\a\_temp\Mendix\10.24.16.96987\modeler\studiopro.exe&lt;/a&gt;' exists.</msg>
+<arg>${STUDIOPRO_EXE}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.102921" elapsed="0.000000"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.102921" level="INFO">${mpr_path} = D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr</msg>
+<var>${mpr_path}</var>
+<arg>${APP_DIR}</arg>
+<arg>App.mpr</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.102921" elapsed="0.000000"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.102921" level="INFO" html="true">File '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr&lt;/a&gt;' exists.</msg>
+<arg>${mpr_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.102921" elapsed="0.002009"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.104930" level="INFO">${ext_dir} = D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension</msg>
+<var>${ext_dir}</var>
+<arg>${APP_DIR}</arg>
+<arg>extensions</arg>
+<arg>MxLintExtension</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.104930" elapsed="0.000000"/>
+</kw>
+<kw name="Directory Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.104930" level="INFO" html="true">Directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension&lt;/a&gt;' exists.</msg>
+<arg>${ext_dir}</arg>
+<doc>Fails unless the given path points to an existing directory.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.104930" elapsed="0.000000"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.104930" level="INFO">${dll_path} = D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\MxLintExtension.dll</msg>
+<var>${dll_path}</var>
+<arg>${ext_dir}</arg>
+<arg>MxLintExtension.dll</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.104930" elapsed="0.000000"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.104930" level="INFO" html="true">File '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\MxLintExtension.dll"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\MxLintExtension.dll&lt;/a&gt;' exists.</msg>
+<arg>${dll_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.104930" elapsed="0.000000"/>
+</kw>
+<doc>Assert key environment variables and files are present.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.100912" elapsed="0.004018"/>
+</kw>
+<kw name="Log E2E Environment Snapshot" owner="studiopro">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.104930" level="WARN">STUDIOPRO_EXE=D:\a\_temp\Mendix\10.24.16.96987\modeler\studiopro.exe</msg>
+<arg>STUDIOPRO_EXE=${STUDIOPRO_EXE}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.104930" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.106942" level="WARN">APP_DIR=D:\a\mxlint-extension\mxlint-extension\resources\App</msg>
+<arg>APP_DIR=${APP_DIR}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.106942" elapsed="0.000000"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.106942" level="INFO">${mpr_path} = D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr</msg>
+<var>${mpr_path}</var>
+<arg>${APP_DIR}</arg>
+<arg>App.mpr</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.106942" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.106942" level="WARN">App.mpr path: D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr</msg>
+<arg>App.mpr path: ${mpr_path}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.106942" elapsed="0.000000"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.106942" level="INFO">${ext_dir} = D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension</msg>
+<var>${ext_dir}</var>
+<arg>${APP_DIR}</arg>
+<arg>extensions</arg>
+<arg>MxLintExtension</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.106942" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.106942" level="WARN">Extension dir: D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension</msg>
+<arg>Extension dir: ${ext_dir}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.106942" elapsed="0.000000"/>
+</kw>
+<doc>Log critical environment paths for troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.104930" elapsed="0.004024"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.108954" level="INFO">${mpr_file} = D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr</msg>
+<var>${mpr_file}</var>
+<arg>${APP_DIR}</arg>
+<arg>App.mpr</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.108954" elapsed="0.000000"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:57:46.108954" level="INFO" html="true">File '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr&lt;/a&gt;' exists.</msg>
+<arg>${mpr_file}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.108954" elapsed="0.000000"/>
+</kw>
+<kw name="Launch Application With Args" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:46.140737" level="INFO">${pid} = 736</msg>
+<var>${pid}</var>
+<arg>${STUDIOPRO_EXE}</arg>
+<arg>--enable-extension-development "${mpr_file}"</arg>
+<doc>Launches an application with given arguments.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.108954" elapsed="0.031783"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.142758" level="INFO">${STUDIOPRO_PID} = 736</msg>
+<arg>${STUDIOPRO_PID}</arg>
+<arg>${pid}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.140737" elapsed="0.002021"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.144525" level="INFO">${MXLINT_PANE_OPENED} = False</msg>
+<arg>${MXLINT_PANE_OPENED}</arg>
+<arg>${False}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.142758" elapsed="0.001767"/>
+</kw>
+<kw name="Should Not Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.145051" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${pid}</arg>
+<arg>0</arg>
+<doc>Fails if objects are equal after converting them to integers.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.144525" elapsed="0.000526"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:57:46.145051" level="INFO">Studio Pro launched with PID 736</msg>
+<arg>Studio Pro launched with PID ${pid}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.145051" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Keyword Succeeds" owner="BuiltIn">
+<kw name="Resolve Main Window Locator" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:48.014617" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.145051" elapsed="1.869566"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:49.056066" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:48.016388" elapsed="1.039678"/>
+</kw>
+<if>
+<branch type="IF" condition="${primary_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:57:49.056066" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using main window locator: ${MAIN_WINDOW_PRIMARY}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:57:49.056066" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:57:49.056066" elapsed="0.001251"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:57:49.056066" elapsed="0.001251"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:57:49.056066" elapsed="0.001251"/>
+</if>
+<if>
+<branch type="IF" condition="${app_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_APP}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:57:49.057317" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using fallback main window locator: ${MAIN_WINDOW_APP}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:57:49.057317" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:57:49.057317" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:57:49.057317" elapsed="0.000770"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:57:49.057317" elapsed="0.000770"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:50.097339" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:49.058087" elapsed="1.039252"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:51.138838" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:50.097339" elapsed="1.041499"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:52.485262" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:51.138838" elapsed="1.346424"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:56.303727" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:52.485262" elapsed="3.818465"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:57.433901" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:56.303727" elapsed="1.130174"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:57:58.591129" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:57:57.433901" elapsed="1.157228"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:57:58.592894" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:57:58.591129" elapsed="0.001765"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:57:49.058087" elapsed="9.534807"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-04-23T09:57:58.592894" level="FAIL">Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:57:58.592894" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Could not resolve Studio Pro main window locator.</msg>
+<arg>Could not resolve Studio Pro main window locator.</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-04-23T09:57:58.592894" elapsed="0.000000">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<doc>Resolve active Studio Pro main window locator based on current window title.</doc>
+<status status="FAIL" start="2026-04-23T09:57:46.145051" elapsed="12.447843">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Resolve Main Window Locator" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:03.599354" level="INFO">${primary_exists} = True</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:03.593302" elapsed="0.006052"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:04.627336" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:03.599354" elapsed="1.027982"/>
+</kw>
+<if>
+<branch type="IF" condition="${primary_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-23T09:58:04.627649" level="INFO">${MAIN_WINDOW} = /Window[contains(@Name,'Studio Pro')]</msg>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-23T09:58:04.627649" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:04.627649" level="WARN">Using main window locator: /Window[contains(@Name,'Studio Pro')]</msg>
+<arg>Using main window locator: ${MAIN_WINDOW_PRIMARY}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:04.627649" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="PASS" start="2026-04-23T09:58:04.627649" elapsed="0.000000"/>
+</return>
+<status status="PASS" start="2026-04-23T09:58:04.627336" elapsed="0.000313"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:04.627336" elapsed="0.000313"/>
+</if>
+<if>
+<branch type="IF" condition="${app_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_APP}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:04.627649" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using fallback main window locator: ${MAIN_WINDOW_APP}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:04.627649" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:04.629347" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:04.627649" elapsed="0.001698"/>
+</branch>
+<status status="NOT RUN" start="2026-04-23T09:58:04.627649" elapsed="0.001698"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:04.629347" elapsed="0.000000"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<arg>Could not resolve Studio Pro main window locator.</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:04.629669" elapsed="0.000000"/>
+</kw>
+<doc>Resolve active Studio Pro main window locator based on current window title.</doc>
+<status status="PASS" start="2026-04-23T09:58:03.593302" elapsed="1.036367"/>
+</kw>
+<arg>${STARTUP_TIMEOUT}s</arg>
+<arg>5s</arg>
+<arg>Resolve Main Window Locator</arg>
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<status status="PASS" start="2026-04-23T09:57:46.145051" elapsed="18.484618"/>
+</kw>
+<kw name="Run Keyword And Ignore Error" owner="BuiltIn">
+<kw name="Skip Sign In If Present" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:04.633705" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>${SIGN_IN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:04.629669" elapsed="0.004036"/>
+</kw>
+<if>
+<branch type="IF" condition="not ${exists}">
+<kw name="Log" owner="BuiltIn">
+<arg>No sign-in window detected</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:04.634728" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:04.634728" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:04.633705" elapsed="0.001023"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:04.633705" elapsed="0.001023"/>
+</if>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:04.635153" level="INFO">Sign-in window detected, waiting for WebView2 to load...</msg>
+<arg>Sign-in window detected, waiting for WebView2 to load...</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:04.634728" elapsed="0.000425"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-23T09:58:14.635462" level="INFO">Slept 10 seconds.</msg>
+<arg>10s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-23T09:58:04.635153" elapsed="10.000309"/>
+</kw>
+<for flavor="IN RANGE">
+<iter>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:14.636289" level="INFO">Escape attempt 1/5</msg>
+<arg>Escape attempt ${attempt}/5</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:14.636289" elapsed="0.000523"/>
+</kw>
+<kw name="Focus" owner="FlaUILibrary">
+<arg>${MAIN_WINDOW}</arg>
+<doc>Try to focus element by given xpath.</doc>
+<status status="PASS" start="2026-04-23T09:58:14.636812" elapsed="0.032092"/>
+</kw>
+<kw name="Run Keyword And Ignore Error" owner="BuiltIn">
+<kw name="Focus" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:14.714693" level="FAIL">FlaUiError: Element '/Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane' is not focusable</msg>
+<msg time="2026-04-23T09:58:14.714693" level="DEBUG">Traceback (most recent call last):
+  File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\robotlibcore\core\dynamic.py", line 25, in run_keyword
+    return self.keywords[name](*args, **(kwargs or {}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\FlaUILibrary\keywords\element.py", line 104, in focus
+    module.action(Element.Action.FOCUS_ELEMENT,
+  File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\FlaUILibrary\flaui\automation\uia.py", line 62, in action
+    raise FlaUiError(msg) if msg is not None else error
+  File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\FlaUILibrary\flaui\automation\uia.py", line 54, in action
+    return self._actions[action].execute_action(action, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\FlaUILibrary\flaui\module\element.py", line 164, in execute_action
+    return switcher.get(action, lambda: FlaUiError.raise_fla_ui_error(FlaUiError.ActionNotSupported))()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\FlaUILibrary\flaui\module\element.py", line 116, in &lt;lambda&gt;
+    lambda: self._focus_element(values),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\FlaUILibrary\flaui\module\element.py", line 603, in _focus_element
+    raise FlaUiError(FlaUiError.ElementNotFocusable.format(xpath)) from None
+FlaUILibrary.flaui.exception.flauierror.FlaUiError: Element '/Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane' is not focusable</msg>
+<arg>${WEBVIEW_PANE}</arg>
+<doc>Try to focus element by given xpath.</doc>
+<status status="FAIL" start="2026-04-23T09:58:14.668904" elapsed="0.047548">FlaUiError: Element '/Window[contains(@Name,'Mendix Studio Pro')]/Pane/Pane' is not focusable</status>
+</kw>
+<arg>Focus</arg>
+<arg>${WEBVIEW_PANE}</arg>
+<doc>Runs the given keyword with the given arguments and ignores possible error.</doc>
+<status status="PASS" start="2026-04-23T09:58:14.668904" elapsed="0.047548"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-23T09:58:15.716707" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-23T09:58:14.716452" elapsed="1.000255"/>
+</kw>
+<kw name="Press Key" owner="FlaUILibrary">
+<arg>s'ESCAPE'</arg>
+<arg>${MAIN_WINDOW}</arg>
+<doc>Keyboard control to execute a user defined one shortcut or text.
+press_only and release_only supports key shortcut only, not text.</doc>
+<status status="PASS" start="2026-04-23T09:58:15.716707" elapsed="0.035729"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-23T09:58:20.752508" level="INFO">Slept 5 seconds.</msg>
+<arg>5s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-23T09:58:15.752436" elapsed="5.000072"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:22.345253" level="INFO">${still_sign_in} = False</msg>
+<var>${still_sign_in}</var>
+<arg>${SIGN_IN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:20.753021" elapsed="1.592232"/>
+</kw>
+<if>
+<branch type="IF" condition="not ${still_sign_in}">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:22.346249" level="INFO">Sign-in dismissed with Escape (attempt 1)</msg>
+<arg>Sign-in dismissed with Escape (attempt ${attempt})</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:22.345253" elapsed="0.000996"/>
+</kw>
+<return>
+<status status="PASS" start="2026-04-23T09:58:22.346249" elapsed="0.000000"/>
+</return>
+<status status="PASS" start="2026-04-23T09:58:22.345253" elapsed="0.000996"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:22.345253" elapsed="0.000996"/>
+</if>
+<kw name="Log" owner="BuiltIn">
+<arg>Sign-in still present after attempt ${attempt}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:22.346249" elapsed="0.001002"/>
+</kw>
+<var name="${attempt}">1</var>
+<status status="PASS" start="2026-04-23T09:58:14.635907" elapsed="7.712343"/>
+</iter>
+<var>${attempt}</var>
+<value>1</value>
+<value>6</value>
+<status status="PASS" start="2026-04-23T09:58:14.635462" elapsed="7.712788"/>
+</for>
+<kw name="Fail" owner="BuiltIn">
+<arg>Could not dismiss sign-in dialog after 5 Escape attempts</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:22.348250" elapsed="0.000000"/>
+</kw>
+<doc>Dismiss the sign-in dialog by pressing Escape.
+The sign-in content is rendered in a WebView2 so we cannot click
+UI elements directly. Pressing Escape skips the sign-in.</doc>
+<status status="PASS" start="2026-04-23T09:58:04.629669" elapsed="17.718581"/>
+</kw>
+<msg time="2026-04-23T09:58:22.349255" level="INFO">${signin_status} = PASS</msg>
+<msg time="2026-04-23T09:58:22.349255" level="INFO">${signin_msg} = None</msg>
+<var>${signin_status}</var>
+<var>${signin_msg}</var>
+<arg>Skip Sign In If Present</arg>
+<doc>Runs the given keyword with the given arguments and ignores possible error.</doc>
+<status status="PASS" start="2026-04-23T09:58:04.629669" elapsed="17.719586"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:22.350249" level="WARN">Sign-in skip result: PASS - None</msg>
+<arg>Sign-in skip result: ${signin_status} - ${signin_msg}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:22.349255" elapsed="0.000994"/>
+</kw>
+<kw name="Run Keyword And Ignore Error" owner="BuiltIn">
+<kw name="Wait For Project To Load" owner="studiopro">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:22.351249" level="INFO">Waiting for project to finish loading...</msg>
+<arg>Waiting for project to finish loading...</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:22.351249" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Keyword Succeeds" owner="BuiltIn">
+<kw name="Sign In Window Should Be Gone" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:23.398958" level="INFO">${exists} = False</msg>
+<var>${exists}</var>
+<arg>${SIGN_IN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:22.353258" elapsed="1.046710"/>
+</kw>
+<kw name="Should Not Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Studio Pro is still showing the sign-in window</arg>
+<doc>Fails if the given condition is true.</doc>
+<status status="PASS" start="2026-04-23T09:58:23.399968" elapsed="0.000000"/>
+</kw>
+<doc>Assert that no sign-in window exists</doc>
+<status status="PASS" start="2026-04-23T09:58:22.352249" elapsed="1.047719"/>
+</kw>
+<arg>120s</arg>
+<arg>5s</arg>
+<arg>Sign In Window Should Be Gone</arg>
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<status status="PASS" start="2026-04-23T09:58:22.352249" elapsed="1.047719"/>
+</kw>
+<kw name="Wait Until Keyword Succeeds" owner="BuiltIn">
+<kw name="Resolve Main Window Locator" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:24.449523" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:23.400969" elapsed="1.048554"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:25.495535" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:24.450522" elapsed="1.045013"/>
+</kw>
+<if>
+<branch type="IF" condition="${primary_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using main window locator: ${MAIN_WINDOW_PRIMARY}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</if>
+<if>
+<branch type="IF" condition="${app_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_APP}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using fallback main window locator: ${MAIN_WINDOW_APP}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:25.495535" elapsed="0.002018"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:25.495535" elapsed="0.002018"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:26.539877" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:25.497553" elapsed="1.042831"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:27.582864" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:26.540384" elapsed="1.042480"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:28.624988" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:27.582864" elapsed="1.042124"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:29.666220" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:28.624988" elapsed="1.041232"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:30.709080" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:29.667887" elapsed="1.041193"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:31.746015" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:30.709080" elapsed="1.036935"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:31.747660" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:31.747214" elapsed="0.000814"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:58:25.497553" elapsed="6.250475"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-04-23T09:58:31.748679" level="FAIL">Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:58:31.748679" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Could not resolve Studio Pro main window locator.</msg>
+<arg>Could not resolve Studio Pro main window locator.</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-04-23T09:58:31.748028" elapsed="0.000651">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<doc>Resolve active Studio Pro main window locator based on current window title.</doc>
+<status status="FAIL" start="2026-04-23T09:58:23.400969" elapsed="8.347710">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Resolve Main Window Locator" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:37.782048" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:36.749318" elapsed="1.032730"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:38.824439" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:37.783754" elapsed="1.040685"/>
+</kw>
+<if>
+<branch type="IF" condition="${primary_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using main window locator: ${MAIN_WINDOW_PRIMARY}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</if>
+<if>
+<branch type="IF" condition="${app_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_APP}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using fallback main window locator: ${MAIN_WINDOW_APP}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:38.824439" elapsed="0.000000"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:39.868732" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:38.824439" elapsed="1.044293"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:40.909657" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:39.868732" elapsed="1.040925"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:41.952316" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:40.909657" elapsed="1.042659"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:42.993600" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:41.952316" elapsed="1.041284"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:44.035597" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:42.994850" elapsed="1.040747"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:45.076998" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:44.035597" elapsed="1.041401"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:45.078458" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:45.078458" elapsed="0.000000"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:58:38.824439" elapsed="6.254019"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-04-23T09:58:45.078458" level="FAIL">Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:58:45.078458" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Could not resolve Studio Pro main window locator.</msg>
+<arg>Could not resolve Studio Pro main window locator.</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-04-23T09:58:45.078458" elapsed="0.000000">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<doc>Resolve active Studio Pro main window locator based on current window title.</doc>
+<status status="FAIL" start="2026-04-23T09:58:36.749318" elapsed="8.329140">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Resolve Main Window Locator" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:51.119864" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:50.078775" elapsed="1.041089"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:52.160324" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:51.119864" elapsed="1.040460"/>
+</kw>
+<if>
+<branch type="IF" condition="${primary_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:52.160324" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using main window locator: ${MAIN_WINDOW_PRIMARY}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:52.161993" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:52.161993" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:52.160324" elapsed="0.001669"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:52.160324" elapsed="0.001669"/>
+</if>
+<if>
+<branch type="IF" condition="${app_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_APP}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:52.162343" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using fallback main window locator: ${MAIN_WINDOW_APP}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:52.162343" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:52.162343" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:52.161993" elapsed="0.000350"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:52.161993" elapsed="0.000350"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:53.202786" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:52.162343" elapsed="1.040443"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:54.244846" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:53.202786" elapsed="1.042060"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:55.286031" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:54.245307" elapsed="1.040724"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:56.325973" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:55.286031" elapsed="1.039942"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:57.369154" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:56.325973" elapsed="1.043181"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:58.410635" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:57.369154" elapsed="1.041481"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:58.412247" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:58.410635" elapsed="0.002021"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:58:52.162343" elapsed="6.250313"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-04-23T09:58:58.412656" level="FAIL">Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:58:58.412656" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Could not resolve Studio Pro main window locator.</msg>
+<arg>Could not resolve Studio Pro main window locator.</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-04-23T09:58:58.412656" elapsed="0.000000">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<doc>Resolve active Studio Pro main window locator based on current window title.</doc>
+<status status="FAIL" start="2026-04-23T09:58:50.078775" elapsed="8.333881">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<msg time="2026-04-23T09:58:58.412656" level="FAIL">Keyword 'Resolve Main Window Locator' failed after retrying for 30 seconds. The last error was: Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:58:58.412656" level="DEBUG">robot.errors.UserKeywordExecutionFailed: Could not resolve Studio Pro main window locator.
+
+During handling of the above exception, another exception occurred:
+
+AssertionError: Keyword 'Resolve Main Window Locator' failed after retrying for 30 seconds. The last error was: Could not resolve Studio Pro main window locator.</msg>
+<arg>30s</arg>
+<arg>5s</arg>
+<arg>Resolve Main Window Locator</arg>
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<status status="FAIL" start="2026-04-23T09:58:23.399968" elapsed="35.012688">Keyword 'Resolve Main Window Locator' failed after retrying for 30 seconds. The last error was: Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Project loaded successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:58:58.412656" elapsed="0.000000"/>
+</kw>
+<doc>After sign-in is dismissed a loading modal appears.
+Wait until the window title no longer contains "Sign In".</doc>
+<status status="FAIL" start="2026-04-23T09:58:22.350249" elapsed="36.063620">Keyword 'Resolve Main Window Locator' failed after retrying for 30 seconds. The last error was: Could not resolve Studio Pro main window locator.</status>
+</kw>
+<msg time="2026-04-23T09:58:58.413869" level="INFO">${load_status} = FAIL</msg>
+<msg time="2026-04-23T09:58:58.413869" level="INFO">${load_msg} = Keyword 'Resolve Main Window Locator' failed after retrying for 30 seconds. The last error was: Could not resolve Studio Pro main window locator.</msg>
+<var>${load_status}</var>
+<var>${load_msg}</var>
+<arg>Wait For Project To Load</arg>
+<doc>Runs the given keyword with the given arguments and ignores possible error.</doc>
+<status status="PASS" start="2026-04-23T09:58:22.350249" elapsed="36.063620"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:58:58.414261" level="WARN">Project load result: FAIL - Keyword 'Resolve Main Window Locator' failed after retrying for 30 seconds. The last error was: Could not resolve Studio Pro main window locator.</msg>
+<arg>Project load result: ${load_status} - ${load_msg}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:58:58.413869" elapsed="0.000804"/>
+</kw>
+<kw name="Try Open MxLint Pane During Setup" owner="studiopro">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Open MxLint Pane Via Menu" owner="studiopro">
+<kw name="Wait Until Keyword Succeeds" owner="BuiltIn">
+<kw name="Open MxLint Pane Once" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:58:59.452779" level="INFO">${already_open} = False</msg>
+<var>${already_open}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:58.415884" elapsed="1.036895"/>
+</kw>
+<if>
+<branch type="IF" condition="${already_open}">
+<return>
+<status status="NOT RUN" start="2026-04-23T09:58:59.452779" elapsed="0.000413"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:58:59.452779" elapsed="0.000413"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:58:59.452779" elapsed="0.000413"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:00.493209" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:58:59.453192" elapsed="1.040017"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:01.534741" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:00.493209" elapsed="1.041532"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:02.574353" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:01.534741" elapsed="1.039612"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:03.616003" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:02.574353" elapsed="1.041650"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:04.657106" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:03.616003" elapsed="1.041103"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:05.698891" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:04.657106" elapsed="1.041785"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:05.699649" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:05.699649" elapsed="0.000000"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:58:59.453192" elapsed="6.246457"/>
+</kw>
+<kw name="Resolve Main Window Locator" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:06.742644" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:05.700908" elapsed="1.041736"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:07.785639" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:06.742644" elapsed="1.042995"/>
+</kw>
+<if>
+<branch type="IF" condition="${primary_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:07.785639" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using main window locator: ${MAIN_WINDOW_PRIMARY}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:07.785639" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:59:07.785639" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:59:07.785639" elapsed="0.002024"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:59:07.785639" elapsed="0.002024"/>
+</if>
+<if>
+<branch type="IF" condition="${app_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_APP}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:07.787663" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using fallback main window locator: ${MAIN_WINDOW_APP}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:07.787663" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:59:07.787663" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:59:07.787663" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:59:07.787663" elapsed="0.000000"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:08.830180" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:07.787663" elapsed="1.042517"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:09.873397" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:08.832201" elapsed="1.041196"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:10.907161" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:09.873397" elapsed="1.033764"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:11.941703" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:10.907161" elapsed="1.034542"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:12.976514" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:11.941703" elapsed="1.034811"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:14.010018" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:12.976514" elapsed="1.033504"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:14.011701" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:14.010018" elapsed="0.001683"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:59:07.787663" elapsed="6.224367"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-04-23T09:59:14.012030" level="FAIL">Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:59:14.012030" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Could not resolve Studio Pro main window locator.</msg>
+<arg>Could not resolve Studio Pro main window locator.</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-04-23T09:59:14.012030" elapsed="0.000000">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<doc>Resolve active Studio Pro main window locator based on current window title.</doc>
+<status status="FAIL" start="2026-04-23T09:59:05.700908" elapsed="8.311122">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${MAIN_WINDOW}</arg>
+<arg>15</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.012030" elapsed="0.000000"/>
+</kw>
+<kw name="Focus" owner="FlaUILibrary">
+<arg>${MAIN_WINDOW}</arg>
+<doc>Try to focus element by given xpath.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.012030" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>15</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.012030" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="FlaUILibrary">
+<arg>${EXTENSIONS_MENU}</arg>
+<doc>Left click to element by an XPath.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.012030" elapsed="0.000000"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.012030" elapsed="0.000000"/>
+</kw>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.013282" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>15</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.013721" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="FlaUILibrary">
+<arg>${MXLINT_MENU_ITEM}</arg>
+<doc>Left click to element by an XPath.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.013721" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${MXLINT_PANE}</arg>
+<arg>30</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:14.014042" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2026-04-23T09:58:58.415884" elapsed="15.598158">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Open MxLint Pane Once" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:17.055703" level="INFO">${already_open} = False</msg>
+<var>${already_open}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:16.014769" elapsed="1.040934"/>
+</kw>
+<if>
+<branch type="IF" condition="${already_open}">
+<return>
+<status status="NOT RUN" start="2026-04-23T09:59:17.055703" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:59:17.055703" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:59:17.055703" elapsed="0.000000"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:18.097432" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:17.056946" elapsed="1.040486"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:19.136580" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:18.097432" elapsed="1.039148"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:20.176024" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:19.136933" elapsed="1.039091"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:21.212726" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:20.176024" elapsed="1.038724"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:22.258121" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:21.214748" elapsed="1.043373"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:23.300262" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:22.258121" elapsed="1.042141"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:23.301862" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:23.300262" elapsed="0.001600"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:59:17.056946" elapsed="6.245333"/>
+</kw>
+<kw name="Resolve Main Window Locator" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:24.333845" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:23.302279" elapsed="1.031566"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:25.371771" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:24.333845" elapsed="1.037926"/>
+</kw>
+<if>
+<branch type="IF" condition="${primary_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:25.371771" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using main window locator: ${MAIN_WINDOW_PRIMARY}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:25.371771" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:59:25.371771" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:59:25.371771" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:59:25.371771" elapsed="0.000000"/>
+</if>
+<if>
+<branch type="IF" condition="${app_exists}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MAIN_WINDOW}</arg>
+<arg>${MAIN_WINDOW_APP}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:25.371771" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Using fallback main window locator: ${MAIN_WINDOW_APP}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:25.373370" elapsed="0.000000"/>
+</kw>
+<return>
+<status status="NOT RUN" start="2026-04-23T09:59:25.373370" elapsed="0.000000"/>
+</return>
+<status status="NOT RUN" start="2026-04-23T09:59:25.371771" elapsed="0.001599"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:59:25.371771" elapsed="0.001599"/>
+</if>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:26.410153" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:25.373795" elapsed="1.036358"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:27.443741" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:26.410153" elapsed="1.033588"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:28.482766" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:27.443741" elapsed="1.039025"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:29.515990" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:28.483104" elapsed="1.032886"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:30.553989" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:29.517653" elapsed="1.036336"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:31.591321" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:30.553989" elapsed="1.037332"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:31.592860" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:31.592543" elapsed="0.000317"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:59:25.373795" elapsed="6.219547"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-04-23T09:59:31.593342" level="FAIL">Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:59:31.593342" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Could not resolve Studio Pro main window locator.</msg>
+<arg>Could not resolve Studio Pro main window locator.</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-04-23T09:59:31.593342" elapsed="0.000000">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<doc>Resolve active Studio Pro main window locator based on current window title.</doc>
+<status status="FAIL" start="2026-04-23T09:59:23.302279" elapsed="8.291063">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${MAIN_WINDOW}</arg>
+<arg>15</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.593342" elapsed="0.000000"/>
+</kw>
+<kw name="Focus" owner="FlaUILibrary">
+<arg>${MAIN_WINDOW}</arg>
+<doc>Try to focus element by given xpath.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.593342" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>15</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.593342" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="FlaUILibrary">
+<arg>${EXTENSIONS_MENU}</arg>
+<doc>Left click to element by an XPath.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.594558" elapsed="0.000000"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.594558" elapsed="0.000000"/>
+</kw>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.594882" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>15</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.594882" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="FlaUILibrary">
+<arg>${MXLINT_MENU_ITEM}</arg>
+<doc>Left click to element by an XPath.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.594882" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Element Exist" owner="FlaUILibrary">
+<arg>${MXLINT_PANE}</arg>
+<arg>30</arg>
+<doc>Waits until element exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.594882" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2026-04-23T09:59:16.014769" elapsed="15.580590">Could not resolve Studio Pro main window locator.</status>
+</kw>
+<msg time="2026-04-23T09:59:31.595359" level="FAIL">Keyword 'Open MxLint Pane Once' failed after retrying for 20 seconds. The last error was: Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:59:31.595359" level="DEBUG">robot.errors.UserKeywordExecutionFailed: Could not resolve Studio Pro main window locator.
+
+During handling of the above exception, another exception occurred:
+
+AssertionError: Keyword 'Open MxLint Pane Once' failed after retrying for 20 seconds. The last error was: Could not resolve Studio Pro main window locator.</msg>
+<arg>20s</arg>
+<arg>2s</arg>
+<arg>Open MxLint Pane Once</arg>
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<status status="FAIL" start="2026-04-23T09:58:58.414673" elapsed="33.180686">Keyword 'Open MxLint Pane Once' failed after retrying for 20 seconds. The last error was: Could not resolve Studio Pro main window locator.</status>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${MXLINT_PANE_OPENED}</arg>
+<arg>${True}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:31.595359" elapsed="0.000000"/>
+</kw>
+<doc>Open MxLint pane from Studio Pro menu and assert it is visible</doc>
+<status status="FAIL" start="2026-04-23T09:58:58.414673" elapsed="33.180686">Keyword 'Open MxLint Pane Once' failed after retrying for 20 seconds. The last error was: Could not resolve Studio Pro main window locator.</status>
+</kw>
+<msg time="2026-04-23T09:59:31.595359" level="INFO">${opened} = False</msg>
+<var>${opened}</var>
+<arg>Open MxLint Pane Via Menu</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-04-23T09:58:58.414673" elapsed="33.180686"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-23T09:59:31.595359" level="INFO">${MXLINT_PANE_OPENED} = False</msg>
+<arg>${MXLINT_PANE_OPENED}</arg>
+<arg>${opened}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-23T09:59:31.595359" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:31.596572" level="INFO">MxLint pane opened during setup: False</msg>
+<arg>MxLint pane opened during setup: ${opened}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:31.595359" elapsed="0.001213"/>
+</kw>
+<if>
+<branch type="IF" condition="not ${opened}">
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:32.633783" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:31.596905" elapsed="1.036878"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:33.664720" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:32.633783" elapsed="1.030937"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:34.698238" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:33.664720" elapsed="1.033518"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:35.731411" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:34.698587" elapsed="1.032824"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:36.762784" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:35.731411" elapsed="1.031373"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T09:59:37.795144" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T09:59:36.762784" elapsed="1.032360"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:37.795144" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.795144" elapsed="0.000000"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T09:59:31.596905" elapsed="6.198239"/>
+</kw>
+<kw name="Log Studio Pro Process Snapshot" owner="studiopro">
+<kw name="Run Process" owner="Process">
+<msg time="2026-04-23T09:59:37.797156" level="INFO">Starting process:
+tasklist /FI "IMAGENAME eq studiopro.exe"</msg>
+<msg time="2026-04-23T09:59:37.797156" level="DEBUG">Process configuration:
+cwd:     D:\a\mxlint-extension\mxlint-extension
+shell:   False
+stdout:  PIPE
+stderr:  PIPE
+stdin:   None
+alias:   None
+env:     None</msg>
+<msg time="2026-04-23T09:59:37.867928" level="INFO">Waiting for process to complete.</msg>
+<msg time="2026-04-23T09:59:37.935543" level="INFO">Process completed.</msg>
+<msg time="2026-04-23T09:59:37.935543" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>tasklist</arg>
+<arg>/FI</arg>
+<arg>IMAGENAME eq studiopro.exe</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.795144" elapsed="0.140399"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:37.937556" level="WARN">tasklist rc=0
+stdout:
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+studiopro.exe                  736 Console                    2    579,576 K
+stderr:
+</msg>
+<arg>tasklist rc=${result.rc}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.937556" elapsed="0.000000"/>
+</kw>
+<doc>Log tasklist output for Studio Pro process.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.795144" elapsed="0.142412"/>
+</kw>
+<kw name="Log Extension Directory Snapshot" owner="studiopro">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.939570" level="INFO">${ext_dir} = D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension</msg>
+<var>${ext_dir}</var>
+<arg>${APP_DIR}</arg>
+<arg>extensions</arg>
+<arg>MxLintExtension</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.939570" elapsed="0.000000"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Directory Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.939570" level="INFO" html="true">Directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension&lt;/a&gt;' exists.</msg>
+<arg>${ext_dir}</arg>
+<doc>Fails unless the given path points to an existing directory.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.939570" elapsed="0.000000"/>
+</kw>
+<msg time="2026-04-23T09:59:37.939570" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>Directory Should Exist</arg>
+<arg>${ext_dir}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.939570" elapsed="0.000000"/>
+</kw>
+<if>
+<branch type="IF" condition="${exists}">
+<kw name="List Files In Directory" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.939570" level="INFO" html="true">Listing contents of directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension&lt;/a&gt;'.</msg>
+<msg time="2026-04-23T09:59:37.939570" level="INFO">11 files:
+Mendix.StudioPro.ExtensionsAPI.dll
+Microsoft.Extensions.ObjectPool.dll
+MxLintExtension.deps.json
+MxLintExtension.dll
+MxLintExtension.pdb
+System.ComponentModel.Composition.dll
+System.Security.Cryptography.Pkcs.dll
+System.Security.Cryptography.Xml.dll
+System.ServiceModel.Primitives.dll
+YamlDotNet.dll
+manifest.json</msg>
+<msg time="2026-04-23T09:59:37.939570" level="INFO">${files} = ['Mendix.StudioPro.ExtensionsAPI.dll', 'Microsoft.Extensions.ObjectPool.dll', 'MxLintExtension.deps.json', 'MxLintExtension.dll', 'MxLintExtension.pdb', 'System.ComponentModel.Composition.dll', 'Syste...</msg>
+<var>${files}</var>
+<arg>${ext_dir}</arg>
+<doc>Wrapper for `List Directory` that returns only files.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.939570" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:37.941582" level="WARN">Extension files: ['Mendix.StudioPro.ExtensionsAPI.dll', 'Microsoft.Extensions.ObjectPool.dll', 'MxLintExtension.deps.json', 'MxLintExtension.dll', 'MxLintExtension.pdb', 'System.ComponentModel.Composition.dll', 'System.Security.Cryptography.Pkcs.dll', 'System.Security.Cryptography.Xml.dll', 'System.ServiceModel.Primitives.dll', 'YamlDotNet.dll', 'manifest.json']</msg>
+<arg>Extension files: ${files}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.941582" elapsed="0.000000"/>
+</kw>
+<status status="PASS" start="2026-04-23T09:59:37.939570" elapsed="0.002012"/>
+</branch>
+<branch type="ELSE">
+<kw name="Log" owner="BuiltIn">
+<arg>Extension directory missing at ${ext_dir}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T09:59:37.941582" elapsed="0.000000"/>
+</kw>
+<status status="NOT RUN" start="2026-04-23T09:59:37.941582" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:59:37.939570" elapsed="0.002012"/>
+</if>
+<doc>Log deployed extension directory contents.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.937556" elapsed="0.004026"/>
+</kw>
+<status status="PASS" start="2026-04-23T09:59:31.596572" elapsed="6.345010"/>
+</branch>
+<status status="PASS" start="2026-04-23T09:59:31.596572" elapsed="6.345010"/>
+</if>
+<doc>Attempt to open pane during setup and store result</doc>
+<status status="PASS" start="2026-04-23T09:58:58.414673" elapsed="39.526909"/>
+</kw>
+<doc>Launch Studio Pro with --enable-extension-development and skip sign-in</doc>
+<status status="PASS" start="2026-04-23T09:57:46.096889" elapsed="111.844693"/>
+</kw>
+<test id="s1-s1-t1" name="Extension DLL Is Deployed" line="10">
+<kw name="Extension DLL Should Be Deployed" owner="studiopro">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.943594" level="INFO">${dll_path} = D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\MxLintExtension.dll</msg>
+<var>${dll_path}</var>
+<arg>${APP_DIR}</arg>
+<arg>extensions</arg>
+<arg>MxLintExtension</arg>
+<arg>MxLintExtension.dll</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.941582" elapsed="0.002012"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.943594" level="INFO" html="true">File '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\MxLintExtension.dll"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\MxLintExtension.dll&lt;/a&gt;' exists.</msg>
+<arg>${dll_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.943594" elapsed="0.000000"/>
+</kw>
+<doc>Verify the extension DLL exists in the app's extensions folder</doc>
+<status status="PASS" start="2026-04-23T09:59:37.941582" elapsed="0.002012"/>
+</kw>
+<doc>The compiled extension DLL must exist in the app extensions folder</doc>
+<status status="PASS" start="2026-04-23T09:59:37.941582" elapsed="0.002012"/>
+</test>
+<test id="s1-s1-t2" name="Manifest Is Deployed" line="14">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.943594" level="INFO">${manifest} = D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\manifest.json</msg>
+<var>${manifest}</var>
+<arg>${APP_DIR}</arg>
+<arg>extensions</arg>
+<arg>MxLintExtension</arg>
+<arg>manifest.json</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.943594" elapsed="0.000000"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.943594" level="INFO" html="true">File '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\manifest.json"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\manifest.json&lt;/a&gt;' exists.</msg>
+<arg>${manifest}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.943594" elapsed="0.000000"/>
+</kw>
+<kw name="Get File" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.945605" level="INFO" html="true">Getting file '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\manifest.json"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension\manifest.json&lt;/a&gt;'.</msg>
+<msg time="2026-04-23T09:59:37.945605" level="INFO">${content} = {
+  "mx_extensions": [ "MxLintExtension.dll" ],
+  "mx_build_extensions": []
+}</msg>
+<var>${content}</var>
+<arg>${manifest}</arg>
+<doc>Returns the contents of a specified file.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.943594" elapsed="0.002011"/>
+</kw>
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${content}</arg>
+<arg>MxLintExtension.dll</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.945605" elapsed="0.000000"/>
+</kw>
+<doc>The extension manifest.json must be present alongside the DLL</doc>
+<status status="PASS" start="2026-04-23T09:59:37.943594" elapsed="0.002011"/>
+</test>
+<test id="s1-s1-t3" name="Studio Pro Launched Successfully" line="21">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T09:59:37.947362" level="INFO">Studio Pro launched and sign-in handled during suite setup</msg>
+<arg>Studio Pro launched and sign-in handled during suite setup</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.945605" elapsed="0.001757"/>
+</kw>
+<doc>Studio Pro should have started and shown a window during suite setup</doc>
+<tag>ui</tag>
+<status status="PASS" start="2026-04-23T09:59:37.945605" elapsed="0.001757"/>
+</test>
+<test id="s1-s1-t4" name="MxLint Panel Can Be Opened" line="26">
+<kw name="Should Be True" owner="BuiltIn">
+<msg time="2026-04-23T09:59:37.947362" level="FAIL">Could not open MxLint pane during suite setup</msg>
+<msg time="2026-04-23T09:59:37.947362" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Could not open MxLint pane during suite setup</msg>
+<arg>${MXLINT_PANE_OPENED}</arg>
+<arg>Could not open MxLint pane during suite setup</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="FAIL" start="2026-04-23T09:59:37.947362" elapsed="0.000000">Could not open MxLint pane during suite setup</status>
+</kw>
+<doc>MxLint pane can be opened through Studio Pro menu</doc>
+<tag>ui</tag>
+<status status="FAIL" start="2026-04-23T09:59:37.947362" elapsed="0.000000">Could not open MxLint pane during suite setup</status>
+</test>
+<test id="s1-s1-t5" name="Lint Results File Is Generated" line="31">
+<kw name="Lint Results File Should Exist" owner="studiopro">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:37.950160" level="INFO">${results_path} = D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json</msg>
+<var>${results_path}</var>
+<arg>${APP_DIR}</arg>
+<arg>.mendix-cache</arg>
+<arg>lint-results.json</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.950160" elapsed="0.000000"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-23T09:59:52.950709" level="INFO">Slept 15 seconds.</msg>
+<arg>15s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-23T09:59:37.950160" elapsed="15.000549"/>
+</kw>
+<kw name="Run Keyword And Ignore Error" owner="BuiltIn">
+<kw name="Wait Until Keyword Succeeds" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:52.951477" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T09:59:52.951477" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T09:59:52.951477" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T09:59:57.952041" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T09:59:57.952041" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T09:59:57.951596" elapsed="0.000445">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:02.952161" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:02.952161" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:02.952161" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:07.954047" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:07.954047" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:07.953470" elapsed="0.000577">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:12.954412" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:12.954412" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:12.954412" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:17.955380" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:17.955380" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:17.954852" elapsed="0.000528">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:22.955473" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:22.955473" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:22.955473" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:27.956068" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:27.956068" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:27.955608" elapsed="0.000460">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:32.956381" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:32.956381" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:32.956381" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:37.956802" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:37.956802" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:37.956802" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:42.957424" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:42.957424" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:42.957424" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:47.958543" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:47.958543" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:47.957798" elapsed="0.000745">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:52.959158" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:52.959158" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:52.958739" elapsed="0.000419">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:00:57.959515" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:00:57.959515" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:00:57.959515" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:02.959872" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:02.959872" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:02.959872" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:07.960749" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:07.960749" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:07.960749" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:12.961034" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:12.961034" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:12.961034" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:17.961871" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:17.961871" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:17.961091" elapsed="0.000780">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:22.961996" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:22.961996" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:22.961996" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:27.962489" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:27.962489" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:27.962489" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:32.962669" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:32.962669" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:32.962669" elapsed="0.000711">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:37.964251" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:37.964251" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:37.963722" elapsed="0.000529">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:42.965112" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:42.965112" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:42.964589" elapsed="0.000523">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:47.966564" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:47.966564" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:47.965693" elapsed="0.000871">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:52.967026" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:52.967026" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:52.967026" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:01:57.967656" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:01:57.967656" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:01:57.967331" elapsed="0.000325">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:02.968013" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:02.968013" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:02.968013" elapsed="0.000730">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:07.969880" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:07.969880" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:07.969285" elapsed="0.000595">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:12.970785" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:12.970785" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:12.970150" elapsed="0.000635">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:17.972198" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:17.972198" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:17.972198" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:22.972387" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:22.972387" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:22.972387" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:27.972464" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:27.972464" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:27.972464" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:32.973013" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:32.973013" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:32.973013" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:37.973372" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:37.973372" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:37.973372" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:42.974423" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:42.974423" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:42.973883" elapsed="0.000540">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:47.974533" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:47.974533" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:47.974533" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:52.975497" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:52.975497" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${results_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:52.975064" elapsed="0.000433">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<msg time="2026-04-23T10:02:52.975497" level="FAIL">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:52.976031" level="DEBUG">AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.
+
+During handling of the above exception, another exception occurred:
+
+robot.errors.HandlerExecutionFailed: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.
+
+During handling of the above exception, another exception occurred:
+
+AssertionError: Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>180s</arg>
+<arg>5s</arg>
+<arg>File Should Exist</arg>
+<arg>${results_path}</arg>
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<status status="FAIL" start="2026-04-23T09:59:52.951477" elapsed="180.024554">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<msg time="2026-04-23T10:02:52.976031" level="INFO">${status} = FAIL</msg>
+<msg time="2026-04-23T10:02:52.976031" level="INFO">${message} = Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<var>${status}</var>
+<var>${message}</var>
+<arg>Wait Until Keyword Succeeds</arg>
+<arg>180s</arg>
+<arg>5s</arg>
+<arg>File Should Exist</arg>
+<arg>${results_path}</arg>
+<doc>Runs the given keyword with the given arguments and ignores possible error.</doc>
+<status status="PASS" start="2026-04-23T09:59:52.950709" elapsed="180.025322"/>
+</kw>
+<if>
+<branch type="IF" condition="'${status}' == 'FAIL'">
+<kw name="Log Cache Directory Snapshot" owner="studiopro">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:52.977075" level="INFO">${cache_dir} = D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache</msg>
+<var>${cache_dir}</var>
+<arg>${APP_DIR}</arg>
+<arg>.mendix-cache</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.976031" elapsed="0.001044"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Directory Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:52.977519" level="INFO" html="true">Directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache&lt;/a&gt;' exists.</msg>
+<arg>${cache_dir}</arg>
+<doc>Fails unless the given path points to an existing directory.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.977519" elapsed="0.000000"/>
+</kw>
+<msg time="2026-04-23T10:02:52.977519" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>Directory Should Exist</arg>
+<arg>${cache_dir}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.977075" elapsed="0.000982"/>
+</kw>
+<if>
+<branch type="IF" condition="${exists}">
+<kw name="List Files In Directory" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:52.978057" level="INFO" html="true">Listing contents of directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache&lt;/a&gt;'.</msg>
+<msg time="2026-04-23T10:02:52.978057" level="INFO">0 files:
+</msg>
+<msg time="2026-04-23T10:02:52.978057" level="INFO">${files} = []</msg>
+<var>${files}</var>
+<arg>${cache_dir}</arg>
+<doc>Wrapper for `List Directory` that returns only files.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.978057" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T10:02:52.979085" level="WARN">.mendix-cache files: []</msg>
+<arg>.mendix-cache files: ${files}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.978057" elapsed="0.001028"/>
+</kw>
+<status status="PASS" start="2026-04-23T10:02:52.978057" elapsed="0.001028"/>
+</branch>
+<branch type="ELSE">
+<kw name="Log" owner="BuiltIn">
+<arg>.mendix-cache directory does not exist at ${cache_dir}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T10:02:52.979085" elapsed="0.000000"/>
+</kw>
+<status status="NOT RUN" start="2026-04-23T10:02:52.979085" elapsed="0.000453"/>
+</branch>
+<status status="PASS" start="2026-04-23T10:02:52.978057" elapsed="0.001481"/>
+</if>
+<doc>Log files present in .mendix-cache to aid troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.976031" elapsed="0.003507"/>
+</kw>
+<kw name="Log MxLint Cache Logs" owner="studiopro">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:52.980081" level="INFO">${log_path} = D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\mxlint.logs</msg>
+<var>${log_path}</var>
+<arg>${APP_DIR}</arg>
+<arg>.mendix-cache</arg>
+<arg>mxlint.logs</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.979538" elapsed="0.000543"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:52.980081" level="FAIL">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\mxlint.logs' does not exist.</msg>
+<msg time="2026-04-23T10:02:52.980081" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\mxlint.logs' does not exist.</msg>
+<arg>${log_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2026-04-23T10:02:52.980081" elapsed="0.000000">File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\mxlint.logs' does not exist.</status>
+</kw>
+<msg time="2026-04-23T10:02:52.980081" level="INFO">${exists} = False</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${log_path}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.980081" elapsed="0.000000"/>
+</kw>
+<if>
+<branch type="IF" condition="${exists}">
+<kw name="Get File" owner="OperatingSystem">
+<var>${logs}</var>
+<arg>${log_path}</arg>
+<doc>Returns the contents of a specified file.</doc>
+<status status="NOT RUN" start="2026-04-23T10:02:52.981097" elapsed="0.000000"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>===== BEGIN mxlint.logs =====\n${logs}\n===== END mxlint.logs =====</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T10:02:52.981097" elapsed="0.000000"/>
+</kw>
+<status status="NOT RUN" start="2026-04-23T10:02:52.980081" elapsed="0.001016"/>
+</branch>
+<branch type="ELSE">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T10:02:52.981559" level="WARN">mxlint.logs not found at D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\mxlint.logs</msg>
+<arg>mxlint.logs not found at ${log_path}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.981097" elapsed="0.000462"/>
+</kw>
+<status status="PASS" start="2026-04-23T10:02:52.981097" elapsed="0.000462"/>
+</branch>
+<status status="PASS" start="2026-04-23T10:02:52.980081" elapsed="0.001478"/>
+</if>
+<doc>Log mxlint.logs from Mendix cache to aid troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.979538" elapsed="0.002021"/>
+</kw>
+<kw name="Log Pane Diagnostics" owner="studiopro">
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T10:02:54.012554" level="INFO">${primary_exists} = False</msg>
+<var>${primary_exists}</var>
+<arg>${MAIN_WINDOW_PRIMARY}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.982100" elapsed="1.030454"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T10:02:55.042178" level="INFO">${app_exists} = False</msg>
+<var>${app_exists}</var>
+<arg>${MAIN_WINDOW_APP}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T10:02:54.012554" elapsed="1.029624"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T10:02:56.071221" level="INFO">${main_exists} = False</msg>
+<var>${main_exists}</var>
+<arg>${MAIN_WINDOW}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T10:02:55.042178" elapsed="1.029043"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T10:02:57.100228" level="INFO">${extensions_exists} = False</msg>
+<var>${extensions_exists}</var>
+<arg>${EXTENSIONS_MENU}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T10:02:56.071221" elapsed="1.029007"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T10:02:58.129311" level="INFO">${menu_item_exists} = False</msg>
+<var>${menu_item_exists}</var>
+<arg>${MXLINT_MENU_ITEM}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T10:02:57.100228" elapsed="1.029600"/>
+</kw>
+<kw name="Element Should Exist" owner="FlaUILibrary">
+<msg time="2026-04-23T10:02:59.158378" level="INFO">${pane_exists} = False</msg>
+<var>${pane_exists}</var>
+<arg>${MXLINT_PANE}</arg>
+<arg>${False}</arg>
+<doc>Checks if element exists. If element exists True will be returned otherwise False.
+If element could not be found by xpath False will be returned.</doc>
+<status status="PASS" start="2026-04-23T10:02:58.129828" elapsed="1.028550"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T10:02:59.158378" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<arg>Pane diagnostics: primary_window=${primary_exists}, app_window=${app_exists}, active_main_locator=${MAIN_WINDOW}, active_main_exists=${main_exists}, extensions_menu=${extensions_exists}, mxlint_menu_item=${menu_item_exists}, mxlint_pane=${pane_exists}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.158378" elapsed="0.000000"/>
+</kw>
+<doc>Log key UI element presence for pane troubleshooting.</doc>
+<status status="PASS" start="2026-04-23T10:02:52.982100" elapsed="6.176278"/>
+</kw>
+<kw name="Log Studio Pro Process Snapshot" owner="studiopro">
+<kw name="Run Process" owner="Process">
+<msg time="2026-04-23T10:02:59.160397" level="INFO">Starting process:
+tasklist /FI "IMAGENAME eq studiopro.exe"</msg>
+<msg time="2026-04-23T10:02:59.160397" level="DEBUG">Process configuration:
+cwd:     D:\a\mxlint-extension\mxlint-extension
+shell:   False
+stdout:  PIPE
+stderr:  PIPE
+stdin:   None
+alias:   None
+env:     None</msg>
+<msg time="2026-04-23T10:02:59.162419" level="INFO">Waiting for process to complete.</msg>
+<msg time="2026-04-23T10:02:59.244052" level="INFO">Process completed.</msg>
+<msg time="2026-04-23T10:02:59.244052" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>tasklist</arg>
+<arg>/FI</arg>
+<arg>IMAGENAME eq studiopro.exe</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.158378" elapsed="0.085674"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T10:02:59.246063" level="WARN">tasklist rc=0
+stdout:
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+studiopro.exe                  736 Console                    2    154,072 K
+stderr:
+</msg>
+<arg>tasklist rc=${result.rc}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.245731" elapsed="0.000332"/>
+</kw>
+<doc>Log tasklist output for Studio Pro process.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.158378" elapsed="0.087685"/>
+</kw>
+<kw name="Log Extension Directory Snapshot" owner="studiopro">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:59.248074" level="INFO">${ext_dir} = D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension</msg>
+<var>${ext_dir}</var>
+<arg>${APP_DIR}</arg>
+<arg>extensions</arg>
+<arg>MxLintExtension</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.247744" elapsed="0.000330"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Directory Should Exist" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:59.248074" level="INFO" html="true">Directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension&lt;/a&gt;' exists.</msg>
+<arg>${ext_dir}</arg>
+<doc>Fails unless the given path points to an existing directory.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.248074" elapsed="0.000000"/>
+</kw>
+<msg time="2026-04-23T10:02:59.248074" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>Directory Should Exist</arg>
+<arg>${ext_dir}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.248074" elapsed="0.000000"/>
+</kw>
+<if>
+<branch type="IF" condition="${exists}">
+<kw name="List Files In Directory" owner="OperatingSystem">
+<msg time="2026-04-23T10:02:59.248074" level="INFO" html="true">Listing contents of directory '&lt;a href="file://D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension"&gt;D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension&lt;/a&gt;'.</msg>
+<msg time="2026-04-23T10:02:59.249502" level="INFO">11 files:
+Mendix.StudioPro.ExtensionsAPI.dll
+Microsoft.Extensions.ObjectPool.dll
+MxLintExtension.deps.json
+MxLintExtension.dll
+MxLintExtension.pdb
+System.ComponentModel.Composition.dll
+System.Security.Cryptography.Pkcs.dll
+System.Security.Cryptography.Xml.dll
+System.ServiceModel.Primitives.dll
+YamlDotNet.dll
+manifest.json</msg>
+<msg time="2026-04-23T10:02:59.249502" level="INFO">${files} = ['Mendix.StudioPro.ExtensionsAPI.dll', 'Microsoft.Extensions.ObjectPool.dll', 'MxLintExtension.deps.json', 'MxLintExtension.dll', 'MxLintExtension.pdb', 'System.ComponentModel.Composition.dll', 'Syste...</msg>
+<var>${files}</var>
+<arg>${ext_dir}</arg>
+<doc>Wrapper for `List Directory` that returns only files.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.248074" elapsed="0.001428"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-04-23T10:02:59.249502" level="WARN">Extension files: ['Mendix.StudioPro.ExtensionsAPI.dll', 'Microsoft.Extensions.ObjectPool.dll', 'MxLintExtension.deps.json', 'MxLintExtension.dll', 'MxLintExtension.pdb', 'System.ComponentModel.Composition.dll', 'System.Security.Cryptography.Pkcs.dll', 'System.Security.Cryptography.Xml.dll', 'System.ServiceModel.Primitives.dll', 'YamlDotNet.dll', 'manifest.json']</msg>
+<arg>Extension files: ${files}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.249502" elapsed="0.000000"/>
+</kw>
+<status status="PASS" start="2026-04-23T10:02:59.248074" elapsed="0.001428"/>
+</branch>
+<branch type="ELSE">
+<kw name="Log" owner="BuiltIn">
+<arg>Extension directory missing at ${ext_dir}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-04-23T10:02:59.249502" elapsed="0.000000"/>
+</kw>
+<status status="NOT RUN" start="2026-04-23T10:02:59.249502" elapsed="0.000000"/>
+</branch>
+<status status="PASS" start="2026-04-23T10:02:59.248074" elapsed="0.001428"/>
+</if>
+<doc>Log deployed extension directory contents.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.246063" elapsed="0.003439"/>
+</kw>
+<kw name="Fail" owner="BuiltIn">
+<msg time="2026-04-23T10:02:59.249502" level="FAIL">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<msg time="2026-04-23T10:02:59.249502" level="DEBUG">Traceback (most recent call last):
+  None
+AssertionError: Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</msg>
+<arg>${message}</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="FAIL" start="2026-04-23T10:02:59.249502" elapsed="0.000000">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<status status="FAIL" start="2026-04-23T10:02:52.976031" elapsed="6.273471">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</branch>
+<status status="FAIL" start="2026-04-23T10:02:52.976031" elapsed="6.273471">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</if>
+<kw name="Get File" owner="OperatingSystem">
+<var>${content}</var>
+<arg>${results_path}</arg>
+<doc>Returns the contents of a specified file.</doc>
+<status status="NOT RUN" start="2026-04-23T10:02:59.249502" elapsed="0.000000"/>
+</kw>
+<kw name="Should Contain" owner="BuiltIn">
+<arg>${content}</arg>
+<arg>testsuites</arg>
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<status status="NOT RUN" start="2026-04-23T10:02:59.249502" elapsed="0.000000"/>
+</kw>
+<doc>Verify lint-results.json is generated in Mendix cache.</doc>
+<status status="FAIL" start="2026-04-23T09:59:37.949384" elapsed="201.302130">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</kw>
+<doc>lint-results.json should be generated in .mendix-cache after running extension</doc>
+<tag>ui</tag>
+<status status="FAIL" start="2026-04-23T09:59:37.947362" elapsed="201.304152">Keyword 'File Should Exist' failed after retrying for 3 minutes. The last error was: File 'D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\lint-results.json' does not exist.</status>
+</test>
+<kw name="Stop Studio Pro" owner="studiopro" type="TEARDOWN">
+<kw name="Run Keyword And Ignore Error" owner="BuiltIn">
+<kw name="Close Application" owner="FlaUILibrary">
+<arg>${STUDIOPRO_PID}</arg>
+<doc>Closes the attached application.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.252295" elapsed="0.096713"/>
+</kw>
+<arg>Close Application</arg>
+<arg>${STUDIOPRO_PID}</arg>
+<doc>Runs the given keyword with the given arguments and ignores possible error.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.252295" elapsed="0.098176"/>
+</kw>
+<kw name="Run Keyword And Ignore Error" owner="BuiltIn">
+<kw name="Wait Until Element Does Not Exist" owner="FlaUILibrary">
+<arg>${MAIN_WINDOW}</arg>
+<arg>30</arg>
+<doc>Waits until element does not exist or timeout was reached. If timeout was reached an FlaUIError occurred.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.350471" elapsed="1.202717"/>
+</kw>
+<arg>Wait Until Element Does Not Exist</arg>
+<arg>${MAIN_WINDOW}</arg>
+<arg>30</arg>
+<doc>Runs the given keyword with the given arguments and ignores possible error.</doc>
+<status status="PASS" start="2026-04-23T10:02:59.350471" elapsed="1.202717"/>
+</kw>
+<doc>Gracefully stop Studio Pro</doc>
+<status status="PASS" start="2026-04-23T10:02:59.252295" elapsed="1.300893"/>
+</kw>
+<doc>Verify the MxLint extension loads correctly in Mendix Studio Pro</doc>
+<status status="FAIL" start="2026-04-23T09:57:45.557673" elapsed="314.995515"/>
+</suite>
+<status status="FAIL" start="2026-04-23T09:57:45.525217" elapsed="315.029987"/>
+</suite>
+<statistics>
+<total>
+<stat pass="3" fail="2" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="1" fail="2" skip="0">ui</stat>
+</tag>
+<suite>
+<stat name="E2E" id="s1" pass="3" fail="2" skip="0">E2E</stat>
+<stat name="Extension Loading" id="s1-s1" pass="3" fail="2" skip="0">E2E.Extension Loading</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2026-04-23T09:57:46.104930" level="WARN">STUDIOPRO_EXE=D:\a\_temp\Mendix\10.24.16.96987\modeler\studiopro.exe</msg>
+<msg time="2026-04-23T09:57:46.106942" level="WARN">APP_DIR=D:\a\mxlint-extension\mxlint-extension\resources\App</msg>
+<msg time="2026-04-23T09:57:46.106942" level="WARN">App.mpr path: D:\a\mxlint-extension\mxlint-extension\resources\App\App.mpr</msg>
+<msg time="2026-04-23T09:57:46.106942" level="WARN">Extension dir: D:\a\mxlint-extension\mxlint-extension\resources\App\extensions\MxLintExtension</msg>
+<msg time="2026-04-23T09:57:58.592894" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:58:04.627649" level="WARN">Using main window locator: /Window[contains(@Name,'Studio Pro')]</msg>
+<msg time="2026-04-23T09:58:22.350249" level="WARN">Sign-in skip result: PASS - None</msg>
+<msg time="2026-04-23T09:58:31.747660" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:58:45.078458" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:58:58.412247" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:58:58.414261" level="WARN">Project load result: FAIL - Keyword 'Resolve Main Window Locator' failed after retrying for 30 seconds. The last error was: Could not resolve Studio Pro main window locator.</msg>
+<msg time="2026-04-23T09:59:05.699649" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:59:14.011701" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:59:23.301862" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:59:31.592860" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:59:37.795144" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T09:59:37.937556" level="WARN">tasklist rc=0
+stdout:
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+studiopro.exe                  736 Console                    2    579,576 K
+stderr:
+</msg>
+<msg time="2026-04-23T09:59:37.941582" level="WARN">Extension files: ['Mendix.StudioPro.ExtensionsAPI.dll', 'Microsoft.Extensions.ObjectPool.dll', 'MxLintExtension.deps.json', 'MxLintExtension.dll', 'MxLintExtension.pdb', 'System.ComponentModel.Composition.dll', 'System.Security.Cryptography.Pkcs.dll', 'System.Security.Cryptography.Xml.dll', 'System.ServiceModel.Primitives.dll', 'YamlDotNet.dll', 'manifest.json']</msg>
+<msg time="2026-04-23T10:02:52.979085" level="WARN">.mendix-cache files: []</msg>
+<msg time="2026-04-23T10:02:52.981559" level="WARN">mxlint.logs not found at D:\a\mxlint-extension\mxlint-extension\resources\App\.mendix-cache\mxlint.logs</msg>
+<msg time="2026-04-23T10:02:59.158378" level="WARN">Pane diagnostics: primary_window=False, app_window=False, active_main_locator=/Window[contains(@Name,'Studio Pro')], active_main_exists=False, extensions_menu=False, mxlint_menu_item=False, mxlint_pane=False</msg>
+<msg time="2026-04-23T10:02:59.246063" level="WARN">tasklist rc=0
+stdout:
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+studiopro.exe                  736 Console                    2    154,072 K
+stderr:
+</msg>
+<msg time="2026-04-23T10:02:59.249502" level="WARN">Extension files: ['Mendix.StudioPro.ExtensionsAPI.dll', 'Microsoft.Extensions.ObjectPool.dll', 'MxLintExtension.deps.json', 'MxLintExtension.dll', 'MxLintExtension.pdb', 'System.ComponentModel.Composition.dll', 'System.Security.Cryptography.Pkcs.dll', 'System.Security.Cryptography.Xml.dll', 'System.ServiceModel.Primitives.dll', 'YamlDotNet.dll', 'manifest.json']</msg>
+</errors>
+</robot>
