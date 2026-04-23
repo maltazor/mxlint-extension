@@ -8,3 +8,7 @@ resources/App/extensions/MxLintExtension/*
 dist
 node_modules
 results/
+# Robot Framework local run artifacts
+log.html
+output.xml
+report.html
